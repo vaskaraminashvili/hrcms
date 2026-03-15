@@ -6,12 +6,24 @@ use App\Enums\EnumsDepartmentColor;
 use App\Enums\EnumsDepartmentType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Openplain\FilamentTreeView\Concerns\HasTreeStructure;
 
 class Department extends Model
 {
     /** @use HasFactory<DepartmentFactory> */
-    use HasFactory,HasTreeStructure;
+    use HasFactory, HasTreeStructure;
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function (Department $department): void {
+            if (blank($department->slug)) {
+                $department->slug = Str::slug($department->name);
+            }
+        });
+    }
 
     protected $fillable = [
         'name',
