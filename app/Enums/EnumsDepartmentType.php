@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Filament\Support\Icons\Heroicon;
+
 enum EnumsDepartmentType: string
 {
     case DEPARTMENT = 'department';
@@ -15,19 +17,11 @@ enum EnumsDepartmentType: string
         };
     }
 
-    public function color(): string
+    public function getIcon(): ?Heroicon
     {
         return match ($this) {
-            self::DEPARTMENT => 'gray',
-            self::POSITION => 'blue',
-        };
-    }
-
-    public function getIcon(): ?string
-    {
-        return match ($this) {
-            self::DEPARTMENT => 'heroicon-o-hourglass',
-            self::POSITION => 'heroicon-o-check-circle',
+            self::DEPARTMENT => Heroicon::ArchiveBox,
+            self::POSITION => Heroicon::ArchiveBox,
         };
     }
 }

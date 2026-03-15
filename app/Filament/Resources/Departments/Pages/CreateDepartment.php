@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Departments\Pages;
 
+use App\Enums\EnumsDepartmentType;
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
 use Filament\Actions\Action;
@@ -24,6 +25,10 @@ class CreateDepartment extends CreateRecord
 
         if ($parentId) {
             $this->parentRecord = Department::findOrFail($parentId);
+
+            if ($this->parentRecord->type === EnumsDepartmentType::POSITION) {
+                abort(403, 'Cannot create a child under a position.');
+            }
         }
 
         parent::mount();
