@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Departments;
 
-use App\Enums\EnumsDepartmentType;
 use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
@@ -42,8 +41,7 @@ class DepartmentResource extends Resource
         return $tree
             ->fields([
                 DepartmentTextField::make('name')
-                    ->withDepartmentColor()
-                    ->withDepartmentIcon(),
+                    ->withDepartmentColor(),
                 IconField::make('is_active')
                     ->alignEnd(),
             ])
@@ -55,8 +53,7 @@ class DepartmentResource extends Resource
                     ->icon('heroicon-o-plus')
                     ->url(
                         fn (Department $record): string => static::getUrl('create', ['record' => $record])
-                    )
-                    ->visible(fn (Department $record): bool => $record->type !== EnumsDepartmentType::POSITION),
+                    ),
                 EditAction::make()
                     ->label('')
                     ->icon('heroicon-o-pencil')

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->string('color')->nullable();
-            $table->string('type')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('users');
             $table->boolean('is_active')->default(true);
 
