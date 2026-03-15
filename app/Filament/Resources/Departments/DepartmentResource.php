@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Departments;
 
+use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
@@ -9,15 +10,14 @@ use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
+use Filament\Actions\EditAction;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Notifications\Notification;
+use Illuminate\Support\HtmlString;
 use Openplain\FilamentTreeView\Fields\IconField;
-use Openplain\FilamentTreeView\Fields\TextField;
 use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
@@ -42,7 +42,12 @@ class DepartmentResource extends Resource
     {
         return $tree
             ->fields([
-                TextField::make('name'),
+                DepartmentTextField::make('name')
+                    ->formatStateUsing(function (mixed $state, Department $record): HtmlString {
+                        $color = $record->color?->color() ?? 'gray';
+
+                        return new HtmlString("<span class='text-sm text-{$color}-500'>".e($record->name).'</span>');
+                    }),
                 IconField::make('is_active')
                     ->alignEnd(),
             ])
@@ -50,40 +55,34 @@ class DepartmentResource extends Resource
 
                 // Navigate to edit page
                 CreateAction::make()
-                    ->url(fn (Department $record): string => static::getUrl('create', ['record' => $record])
+                    ->url(
+                        fn (Department $record): string => static::getUrl('create', ['record' => $record])
+                    ),
+                EditAction::make()
+                    ->url(
+                        fn (Department $record): string => static::getUrl('edit', ['record' => $record])
                     ),
 
-                // Edit in modal
-                Action::make('editModal')
-                    ->label('Quick Edit')
-                    ->icon('heroicon-o-pencil-square')
-                    ->fillForm(fn (Department $record): array => [
-                        'name' => $record->name,
-                        'description' => $record->description,
-                    ])
-                    ->form([
-                        TextInput::make('name')->required(),
-                        Textarea::make('description'),
-                    ])
-                    ->action(function (Department $record, array $data) {
-                        $record->update($data);
+                // Edit in modal (slideOver causes getNestingIndex on null with tree view)
+                Action::make('quickView')
+                    ->label('')
+                    ->icon('heroicon-o-eye')
 
-                        Notification::make()
-                            ->title('Category updated')
-                            ->success()
-                            ->send();
-                    }),
+                    ->fillForm(fn (Department $record): array => ['name' => $record->name])
+                    ->schema(DepartmentForm::getFormComponents())
+                    ->slideOver()
+                    ->disabledForm(),
 
                 // Delete with descendant warning
                 DeleteAction::make()
-                    ->modalDescription(function (Category $record): string {
+                    ->modalDescription(function (Department $record): string {
                         $count = $record->descendants()->count();
 
                         if ($count === 0) {
-                            return 'Are you sure you want to delete this category?';
+                            return 'Are you sure you want to delete this department?';
                         }
 
-                        return "This category has {$count} descendants that will also be deleted.";
+                        return "This department has {$count} descendants that will also be deleted.";
                     }),
             ])
             ->maxDepth(6);
