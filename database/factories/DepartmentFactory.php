@@ -27,6 +27,7 @@ class DepartmentFactory extends Factory
             'slug' => Str::slug($name.'-'.fake()->unique()->numberBetween(1, 9999)),
             'description' => fake()->optional(0.7)->realText(200),
             'color' => fake()->randomElement(EnumsDepartmentColor::cases()),
+            'vacancy_count' => fake()->numberBetween(0, 10),
             'author_id' => User::factory(),
             'is_active' => fake()->boolean(90),
             'parent_id' => null,

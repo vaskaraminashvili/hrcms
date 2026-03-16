@@ -40,6 +40,15 @@ class DepartmentResource extends Resource
         return $tree
             ->fields([
                 DepartmentTextField::make('name'),
+                DepartmentTextField::make('vacancy_count')
+                    ->formatStateUsing(function (int $state, Department $record): string {
+                        if ($record->children()->exists()) {
+                            return '';
+                        }
+
+                        return 'Vacancies: '.$state;
+                    })
+                    ->alignEnd(),
                 IconField::make('is_active')
                     ->alignEnd(),
             ])
@@ -59,7 +68,8 @@ class DepartmentResource extends Resource
                         fn (Department $record): string => static::getUrl('edit', ['record' => $record])
                     ),
             ])
-            ->maxDepth(6);
+            ->maxDepth(6)
+            ->reorderable(false);
     }
 
     public static function getPages(): array

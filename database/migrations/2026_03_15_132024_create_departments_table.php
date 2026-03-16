@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('color')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('users');
             $table->boolean('is_active')->default(true);
+            $table->integer('vacancy_count')->default(0);
 
             // Required for tree structure
             $table->foreignId('parent_id')->nullable()->constrained('departments');

@@ -6,9 +6,9 @@ use App\Enums\EnumsDepartmentColor;
 use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class DepartmentForm
@@ -27,14 +27,35 @@ class DepartmentForm
             ->pluck('name', 'id');
 
         return [
-            TextInput::make('name')
-                ->required()
-                ->maxLength(255)
-                ->columnSpanFull(),
+            Section::make()
+                ->schema([
+                    Select::make('parent_id')
+                        ->label('Parent Department')
+                        ->options($parentOptions)
+                        ->nullable()
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->hint(fn ($state): string => $state
+                            ? 'Level '.(Department::find($state)?->ancestors()->count() + 2)
+                            : 'Level 1 (Root)'
+                        )
+                        ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+                    TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
 
-            Textarea::make('description')
-                ->nullable()
-                ->rows(3)
+                    TextInput::make('vacancy_count')
+                        ->label('Vacancies')
+                        ->numeric()
+                        ->default(0),
+
+                    Toggle::make('is_active')
+                        ->label('Active')
+                        ->default(true)
+                        ->columnSpanFull()
+                        ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+                ])
                 ->columnSpanFull(),
 
             // Select::make('color')
@@ -44,20 +65,6 @@ class DepartmentForm
             //     ->nullable()
             //     ->searchable()
             //     ->hidden(fn (string $operation): bool => $operation === 'quickView'),
-
-            // Select::make('parent_id')
-            //     ->label('Parent Department')
-            //     ->options($parentOptions)
-            //     ->nullable()
-            //     ->searchable()
-            //     ->preload()
-            //     ->hidden(fn (string $operation): bool => $operation === 'quickView'),
-
-            Toggle::make('is_active')
-                ->label('Active')
-                ->default(true)
-                ->columnSpanFull()
-                ->hidden(fn (string $operation): bool => $operation === 'quickView'),
         ];
     }
 
