@@ -8,7 +8,6 @@ use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
 use BackedEnum;
 use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
@@ -59,20 +58,6 @@ class DepartmentResource extends Resource
                     ->url(
                         fn (Department $record): string => static::getUrl('edit', ['record' => $record])
                     ),
-
-                // Delete with descendant warning
-                DeleteAction::make()
-                    ->label('')
-                    ->icon('heroicon-o-trash')
-                    ->modalDescription(function (Department $record): string {
-                        $count = $record->descendants()->count();
-
-                        if ($count === 0) {
-                            return 'Are you sure you want to delete this department?';
-                        }
-
-                        return "This department has {$count} descendants that will also be deleted.";
-                    }),
             ])
             ->maxDepth(6);
     }
