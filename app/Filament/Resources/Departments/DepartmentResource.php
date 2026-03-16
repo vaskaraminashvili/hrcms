@@ -40,8 +40,7 @@ class DepartmentResource extends Resource
     {
         return $tree
             ->fields([
-                DepartmentTextField::make('name')
-                    ->withDepartmentColor(),
+                DepartmentTextField::make('name'),
                 IconField::make('is_active')
                     ->alignEnd(),
             ])

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\EnumsDepartmentColor;
-use App\Enums\EnumsDepartmentType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -31,7 +30,6 @@ class Department extends Model
         'description',
         'icon',
         'color',
-        'type',
         'author_id',
         'is_active',
         'parent_id',
@@ -39,7 +37,6 @@ class Department extends Model
     ];
 
     protected $casts = [
-        'type' => EnumsDepartmentType::class,
         'color' => EnumsDepartmentColor::class,
     ];
 }

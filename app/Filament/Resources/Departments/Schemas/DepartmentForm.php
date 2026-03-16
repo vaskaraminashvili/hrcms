@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Departments\Schemas;
 
 use App\Enums\EnumsDepartmentColor;
-use App\Enums\EnumsDepartmentType;
 use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
@@ -38,29 +37,21 @@ class DepartmentForm
                 ->rows(3)
                 ->columnSpanFull(),
 
-            Select::make('type')
-                ->options(collect(EnumsDepartmentType::cases())->mapWithKeys(
-                    fn (EnumsDepartmentType $case) => [$case->value => $case->label()]
-                ))
-                ->nullable()
-                ->searchable()
-                ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+            // Select::make('color')
+            //     ->options(collect(EnumsDepartmentColor::cases())->mapWithKeys(
+            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label()]
+            //     ))
+            //     ->nullable()
+            //     ->searchable()
+            //     ->hidden(fn (string $operation): bool => $operation === 'quickView'),
 
-            Select::make('color')
-                ->options(collect(EnumsDepartmentColor::cases())->mapWithKeys(
-                    fn (EnumsDepartmentColor $case) => [$case->value => $case->label()]
-                ))
-                ->nullable()
-                ->searchable()
-                ->hidden(fn (string $operation): bool => $operation === 'quickView'),
-
-            Select::make('parent_id')
-                ->label('Parent Department')
-                ->options($parentOptions)
-                ->nullable()
-                ->searchable()
-                ->preload()
-                ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+            // Select::make('parent_id')
+            //     ->label('Parent Department')
+            //     ->options($parentOptions)
+            //     ->nullable()
+            //     ->searchable()
+            //     ->preload()
+            //     ->hidden(fn (string $operation): bool => $operation === 'quickView'),
 
             Toggle::make('is_active')
                 ->label('Active')

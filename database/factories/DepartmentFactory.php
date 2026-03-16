@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\EnumsDepartmentColor;
-use App\Enums\EnumsDepartmentType;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,7 +27,6 @@ class DepartmentFactory extends Factory
             'slug' => Str::slug($name.'-'.fake()->unique()->numberBetween(1, 9999)),
             'description' => fake()->optional(0.7)->realText(200),
             'color' => fake()->randomElement(EnumsDepartmentColor::cases()),
-            'type' => fake()->randomElement(EnumsDepartmentType::cases()),
             'author_id' => User::factory(),
             'is_active' => fake()->boolean(90),
             'parent_id' => null,

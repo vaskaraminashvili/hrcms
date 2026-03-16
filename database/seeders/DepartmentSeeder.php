@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\EnumsDepartmentType;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -34,14 +33,9 @@ class DepartmentSeeder extends Seeder
         }
 
         for ($i = 0; $i < $branches; $i++) {
-            // Higher dimension (deepest child branches i.e., end levels) assigned as specific Positions,
-            // while upper hierarchy layers are grouped under Departments as logically expected.
-            $type = $currentDimension >= 5 ? EnumsDepartmentType::POSITION : EnumsDepartmentType::DEPARTMENT;
-
             $node = Department::factory()->create([
                 'author_id' => $authorId,
                 'parent_id' => $parentId,
-                'type' => $type,
             ]);
 
             $this->seedDimension($authorId, $node->id, $currentDimension + 1, $maxDimension, $branches);
