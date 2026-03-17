@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\DepartmentStatus;
 use App\Enums\EnumsDepartmentColor;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Openplain\FilamentTreeView\Concerns\HasTreeStructure;
 
@@ -36,15 +38,20 @@ class Department extends Model
         'name',
         'slug',
         'description',
-        'icon',
         'color',
         'author_id',
-        'is_active',
+        'status',
         'parent_id',
         'order',
     ];
 
     protected $casts = [
         'color' => EnumsDepartmentColor::class,
+        'status' => DepartmentStatus::class,
     ];
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class);
+    }
 }
