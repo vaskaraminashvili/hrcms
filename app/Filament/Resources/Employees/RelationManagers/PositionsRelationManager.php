@@ -1,37 +1,48 @@
 <?php
 
-namespace App\Filament\Resources\Positions\Tables;
+namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Enums\PositionStatus;
-use App\Models\Position;
+use App\Filament\Resources\Positions\Schemas\PositionForm;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PositionsTable
+class PositionsRelationManager extends RelationManager
 {
-    public static function configure(Table $table): Table
+    protected static string $relationship = 'positions';
+
+    protected static ?string $title = 'Positions';
+
+    public function form(Schema $schema): Schema
+    {
+        return PositionForm::configureForRelationManager($schema);
+    }
+
+    public function table(Table $table): Table
     {
         return $table
-
+            ->recordTitleAttribute('date_start')
             ->columns([
-                TextColumn::make('employee.name')
-                    ->formatStateUsing(function (string $state, Position $record): string {
-                        return $record->employee->name.' '.$record->employee->surname;
-                    })
-                    ->description(function (Position $record): string {
-                        return $record->department->name;
-                    })
-                    ->searchable(['employee.name', 'employee.surname'])
-
+                TextColumn::make('department.name')
+                    ->searchable()
                     ->sortable(),
-                TextColumn::make('positionTypes.name')
-                    ->badge()
-                    ->label('Position Types')
+                TextColumn::make('place.name')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->date()
@@ -45,28 +56,23 @@ class PositionsTable
                     ->color(fn (PositionStatus $state): string => $state->color())
                     ->alignCenter()
                     ->searchable(),
+                TextColumn::make('act_number')
+                    ->alignCenter()
+                    ->searchable(),
+                TextColumn::make('act_date')
+                    ->date()
+                    ->sortable(),
+                IconColumn::make('automative_renewal')
+                    ->label('Renewal')
+                    ->alignCenter()
+                    ->boolean(),
                 TextColumn::make('salary')
                     ->label('Salary')
                     ->money('GEL')
                     ->sortable(),
-                TextColumn::make('act_number')
-                    ->alignCenter()
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('act_date')
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                IconColumn::make('automative_renewal')
-                    ->label('Renewal')
-                    ->alignCenter()
-                    ->boolean()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('comment')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -81,18 +87,28 @@ class PositionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
+            ])
+            ->headerActions([
+                CreateAction::make()
+                    ->label('Add New Position'),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
+                DeleteAction::make(),
+                ForceDeleteAction::make(),
+                RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
-            ])->recordUrl(
-                fn (Position $record): string => route('filament.admin.resources.positions.edit', ['record' => $record]),
-            );
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->withoutGlobalScopes([
+                    SoftDeletingScope::class,
+                ]));
     }
 }

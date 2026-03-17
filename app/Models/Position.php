@@ -17,6 +17,8 @@ class Position extends Model
 
     protected $fillable = [
         'employee_id',
+        'department_id',
+        'place_id',
         'date_start',
         'date_end',
         'status',
@@ -25,7 +27,6 @@ class Position extends Model
         'automative_renewal',
         'salary',
         'comment',
-        'department_id',
     ];
 
     protected $casts = [

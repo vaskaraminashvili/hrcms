@@ -69,4 +69,49 @@ class PositionForm
 
             ]);
     }
+
+    public static function configureForRelationManager(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tab::make('Basic Information')
+                            ->schema([
+                                Select::make('department_id')
+                                    ->relationship('department', 'name', fn (Builder $query) => $query->where('is_active', true))
+                                    ->required()
+                                    ->columnSpanFull(),
+                                Select::make('place_id')
+                                    ->relationship('place', 'name', fn (Builder $query) => $query->where('is_active', true))
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->columnSpanFull(),
+                                Select::make('position_types')
+                                    ->relationship('positionTypes', 'name', fn (Builder $query) => $query->where('is_active', true))
+                                    ->searchable()
+                                    ->preload()
+                                    ->multiple()
+                                    ->required()
+                                    ->columnSpanFull(),
+                                DatePicker::make('date_start'),
+                                DatePicker::make('date_end'),
+                                TextInput::make('act_number'),
+                                DatePicker::make('act_date'),
+                                Select::make('status')
+                                    ->options(PositionStatus::class)
+                                    ->required(),
+                                Toggle::make('automative_renewal')
+                                    ->label('Automative Renewal'),
+                                TextInput::make('salary')
+                                    ->numeric(),
+                                RichEditor::make('comment')
+                                    ->columnSpanFull(),
+                            ])
+                            ->columns(2),
+                    ])
+                    ->columnSpanFull(),
+            ]);
+    }
 }

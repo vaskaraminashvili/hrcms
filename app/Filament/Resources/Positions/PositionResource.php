@@ -22,7 +22,7 @@ class PositionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Position';
+    protected static ?string $recordTitleAttribute = 'employee.name';
 
     public static function form(Schema $schema): Schema
     {

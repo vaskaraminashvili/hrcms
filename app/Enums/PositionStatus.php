@@ -2,12 +2,12 @@
 
 namespace App\Enums;
 
-enum PositionStatus
+enum PositionStatus: string
 {
-    case Active;
-    case Inactive;
-    case Pending;
-    case Archived;
+    case Active = 'active';
+    case Inactive = 'inactive';
+    case Pending = 'pending';
+    case Archived = 'archived';
 
     public function label(): string
     {

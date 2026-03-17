@@ -41,6 +41,12 @@ class EmployeesTable
                     })
                     ->color('success')
                     ->searchable(),
+                TextColumn::make('positions_count')
+                    ->label('Positions')
+                    ->alignCenter()
+                    ->icon('heroicon-o-briefcase')
+                    ->counts('positions')
+                    ->sortable(),
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),

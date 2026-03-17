@@ -24,7 +24,7 @@ class EmployeeResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'Employee';
+    protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
     {
@@ -44,7 +44,7 @@ class EmployeeResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PositionsRelationManager::class,
         ];
     }
 
@@ -53,7 +53,7 @@ class EmployeeResource extends Resource
         return [
             'index' => ListEmployees::route('/'),
             'create' => CreateEmployee::route('/create'),
-            'view' => ViewEmployee::route('/{record}'),
+            // 'view' => ViewEmployee::route('/{record}'),
             'edit' => EditEmployee::route('/{record}/edit'),
         ];
     }
