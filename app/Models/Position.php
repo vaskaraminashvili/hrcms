@@ -24,6 +24,9 @@ class Position extends Model
         'status',
         'act_number',
         'act_date',
+        'staff_type',
+        'clinical',
+        'clinical_text',
         'automative_renewal',
         'salary',
         'comment',
@@ -34,6 +37,8 @@ class Position extends Model
         'date_start' => 'date',
         'date_end' => 'date',
         'act_date' => 'date',
+        'staff_type' => 'boolean',
+        'clinical' => 'boolean',
         'automative_renewal' => 'boolean',
         'status' => PositionStatus::class,
     ];

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Positions\Schemas;
 
 use App\Enums\PositionStatus;
 use App\Models\Position;
+use App\Models\PositionType;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -16,6 +17,21 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
+    private const ACADEMIC_PERSONNEL_NAME = 'აკადემიური პერსონალი';
+
+    public static function hasAcademicPersonnelPositionType(mixed $positionTypeIds): bool
+    {
+        $ids = collect($positionTypeIds)->flatten()->filter()->toArray();
+
+        if (empty($ids)) {
+            return false;
+        }
+
+        return PositionType::whereIn('id', $ids)
+            ->where('name', self::ACADEMIC_PERSONNEL_NAME)
+            ->exists();
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -46,7 +62,7 @@ class PositionForm
                                     ->relationship('positionTypes', 'name', fn (Builder $query) => $query->where('is_active', true))
                                     ->searchable()
                                     ->preload()
-                                    ->multiple()
+                                    ->live()
                                     ->required()
                                     ->columnSpanFull(),
                                 DatePicker::make('date_start'),
@@ -56,8 +72,23 @@ class PositionForm
                                 Select::make('status')
                                     ->options(PositionStatus::class)
                                     ->required(),
+                                Toggle::make('staff_type')
+                                    ->label('Staff Type'),
+                                Toggle::make('clinical')
+                                    ->label('Clinical')
+                                    ->visible(fn ($get): bool => self::hasAcademicPersonnelPositionType($get('position_types'))),
+                                TextInput::make('clinical_text')
+                                    ->label('Clinical Text')
+                                    ->visible(fn ($get): bool => self::hasAcademicPersonnelPositionType($get('position_types'))),
                                 Toggle::make('automative_renewal')
-                                    ->label('Automative Renewal'),
+                                    ->label('Automative Renewal')
+                                    ->visible(function ($get) {
+                                        $positionTypes = $get('position_type');
+                                        $positionType = PositionType::query()
+                                            ->where('id', $positionTypes)->first();
+
+                                        return $positionType->name === self::ACADEMIC_PERSONNEL_NAME;
+                                    }),
                                 TextInput::make('salary')
                                     ->numeric(),
                                 RichEditor::make('comment')

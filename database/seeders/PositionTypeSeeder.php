@@ -12,6 +12,19 @@ class PositionTypeSeeder extends Seeder
      */
     public function run(): void
     {
-        PositionType::factory(50)->create();
+        $positionTypes = [
+            ['name' => 'ემერიტუსი'],
+            ['name' => 'ადმინისტრაციული პერსონალი'],
+            ['name' => 'დამხმარე ადმინისტრაციული პერსონალი'],
+            ['name' => 'აკადემიური პერსონალი'], // if it has this add fields
+            ['name' => 'მოწვეული მასწავლებელი'],
+            ['name' => 'ხელშეკრულებით დასაქმებული'], // if this add automative renewable
+            ['name' => 'აკადემიური წოდება'],
+        ];
+
+        // fields
+        // theoretical or Clinical toggle
+        // if clinical add CLINIcs text field
+        PositionType::insert($positionTypes);
     }
 }
