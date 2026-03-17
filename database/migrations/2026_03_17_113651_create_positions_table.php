@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('place_id')->constrained('places');
             $table->foreignId('employee_id')->constrained('employees');
             $table->foreignId('department_id')->constrained('departments');
             $table->date('date_start')->nullable();

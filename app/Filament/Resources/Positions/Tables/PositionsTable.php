@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Positions\Tables;
 
+use App\Enums\PositionStatus;
 use App\Models\Position;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -37,11 +38,8 @@ class PositionsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'active' => 'success',
-                        'inactive' => 'warning',
-                        default => 'gray',
-                    })
+                    ->formatStateUsing(fn (PositionStatus $state): string => $state->label())
+                    ->color(fn (PositionStatus $state): string => $state->color())
                     ->alignCenter()
                     ->searchable(),
                 TextColumn::make('act_number')

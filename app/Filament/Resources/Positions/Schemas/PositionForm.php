@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Positions\Schemas;
 
+use App\Enums\PositionStatus;
 use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\RichEditor;
@@ -34,11 +35,19 @@ class PositionForm
                                     ->relationship('department', 'name')
                                     ->required()
                                     ->columnSpanFull(),
+                                Select::make('place_id')
+                                    ->relationship('place', 'name')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->columnSpanFull(),
                                 DatePicker::make('date_start'),
                                 DatePicker::make('date_end'),
                                 TextInput::make('act_number'),
                                 DatePicker::make('act_date'),
-                                TextInput::make('status'),
+                                Select::make('status')
+                                    ->options(PositionStatus::class)
+                                    ->required(),
                                 Toggle::make('automative_renewal')
                                     ->label('Automative Renewal'),
                                 TextInput::make('salary')

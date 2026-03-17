@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PositionStatus;
 use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +33,13 @@ class Position extends Model
         'date_end' => 'date',
         'act_date' => 'date',
         'automative_renewal' => 'boolean',
+        'status' => PositionStatus::class,
     ];
+
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class);
+    }
 
     public function employee(): BelongsTo
     {
