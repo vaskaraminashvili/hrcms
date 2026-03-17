@@ -12,6 +12,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
@@ -32,17 +33,19 @@ class PositionForm
                         Tab::make('Basic Information')
                             ->schema([
                                 Select::make('department_id')
-                                    ->relationship('department', 'name')
+                                    ->relationship('department', 'name', fn (Builder $query) => $query->where('is_active', true))
                                     ->required()
                                     ->columnSpanFull(),
                                 Select::make('place_id')
-                                    ->relationship('place', 'name')
+                                    ->relationship('place', 'name', fn (Builder $query) => $query->where('is_active', true))
                                     ->searchable()
                                     ->preload()
                                     ->required()
                                     ->columnSpanFull(),
                                 Select::make('position_types')
-                                    ->relationship('positionTypes', 'name')
+                                    ->relationship('positionTypes', 'name', fn (Builder $query) => $query->where('is_active', true))
+                                    ->searchable()
+                                    ->preload()
                                     ->multiple()
                                     ->required()
                                     ->columnSpanFull(),
