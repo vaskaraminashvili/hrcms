@@ -29,9 +29,10 @@ class PositionsTable
                     ->searchable(['employee.name', 'employee.surname'])
 
                     ->sortable(),
-                TextColumn::make('positionTypes.name')
+                TextColumn::make('position_type')
                     ->badge()
-                    ->label('Position Types')
+                    ->formatStateUsing(fn ($state) => $state?->label())
+                    ->label('Position Type')
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->date()

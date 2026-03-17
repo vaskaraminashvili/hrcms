@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Enums\PositionStatus;
+use App\Enums\PositionType;
 use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Position extends Model
@@ -19,6 +19,7 @@ class Position extends Model
         'employee_id',
         'department_id',
         'place_id',
+        'position_type',
         'date_start',
         'date_end',
         'status',
@@ -32,16 +33,20 @@ class Position extends Model
         'comment',
     ];
 
-    protected $casts = [
-        'salary' => 'integer',
-        'date_start' => 'date',
-        'date_end' => 'date',
-        'act_date' => 'date',
-        'staff_type' => 'boolean',
-        'clinical' => 'boolean',
-        'automative_renewal' => 'boolean',
-        'status' => PositionStatus::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'salary' => 'integer',
+            'date_start' => 'date',
+            'date_end' => 'date',
+            'act_date' => 'date',
+            'staff_type' => 'boolean',
+            'clinical' => 'boolean',
+            'automative_renewal' => 'boolean',
+            'status' => PositionStatus::class,
+            'position_type' => PositionType::class,
+        ];
+    }
 
     public function place(): BelongsTo
     {
@@ -56,11 +61,5 @@ class Position extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
-    }
-
-    public function positionTypes(): BelongsToMany
-    {
-        return $this->belongsToMany(PositionType::class, 'position_position_type')
-            ->withTimestamps();
     }
 }

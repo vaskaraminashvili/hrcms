@@ -2,44 +2,43 @@
 
 namespace App\Enums;
 
-enum PositionType
+use Filament\Support\Contracts\HasLabel;
+
+enum PositionType: string implements HasLabel
 {
-    case Permanent;
-    case Temporary;
-    case Intern;
-    case Contract;
-    case Other;
+    case Emeritus = 'emeritus';
+    case AdministrativePersonnel = 'administrative_personnel';
+    case AssistantAdministrativePersonnel = 'assistant_administrative_personnel';
+    case AcademicPersonnel = 'academic_personnel';
+    case InvitedTeacher = 'invited_teacher';
+    case ContractedEmployee = 'contracted_employee';
+    case AcademicRank = 'academic_rank';
+
+    public function getLabel(): ?string
+    {
+        return match ($this) {
+            self::Emeritus => 'ემერიტუსი',
+            self::AdministrativePersonnel => 'ადმინისტრაციული პერსონალი',
+            self::AssistantAdministrativePersonnel => 'დამხმარე ადმინისტრაციული პერსონალი',
+            self::AcademicPersonnel => 'აკადემიური პერსონალი',
+            self::InvitedTeacher => 'მოწვეული მასწავლებელი',
+            self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული',
+            self::AcademicRank => 'აკადემიური წოდება',
+        };
+    }
 
     public function label(): string
     {
-        return match ($this) {
-            self::Permanent => 'Permanent',
-            self::Temporary => 'Temporary',
-            self::Intern => 'Intern',
-            self::Contract => 'Contract',
-            self::Other => 'Other',
-        };
+        return $this->getLabel() ?? '';
     }
 
-    public function color(): string
+    public function showsClinicalFields(): bool
     {
-        return match ($this) {
-            self::Permanent => 'green',
-            self::Temporary => 'yellow',
-            self::Intern => 'blue',
-            self::Contract => 'yellow',
-            self::Other => 'gray',
-        };
+        return $this === self::AcademicPersonnel;
     }
 
-    public function icon(): string
+    public function showsAutomativeRenewal(): bool
     {
-        return match ($this) {
-            self::Permanent => 'fa-solid fa-user',
-            self::Temporary => 'fa-solid fa-user',
-            self::Intern => 'fa-solid fa-user',
-            self::Contract => 'fa-solid fa-user',
-            self::Other => 'fa-solid fa-user',
-        };
+        return $this === self::ContractedEmployee;
     }
 }

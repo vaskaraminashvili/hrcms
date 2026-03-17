@@ -15,6 +15,9 @@ class PositionInfolist
             ->components([
                 TextEntry::make('employee_id')
                     ->numeric(),
+                TextEntry::make('position_type')
+                    ->formatStateUsing(fn ($state) => $state?->label())
+                    ->placeholder('-'),
                 TextEntry::make('department.name')
                     ->label('Department'),
                 TextEntry::make('date_start')

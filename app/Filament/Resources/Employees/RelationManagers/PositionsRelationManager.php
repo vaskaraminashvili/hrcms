@@ -41,6 +41,10 @@ class PositionsRelationManager extends RelationManager
                 TextColumn::make('department.name')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('position_type')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state?->label())
+                    ->sortable(),
                 TextColumn::make('place.name')
                     ->searchable()
                     ->sortable(),

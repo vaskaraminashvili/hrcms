@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Positions\Schemas;
 
 use App\Enums\PositionStatus;
+use App\Enums\PositionType;
 use App\Models\Position;
-use App\Models\PositionType;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -17,21 +18,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    private const ACADEMIC_PERSONNEL_NAME = 'აკადემიური პერსონალი';
-
-    public static function hasAcademicPersonnelPositionType(mixed $positionTypeIds): bool
-    {
-        $ids = collect($positionTypeIds)->flatten()->filter()->toArray();
-
-        if (empty($ids)) {
-            return false;
-        }
-
-        return PositionType::whereIn('id', $ids)
-            ->where('name', self::ACADEMIC_PERSONNEL_NAME)
-            ->exists();
-    }
-
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -58,12 +44,10 @@ class PositionForm
                                     ->preload()
                                     ->required()
                                     ->columnSpanFull(),
-                                Select::make('position_types')
-                                    ->relationship('positionTypes', 'name', fn (Builder $query) => $query->where('is_active', true))
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
+                                Select::make('position_type')
+                                    ->options(PositionType::class)
                                     ->required()
+                                    ->live()
                                     ->columnSpanFull(),
                                 DatePicker::make('date_start'),
                                 DatePicker::make('date_end'),
@@ -72,23 +56,33 @@ class PositionForm
                                 Select::make('status')
                                     ->options(PositionStatus::class)
                                     ->required(),
-                                Toggle::make('staff_type')
-                                    ->label('Staff Type'),
-                                Toggle::make('clinical')
+
+                                Radio::make('staff_type')
+                                    ->inline()
+                                    ->options([
+                                        '0' => 'Contractual',
+                                        '1' => 'Staff',
+                                    ]),
+                                Radio::make('clinical')
+                                    ->inline()
+                                    ->options([
+                                        '0' => 'Clinical',
+                                        '1' => 'Non-clinical',
+                                    ])
                                     ->label('Clinical')
-                                    ->visible(fn ($get): bool => self::hasAcademicPersonnelPositionType($get('position_types'))),
+                                    ->visible(function ($get) {
+                                        $positionType = $get('position_type');
+
+                                        return $positionType->value === PositionType::AcademicPersonnel->value;
+                                    }),
                                 TextInput::make('clinical_text')
                                     ->label('Clinical Text')
-                                    ->visible(fn ($get): bool => self::hasAcademicPersonnelPositionType($get('position_types'))),
+                                    ->visible(fn ($get) => $get('position_type')?->value === PositionType::AcademicPersonnel->value)
+                                    ->required(fn ($get) => $get('position_type')?->value === PositionType::AcademicPersonnel->value),
                                 Toggle::make('automative_renewal')
                                     ->label('Automative Renewal')
-                                    ->visible(function ($get) {
-                                        $positionTypes = $get('position_type');
-                                        $positionType = PositionType::query()
-                                            ->where('id', $positionTypes)->first();
-
-                                        return $positionType->name === self::ACADEMIC_PERSONNEL_NAME;
-                                    }),
+                                    ->visible(fn ($get) => $get('position_type')?->value === PositionType::ContractedEmployee->value)
+                                    ->required(fn ($get) => $get('position_type')?->value === PositionType::ContractedEmployee->value),
                                 TextInput::make('salary')
                                     ->numeric(),
                                 RichEditor::make('comment')
@@ -119,11 +113,8 @@ class PositionForm
                                     ->preload()
                                     ->required()
                                     ->columnSpanFull(),
-                                Select::make('position_types')
-                                    ->relationship('positionTypes', 'name', fn (Builder $query) => $query->where('is_active', true))
-                                    ->searchable()
-                                    ->preload()
-                                    ->multiple()
+                                Select::make('position_type')
+                                    ->options(PositionType::class)
                                     ->required()
                                     ->columnSpanFull(),
                                 DatePicker::make('date_start'),
@@ -134,7 +125,8 @@ class PositionForm
                                     ->options(PositionStatus::class)
                                     ->required(),
                                 Toggle::make('automative_renewal')
-                                    ->label('Automative Renewal'),
+                                    ->label('Automative Renewal')
+                                    ->visible(fn ($get): bool => $get('position_type') === PositionType::ContractedEmployee->value),
                                 TextInput::make('salary')
                                     ->numeric(),
                                 RichEditor::make('comment')
