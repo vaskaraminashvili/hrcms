@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Position;
+use App\Models\PositionType;
 use Illuminate\Database\Seeder;
 
 class PositionSeeder extends Seeder
@@ -12,6 +13,12 @@ class PositionSeeder extends Seeder
      */
     public function run(): void
     {
-        Position::factory(100)->create();
+        $positionTypes = PositionType::all();
+
+        Position::factory(100)->create()->each(function (Position $position) use ($positionTypes): void {
+            $position->positionTypes()->attach(
+                $positionTypes->random(fake()->numberBetween(1, 3))->pluck('id')
+            );
+        });
     }
 }

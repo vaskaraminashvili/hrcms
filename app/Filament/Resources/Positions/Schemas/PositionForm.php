@@ -41,6 +41,11 @@ class PositionForm
                                     ->preload()
                                     ->required()
                                     ->columnSpanFull(),
+                                Select::make('position_types')
+                                    ->relationship('positionTypes', 'name')
+                                    ->multiple()
+                                    ->required()
+                                    ->columnSpanFull(),
                                 DatePicker::make('date_start'),
                                 DatePicker::make('date_end'),
                                 TextInput::make('act_number'),
