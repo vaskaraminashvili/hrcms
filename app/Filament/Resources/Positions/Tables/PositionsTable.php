@@ -42,8 +42,8 @@ class PositionsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (PositionStatus $state): string => $state->label())
-                    ->color(fn (PositionStatus $state): string => $state->color())
+                    ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
+                    ->color(fn (PositionStatus $state): string|array|null => $state->getColor())
                     ->alignCenter()
                     ->searchable(),
                 TextColumn::make('salary')

@@ -30,7 +30,7 @@ class PositionsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return PositionForm::configureForRelationManager($schema);
+        return PositionForm::configure($schema, false);
     }
 
     public function table(Table $table): Table
@@ -56,8 +56,8 @@ class PositionsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->formatStateUsing(fn (PositionStatus $state): string => $state->label())
-                    ->color(fn (PositionStatus $state): string => $state->color())
+                    ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
+                    ->color(fn (PositionStatus $state): string => $state->getColor())
                     ->alignCenter()
                     ->searchable(),
                 TextColumn::make('act_number')
