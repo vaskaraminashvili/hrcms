@@ -8,7 +8,6 @@ class ActivityLogAuthorizer
 {
     public function __invoke(User $user): bool
     {
-        // return $user->id === 1;
-        return true;
+        return $user->hasRole('super_admin');
     }
 }
