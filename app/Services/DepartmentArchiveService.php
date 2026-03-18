@@ -46,6 +46,7 @@ class DepartmentArchiveService
             $newDepartment->parent_id = $newParent->id;
         }
         $newDepartment->status = DepartmentStatus::ACTIVE->value;
+        $newDepartment->order = $original->order;
         $newDepartment->save();
 
         if ($original->positions->isNotEmpty()) {
@@ -57,6 +58,7 @@ class DepartmentArchiveService
             }
             $original->positions()->update([
                 'status' => DepartmentStatus::ARCHIVED->value,
+                'date_end' => now(),
             ]);
         }
 
