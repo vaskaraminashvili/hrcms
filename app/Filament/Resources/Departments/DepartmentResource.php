@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Departments;
 
+use App\Filament\Resources\Departments\Fields\DepartmentStatusIconField;
 use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
@@ -14,7 +15,6 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Openplain\FilamentTreeView\Fields\IconField;
 use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
@@ -49,7 +49,10 @@ class DepartmentResource extends Resource
                         return 'Vacancies: '.$state;
                     })
                     ->alignEnd(),
-                IconField::make('is_active')
+                DepartmentStatusIconField::make('status')
+                    ->boolean()
+                    ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')
+                    ->colors('success', 'warning')
                     ->alignEnd(),
             ])
             ->recordActions([

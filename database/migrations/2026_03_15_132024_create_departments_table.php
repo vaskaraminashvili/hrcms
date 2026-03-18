@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DepartmentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('color')->nullable();
             $table->foreignId('author_id')->nullable()->constrained('users');
-            $table->boolean('is_active')->default(true);
+            $table->string('status')->default(DepartmentStatus::ACTIVE->value);
             $table->integer('vacancy_count')->default(0);
 
             // Required for tree structure

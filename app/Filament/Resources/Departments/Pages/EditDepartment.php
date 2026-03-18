@@ -44,7 +44,26 @@ class EditDepartment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->before(function (DeleteAction $action): void {
+                    $record = $this->getRecord();
+
+                    if (! $record instanceof Department) {
+                        return;
+                    }
+
+                    if ($record->positions()->exists()) {
+                        $count = $record->positions()->count();
+
+                        Notification::make()
+                            ->danger()
+                            ->title('Cannot delete department')
+                            ->body("This department has {$count} position(s) assigned. Reassign or remove them first.")
+                            ->send();
+
+                        $action->halt();
+                    }
+                }),
         ];
     }
 
