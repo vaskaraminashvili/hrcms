@@ -12,63 +12,58 @@ class ActivityPolicy
 {
     use HandlesAuthorization;
 
-    protected function isSuperAdmin(AuthUser $user): bool
-    {
-        return $user->hasRole(config('filament-shield.super_admin.name', 'super_admin'));
-    }
-
     public function viewAny(AuthUser $authUser): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('ViewAny:Activity');
+        return $authUser->can('ViewAny:Activity');
     }
 
     public function view(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('View:Activity');
+        return $authUser->can('View:Activity');
     }
 
     public function create(AuthUser $authUser): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Create:Activity');
+        return $authUser->can('Create:Activity');
     }
 
     public function update(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Update:Activity');
+        return $authUser->can('Update:Activity');
     }
 
     public function delete(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Delete:Activity');
+        return $authUser->can('Delete:Activity');
     }
 
     public function restore(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Restore:Activity');
+        return $authUser->can('Restore:Activity');
     }
 
     public function forceDelete(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('ForceDelete:Activity');
+        return $authUser->can('ForceDelete:Activity');
     }
 
     public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('ForceDeleteAny:Activity');
+        return $authUser->can('ForceDeleteAny:Activity');
     }
 
     public function restoreAny(AuthUser $authUser): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('RestoreAny:Activity');
+        return $authUser->can('RestoreAny:Activity');
     }
 
     public function replicate(AuthUser $authUser, Activity $activity): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Replicate:Activity');
+        return $authUser->can('Replicate:Activity');
     }
 
     public function reorder(AuthUser $authUser): bool
     {
-        return $this->isSuperAdmin($authUser) || $authUser->can('Reorder:Activity');
+        return $authUser->can('Reorder:Activity');
     }
 }
