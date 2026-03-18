@@ -21,18 +21,20 @@ class DepartmentArchiveService
                 $newDepartment->status = DepartmentStatus::ACTIVE->value;
                 $newDepartment->save();
 
-                // 2. Replicate positions to new department
-                foreach ($original->positions as $position) {
-                    $newPosition = $position->replicate();
-                    $newPosition->department_id = $newDepartment->id;
-                    $newPosition->status = $position->status; // keep original status
-                    $newPosition->save();
-                }
+                // 2. Replicate positions to new department (if any exist)
+                if ($original->positions->isNotEmpty()) {
+                    foreach ($original->positions as $position) {
+                        $newPosition = $position->replicate();
+                        $newPosition->department_id = $newDepartment->id;
+                        $newPosition->status = $position->status; // keep original status
+                        $newPosition->save();
+                    }
 
-                // 3. Archive original positions
-                $original->positions()->update([
-                    'status' => DepartmentStatus::ARCHIVED->value,
-                ]);
+                    // 3. Archive original positions
+                    $original->positions()->update([
+                        'status' => DepartmentStatus::ARCHIVED->value,
+                    ]);
+                }
 
                 // 4. Archive original department
                 $original->update([
