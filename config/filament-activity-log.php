@@ -1,12 +1,14 @@
 <?php
 
 declare(strict_types=1);
+
 use AlizHarb\ActivityLog\Pages\UserActivitiesPage;
 use AlizHarb\ActivityLog\Resources\ActivityLogs\ActivityLogResource;
 use AlizHarb\ActivityLog\Widgets\ActivityChartWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityHeatmapWidget;
 use AlizHarb\ActivityLog\Widgets\ActivityStatsWidget;
 use AlizHarb\ActivityLog\Widgets\LatestActivityWidget;
+use App\Authorizer\ActivityLogAuthorizer;
 
 return [
     /*
@@ -27,7 +29,7 @@ return [
         'navigation_icon' => 'heroicon-o-rectangle-stack',
         'global_search' => [
             'enabled' => true,
-            'attributes' => ['log_name', 'description', 'subject_type', 'event'],
+            'attributes' => ['log_name', 'subject_type', 'event'],
         ],
         'pagination' => [
             'options' => [10, 25, 50, 100],
@@ -104,7 +106,7 @@ return [
                 'sortable' => true,
             ],
             'description' => [
-                'visible' => true,
+                'visible' => false,
                 'searchable' => true,
                 'limit' => 50,
             ],
@@ -114,11 +116,11 @@ return [
                 'sortable' => true,
             ],
             'ip_address' => [
-                'visible' => true,
+                'visible' => false,
                 'searchable' => true,
             ],
             'user_agent' => [
-                'visible' => true,
+                'visible' => false,
                 'searchable' => true,
             ],
         ],
@@ -205,7 +207,7 @@ return [
     |
     */
     'permissions' => [
-        'enabled' => false,
+        'enabled' => true,
 
         /**
          * Custom authorization callback.
@@ -217,7 +219,7 @@ return [
          * Example: fn($user) => $user->hasRole('super_admin')
          * Example: 'App\Support\ActivityLogAuthorization' (class with __invoke method)
          */
-        'custom_authorization' => null,
+        'custom_authorization' => ActivityLogAuthorizer::class,
 
         'view_any' => 'view_any_activity',
         'view' => 'view_activity',
@@ -259,10 +261,10 @@ return [
         'enabled' => true,
         'dashboard' => true,
         'widgets' => [
-            ActivityChartWidget::class,
-            LatestActivityWidget::class,
-            ActivityHeatmapWidget::class,
-            ActivityStatsWidget::class,
+            // ActivityChartWidget::class,
+            // LatestActivityWidget::class,
+            // ActivityHeatmapWidget::class,
+            // ActivityStatsWidget::class,
         ],
 
         /**

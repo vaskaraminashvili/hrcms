@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Openplain\FilamentTreeView\Concerns\HasTreeStructure;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Department extends Model
 {
     /** @use HasFactory<DepartmentFactory> */
-    use HasFactory, HasTreeStructure;
+    use HasFactory, HasTreeStructure, LogsActivity;
 
     protected static function boot(): void
     {
@@ -53,5 +55,11 @@ class Department extends Model
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
     }
 }
