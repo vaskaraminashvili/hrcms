@@ -10,5 +10,6 @@ return [
     'parent_id' => 'მშობელი',
     'plural_model_label' => 'დეპარტამენტები',
     'vacancy_count' => 'ვაკანსიების რაოდენობა',
+    'status' => 'სტატუსი',
 
 ];

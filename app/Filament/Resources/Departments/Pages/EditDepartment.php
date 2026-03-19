@@ -5,7 +5,7 @@ namespace App\Filament\Resources\Departments\Pages;
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
 use App\Services\DepartmentArchiveService;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
@@ -46,7 +46,7 @@ class EditDepartment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('saveWithArchive')
+            Action::make('saveWithArchive')
                 ->label('Save & Archive')
                 ->color('primary')
                 ->requiresConfirmation()
@@ -96,6 +96,46 @@ class EditDepartment extends EditRecord
                         $action->halt();
                     }
                 }),
+
+        ];
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('saveWithArchive')
+                ->label('Save & Archive')
+                ->color('primary')
+                ->requiresConfirmation()
+                ->modalHeading('Archive & Duplicate Department?')
+                ->modalDescription(
+                    'Changing the name or parent will archive this department and its positions, 
+             then create a new duplicate with your changes.'
+                )
+                ->modalSubmitActionLabel('Yes, proceed')
+                ->action(function (DepartmentArchiveService $service) {
+                    $formData = $this->form->getState();
+                    $originalData = $this->record->only(['name', 'parent_id']);
+
+                    $nameChanged = ($originalData['name'] ?? null) !== ($formData['name'] ?? null);
+                    $parentChanged = ($originalData['parent_id'] ?? null) !== ($formData['parent_id'] ?? null);
+                    if ($nameChanged || $parentChanged) {
+                        // Archive original + duplicate with new data
+                        $newDepartment = $service->archiveAndReplicate($this->record, $formData);
+
+                        // Full page redirect to the new record's edit page
+                        return redirect(
+                            DepartmentResource::getUrl('edit', ['record' => $newDepartment])
+                        );
+                    } else {
+                        // No relevant change — just do a normal save
+                        $this->save();
+                    }
+                }),
+            Action::make('cancel')
+                ->label('Cancel')
+                ->color('gray')
+                ->url(DepartmentResource::getUrl('index')),
 
         ];
     }
