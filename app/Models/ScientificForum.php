@@ -12,6 +12,8 @@ class ScientificForum extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'scientific_forums';
+
     protected $fillable = [
         'employee_id',
         'title',
@@ -24,9 +26,9 @@ class ScientificForum extends Model
     protected function casts(): array
     {
         return [
-            'title'              => 'array',
+            'title' => 'array',
             'participation_form' => 'array',
-            'held_at'            => 'date',
+            'held_at' => 'date',
         ];
     }
 

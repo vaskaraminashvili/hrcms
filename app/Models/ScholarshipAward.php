@@ -12,6 +12,8 @@ class ScholarshipAward extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'scholarships_awards';
+
     protected $fillable = [
         'employee_id',
         'title',
@@ -24,8 +26,8 @@ class ScholarshipAward extends Model
     protected function casts(): array
     {
         return [
-            'title'     => 'array',
-            'issuer'    => 'array',
+            'title' => 'array',
+            'issuer' => 'array',
             'issued_at' => 'date',
         ];
     }

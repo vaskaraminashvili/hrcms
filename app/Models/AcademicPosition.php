@@ -12,6 +12,8 @@ class AcademicPosition extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'academic_positions';
+
     protected $fillable = [
         'employee_id',
         'title',

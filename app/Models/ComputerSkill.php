@@ -12,6 +12,8 @@ class ComputerSkill extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'computer_skills';
+
     protected $fillable = [
         'employee_id',
         'title',

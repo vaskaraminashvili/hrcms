@@ -12,6 +12,8 @@ class ScientificProject extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'scientific_projects';
+
     protected $fillable = [
         'employee_id',
         'project_name',
@@ -27,10 +29,10 @@ class ScientificProject extends Model
     {
         return [
             'project_name' => 'array',
-            'institution'  => 'array',
-            'position'     => 'array',
-            'started_at'   => 'date',
-            'ended_at'     => 'date',
+            'institution' => 'array',
+            'position' => 'array',
+            'started_at' => 'date',
+            'ended_at' => 'date',
         ];
     }
 

@@ -12,6 +12,8 @@ class WorkExperience extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'work_experiences';
+
     protected $fillable = [
         'employee_id',
         'institution',
@@ -26,9 +28,9 @@ class WorkExperience extends Model
     {
         return [
             'institution' => 'array',
-            'position'    => 'array',
-            'started_at'  => 'date',
-            'ended_at'    => 'date',
+            'position' => 'array',
+            'started_at' => 'date',
+            'ended_at' => 'date',
         ];
     }
 

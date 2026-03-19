@@ -12,6 +12,8 @@ class Publication extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'publications';
+
     protected $fillable = [
         'employee_id',
         'title',
@@ -26,11 +28,11 @@ class Publication extends Model
     protected function casts(): array
     {
         return [
-            'title'        => 'array',
-            'place'        => 'array',
-            'co_authors'   => 'array',
+            'title' => 'array',
+            'place' => 'array',
+            'co_authors' => 'array',
             'published_at' => 'date',
-            'page_count'   => 'integer',
+            'page_count' => 'integer',
         ];
     }
 

@@ -12,6 +12,8 @@ class AcademicDegree extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'academic_degrees';
+
     protected $fillable = [
         'employee_id',
         'degree',
@@ -24,7 +26,7 @@ class AcademicDegree extends Model
     {
         return [
             'degree' => 'array',
-            'other'  => 'array',
+            'other' => 'array',
         ];
     }
 

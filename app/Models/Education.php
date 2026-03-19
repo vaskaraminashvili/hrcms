@@ -12,6 +12,8 @@ class Education extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'educations';
+
     protected $fillable = [
         'employee_id',
         'institution',
@@ -27,10 +29,10 @@ class Education extends Model
     {
         return [
             'institution' => 'array',
-            'program'     => 'array',
-            'specialty'   => 'array',
-            'started_at'  => 'date',
-            'ended_at'    => 'date',
+            'program' => 'array',
+            'specialty' => 'array',
+            'started_at' => 'date',
+            'ended_at' => 'date',
         ];
     }
 

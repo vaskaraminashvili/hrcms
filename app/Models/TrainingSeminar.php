@@ -12,6 +12,8 @@ class TrainingSeminar extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'trainings_seminars';
+
     protected $fillable = [
         'employee_id',
         'institution',
@@ -26,9 +28,9 @@ class TrainingSeminar extends Model
     {
         return [
             'institution' => 'array',
-            'topic'       => 'array',
-            'started_at'  => 'date',
-            'ended_at'    => 'date',
+            'topic' => 'array',
+            'started_at' => 'date',
+            'ended_at' => 'date',
         ];
     }
 

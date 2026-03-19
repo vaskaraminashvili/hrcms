@@ -12,6 +12,8 @@ class ForeignLanguage extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
 
+    protected $table = 'foreign_languages';
+
     protected $fillable = [
         'employee_id',
         'language',
@@ -24,7 +26,7 @@ class ForeignLanguage extends Model
     {
         return [
             'language' => 'array',
-            'level'    => 'array',
+            'level' => 'array',
         ];
     }
 
