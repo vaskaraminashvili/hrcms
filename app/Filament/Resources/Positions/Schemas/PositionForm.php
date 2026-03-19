@@ -26,7 +26,7 @@ class PositionForm
             Select::make('employee_id')
                 ->relationship('employee', 'name')
                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
-                ->label('Employee')
+                ->label(__('filament/admin/position_resource.employee_id'))
                 ->disabled(fn (?Position $record): bool => $record !== null)
                 ->dehydrated()
                 ->required()
@@ -38,11 +38,13 @@ class PositionForm
                     Tab::make('Basic Information')
                         ->schema([
                             Select::make('department_id')
+                    ->label(__('filament/admin/position_resource.department_id'))
                                 ->relationship('department', 'name', fn (Builder $query) => $query->where('status', DepartmentStatus::ACTIVE))
                                 ->required()
                                 ->columnSpanFull(),
 
                             Select::make('place_id')
+                    ->label(__('filament/admin/position_resource.place_id'))
                                 ->relationship('place', 'name', fn (Builder $query) => $query->where('is_active', true))
                                 ->searchable()
                                 ->preload()
@@ -50,22 +52,29 @@ class PositionForm
                                 ->columnSpanFull(),
 
                             Select::make('position_type')
+                    ->label(__('filament/admin/position_resource.position_type'))
                                 ->options(PositionType::class)
                                 ->required()
                                 ->live()
                                 ->columnSpanFull(),
 
-                            DatePicker::make('date_start'),
-                            DatePicker::make('date_end'),
+                            DatePicker::make('date_start')
+                    ->label(__('filament/admin/position_resource.date_start')),
+                            DatePicker::make('date_end')
+                    ->label(__('filament/admin/position_resource.date_end')),
 
-                            TextInput::make('act_number'),
-                            DatePicker::make('act_date'),
+                            TextInput::make('act_number')
+                    ->label(__('filament/admin/position_resource.act_number')),
+                            DatePicker::make('act_date')
+                    ->label(__('filament/admin/position_resource.act_date')),
 
                             Select::make('status')
+                    ->label(__('filament/admin/position_resource.status'))
                                 ->options(PositionStatus::class)
                                 ->required(),
 
                             Radio::make('staff_type')
+                    ->label(__('filament/admin/position_resource.staff_type'))
                                 ->inline()
                                 ->options([
                                     '0' => 'Contractual',
@@ -75,6 +84,7 @@ class PositionForm
                             Section::make()
                                 ->schema([
                                     Radio::make('clinical')
+                    ->label(__('filament/admin/position_resource.clinical'))
                                         ->inline()
                                         ->options([
                                             '0' => 'Clinical',
@@ -84,7 +94,7 @@ class PositionForm
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
 
                                     TextInput::make('clinical_text')
-                                        ->label('Clinical Text')
+                                        ->label(__('filament/admin/position_resource.clinical_text'))
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type')))
                                         ->required(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
                                 ])
@@ -93,7 +103,7 @@ class PositionForm
                             Section::make()
                                 ->schema([
                                     Toggle::make('automative_renewal')
-                                        ->label('Automative Renewal')
+                                        ->label(__('filament/admin/position_resource.automative_renewal'))
                                         ->visible(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type')))
                                         ->required(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type'))),
                                 ])
@@ -101,9 +111,11 @@ class PositionForm
                                 ->visible(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type'))),
 
                             TextInput::make('salary')
+                    ->label(__('filament/admin/position_resource.salary'))
                                 ->numeric(),
 
                             RichEditor::make('comment')
+                    ->label(__('filament/admin/position_resource.comment'))
                                 ->columnSpanFull(),
                         ])
                         ->columns(2),

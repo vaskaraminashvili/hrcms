@@ -20,10 +20,10 @@ class PlacesTable
             ->columns([
                 TextColumn::make('name')
                     ->limit(100)
-                    ->label('Name')
+                    ->label(__('filament/admin/place_resource.name'))
                     ->searchable(),
                 ToggleColumn::make('is_active')
-                    ->label('Active')
+                    ->label(__('filament/admin/place_resource.is_active'))
                     ->searchable(),
             ])
             ->filters([

@@ -16,4 +16,14 @@ class ViewPosition extends ViewRecord
             EditAction::make(),
         ];
     }
+    public function getTitle(): string
+    {
+        return __('filament/admin/view_position.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/view_position.title');
+    }
+
 }

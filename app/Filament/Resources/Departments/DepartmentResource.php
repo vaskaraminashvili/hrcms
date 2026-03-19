@@ -21,6 +21,12 @@ class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
 
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -83,4 +89,19 @@ class DepartmentResource extends Resource
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/department_resource.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament/admin/department_resource.model_label');
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament/admin/department_resource.plural_model_label');
+    }
+
+
+
 }

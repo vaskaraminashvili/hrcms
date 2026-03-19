@@ -20,4 +20,14 @@ class EditPlace extends EditRecord
             RestoreAction::make(),
         ];
     }
+    public function getTitle(): string
+    {
+        return __('filament/admin/edit_place.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/edit_place.title');
+    }
+
 }

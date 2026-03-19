@@ -20,6 +20,12 @@ class PositionResource extends Resource
 {
     protected static ?string $model = Position::class;
 
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'employee.name';
@@ -55,4 +61,19 @@ class PositionResource extends Resource
             'edit' => EditPosition::route('/{record}/edit'),
         ];
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/position_resource.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament/admin/position_resource.model_label');
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament/admin/position_resource.plural_model_label');
+    }
+
+
+
 }

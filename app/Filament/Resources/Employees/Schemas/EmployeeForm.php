@@ -21,25 +21,37 @@ class EmployeeForm
                         Tab::make('Basic Information')
                             ->schema([
                                 TextInput::make('name')
+                    ->label(__('filament/admin/employee_resource.name'))
                                     ->required(),
                                 TextInput::make('surname')
+                    ->label(__('filament/admin/employee_resource.surname'))
                                     ->required(),
-                                TextInput::make('name_eng'),
-                                TextInput::make('surrname_eng'),
+                                TextInput::make('name_eng')
+                    ->label(__('filament/admin/employee_resource.name_eng')),
+                                TextInput::make('surrname_eng')
+                    ->label(__('filament/admin/employee_resource.surrname_eng')),
                                 TextInput::make('personal_number')
+                    ->label(__('filament/admin/employee_resource.personal_number'))
                                     ->required(),
                                 TextInput::make('email')
-                                    ->label('Email address')
+                                    ->label(__('filament/admin/employee_resource.email'))
                                     ->email(),
                                 DatePicker::make('birth_date')
+                    ->label(__('filament/admin/employee_resource.birth_date'))
                                     ->required(),
-                                TextInput::make('gender'),
-                                TextInput::make('citizenship'),
+                                TextInput::make('gender')
+                    ->label(__('filament/admin/employee_resource.gender')),
+                                TextInput::make('citizenship')
+                    ->label(__('filament/admin/employee_resource.citizenship')),
                                 TextInput::make('education')
+                    ->label(__('filament/admin/employee_resource.education'))
                                     ->numeric(),
-                                TextInput::make('degree'),
-                                TextInput::make('address'),
-                                TextInput::make('pysical_address'),
+                                TextInput::make('degree')
+                    ->label(__('filament/admin/employee_resource.degree')),
+                                TextInput::make('address')
+                    ->label(__('filament/admin/employee_resource.address')),
+                                TextInput::make('pysical_address')
+                    ->label(__('filament/admin/employee_resource.pysical_address')),
                             ])
                             ->columns(2),
                         ...array_map(

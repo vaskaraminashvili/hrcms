@@ -30,7 +30,7 @@ class DepartmentForm
             Section::make()
                 ->schema([
                     Select::make('parent_id')
-                        ->label('Parent Department')
+                        ->label(__('filament/admin/department_resource.parent_id'))
                         ->options($parentOptions)
                         ->nullable()
                         ->searchable()
@@ -42,16 +42,17 @@ class DepartmentForm
                         )
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
                     TextInput::make('name')
+                    ->label(__('filament/admin/department_resource.name'))
                         ->required()
                         ->maxLength(255),
 
                     TextInput::make('vacancy_count')
-                        ->label('Vacancies')
+                        ->label(__('filament/admin/department_resource.vacancy_count'))
                         ->numeric()
                         ->default(0),
 
                     Toggle::make('is_active')
-                        ->label('Active')
+                        ->label(__('filament/admin/department_resource.is_active'))
                         ->default(true)
                         ->columnSpanFull()
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
@@ -60,7 +61,7 @@ class DepartmentForm
 
             // Select::make('color')
             //     ->options(collect(EnumsDepartmentColor::cases())->mapWithKeys(
-            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label()]
+            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label(__('filament/admin/department_resource.color'))]
             //     ))
             //     ->nullable()
             //     ->searchable()
