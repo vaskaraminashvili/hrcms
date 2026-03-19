@@ -59,6 +59,7 @@ class EmployeeForm
                                 $schemaClass = $case->schemaClass();
 
                                 return Tab::make($case->label())
+                                    ->badge(fn ($record) => $record?->{$case->relationship()}()->count() ?? 0)
                                     ->schema([
                                         Repeater::make($case->relationship())
                                             ->relationship()
