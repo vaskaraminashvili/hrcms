@@ -23,6 +23,12 @@ class PlaceResource extends Resource
 
     protected static ?string $model = Place::class;
 
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -60,4 +66,19 @@ class PlaceResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/place_resource.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament/admin/place_resource.model_label');
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament/admin/place_resource.plural_model_label');
+    }
+
+
+
 }

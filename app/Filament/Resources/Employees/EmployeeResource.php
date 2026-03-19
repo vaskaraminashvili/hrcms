@@ -22,6 +22,12 @@ class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -65,4 +71,19 @@ class EmployeeResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
+    public static function getNavigationLabel(): string
+    {
+        return __('filament/admin/employee_resource.navigation_label');
+    }
+    public static function getModelLabel(): string
+    {
+        return __('filament/admin/employee_resource.model_label');
+    }
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament/admin/employee_resource.plural_model_label');
+    }
+
+
+
 }
