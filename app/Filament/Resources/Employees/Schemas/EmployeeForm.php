@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Employees\Schemas;
 
+use App\Enums\PersonalFile;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -40,6 +42,28 @@ class EmployeeForm
                                 TextInput::make('pysical_address'),
                             ])
                             ->columns(2),
+                        ...array_map(
+                            function (PersonalFile $case) {
+                                $schemaClass = $case->schemaClass();
+
+                                return Tab::make($case->label())
+                                    ->schema([
+                                        Repeater::make($case->relationship())
+                                            ->relationship()
+                                            ->schema($schemaClass::schema())
+                                            ->collapsible()
+                                            ->reorderable()
+                                            ->columnSpanFull()
+                                            ->itemLabel(function (array $state) use ($case): ?string {
+                                                $field = $case->itemLabelField();
+                                                $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
+
+                                                return is_string($value) ? $value : null;
+                                            }),
+                                    ]);
+                            },
+                            PersonalFile::cases()
+                        ),
                     ])
                     ->columnSpanFull(),
             ]);
