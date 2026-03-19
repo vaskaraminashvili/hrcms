@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'View Employee',
-    'title' => 'View Employee',
+    'navigation_label' => 'თანამშრომლის ნახვა',
+    'title' => 'თანამშრომლის ნახვა',
 
 ];

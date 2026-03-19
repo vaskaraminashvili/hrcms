@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'Edit Place',
-    'title' => 'Edit Place',
+    'navigation_label' => 'ადგილის რედაქტირება',
+    'title' => 'ადგილის რედაქტირება',
 
 ];

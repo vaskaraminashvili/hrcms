@@ -2,13 +2,13 @@
 
 return [
 
-    'color' => 'Color',
-    'is_active' => 'Is Active',
-    'model_label' => 'Department',
-    'name' => 'Name',
-    'navigation_label' => 'Departments',
-    'parent_id' => 'Parent',
-    'plural_model_label' => 'Departments',
-    'vacancy_count' => 'Vacancy Count',
+    'color' => 'ფერი',
+    'is_active' => 'აქტიურია',
+    'model_label' => 'დეპარტამენტი',
+    'name' => 'სახელი',
+    'navigation_label' => 'დეპარტამენტები',
+    'parent_id' => 'მშობელი',
+    'plural_model_label' => 'დეპარტამენტები',
+    'vacancy_count' => 'ვაკანსიების რაოდენობა',
 
 ];

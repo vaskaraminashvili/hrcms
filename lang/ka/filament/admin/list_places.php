@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'List Places',
-    'title' => 'List Places',
+    'navigation_label' => 'ადგილების სია',
+    'title' => 'ადგილების სია',
 
 ];

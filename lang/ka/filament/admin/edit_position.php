@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'Edit Position',
-    'title' => 'Edit Position',
+    'navigation_label' => 'პოზიციის რედაქტირება',
+    'title' => 'პოზიციის რედაქტირება',
 
 ];

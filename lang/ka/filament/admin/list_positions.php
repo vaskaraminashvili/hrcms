@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'List Positions',
-    'title' => 'List Positions',
+    'navigation_label' => 'პოზიციების სია',
+    'title' => 'პოზიციების სია',
 
 ];

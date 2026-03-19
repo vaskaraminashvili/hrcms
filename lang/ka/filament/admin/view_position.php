@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'View Position',
-    'title' => 'View Position',
+    'navigation_label' => 'პოზიციის ნახვა',
+    'title' => 'პოზიციის ნახვა',
 
 ];

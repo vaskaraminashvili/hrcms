@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'User Activities',
-    'title' => 'User Activities',
+    'navigation_label' => 'მომხმარებლის აქტივობები',
+    'title' => 'მომხმარებლის აქტივობები',
 
 ];

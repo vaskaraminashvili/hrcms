@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'Edit Role',
-    'title' => 'Edit Role',
+    'navigation_label' => 'როლის რედაქტირება',
+    'title' => 'როლის რედაქტირება',
 
 ];

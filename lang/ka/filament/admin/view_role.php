@@ -2,7 +2,7 @@
 
 return [
 
-    'navigation_label' => 'View Role',
-    'title' => 'View Role',
+    'navigation_label' => 'როლის ნახვა',
+    'title' => 'როლის ნახვა',
 
 ];

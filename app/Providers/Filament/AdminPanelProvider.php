@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
+use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -56,6 +58,11 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->plugins([
+                FilamentLanguageSwitcherPlugin::make()
+                    ->locales([
+                        ['code' => 'en', 'name' => 'English', 'flag' => 'us'],
+                        ['code' => 'ka', 'name' => 'Georgian', 'flag' => 'ge'],
+                    ]),
                 FilamentShieldPlugin::make()
                     ->registerNavigation(true),
                 ActivityLogPlugin::make()
@@ -63,6 +70,10 @@ class AdminPanelProvider extends PanelProvider
                     ->pluralLabel('Logs')
                     ->navigationGroup('System'),
 
-            ]);
+            ])
+            ->font(
+                fn () => app()->getLocale() === 'ka' ? 'Noto Sans Georgian' : 'Inter',
+                provider: GoogleFontProvider::class
+            );
     }
 }
