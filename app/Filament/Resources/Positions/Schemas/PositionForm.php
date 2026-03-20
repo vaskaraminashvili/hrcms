@@ -102,13 +102,22 @@ class PositionForm
                                 ->preload()
                                 ->required()
                                 ->columnSpanFull(),
-
                             Select::make('position_type')
                                 ->label(__('filament/admin/position_resource.position_type'))
                                 ->options(PositionType::class)
                                 ->required()
                                 ->live()
-                                ->columnSpanFull(),
+                                ->columns(1),
+                            Radio::make('staff_type')
+                                ->label(__('filament/admin/position_resource.staff_type'))
+                                ->inline()
+                                ->default(0)
+                                ->options([
+                                    '1' => 'საშტატო', // საშტატო
+                                    '2' => 'არა საშტატო', // არა საშტატო
+                                ])
+                                ->columns(1)
+                                ->required(),
 
                             DatePicker::make('date_start')
                                 ->label(__('filament/admin/position_resource.date_start')),
@@ -131,16 +140,6 @@ class PositionForm
                             Select::make('status')
                                 ->label(__('filament/admin/position_resource.status'))
                                 ->options(PositionStatus::class)
-                                ->required(),
-
-                            Radio::make('staff_type')
-                                ->label(__('filament/admin/position_resource.staff_type'))
-                                ->inline()
-                                ->default(0)
-                                ->options([
-                                    '1' => 'Contractual',
-                                    '2' => 'Staff',
-                                ])
                                 ->required(),
 
                             Section::make()
@@ -175,7 +174,6 @@ class PositionForm
 
                             TextInput::make('salary')
                                 ->label(__('filament/admin/position_resource.salary'))
-                                ->required()
                                 ->numeric(),
 
                             RichEditor::make('comment')
