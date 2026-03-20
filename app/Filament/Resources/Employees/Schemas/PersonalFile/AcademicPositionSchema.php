@@ -11,7 +11,7 @@ class AcademicPositionSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', 'თანამდებობა test', [true, false]),
+            static::translatableField('title', 'თანამდებობა'),
         ];
     }
 }
