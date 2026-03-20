@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->string('act_number')->nullable();
             $table->date('act_date')->nullable();
-            $table->boolean('staff_type')->default(false);
-            $table->boolean('clinical')->default(false);
+            $table->boolean('staff_type')->nullable()->default(false);
+            $table->boolean('clinical')->nullable()->default(false);
             $table->string('clinical_text')->nullable();
             $table->boolean('automative_renewal')->nullable();
             $table->integer('salary')->nullable();

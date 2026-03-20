@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             EmployeeSeeder::class,
             PlaceSeeder::class,
             PositionSeeder::class,
+            ShieldSeeder::class,
         ]);
     }
 }

@@ -13,6 +13,7 @@ return [
     'date_start' => 'Date Start',
     'deleted_at' => 'Deleted',
     'department_id' => 'Department',
+    'department_vacancy_limit' => 'This department already has the maximum number of positions allowed (:max).',
     'employee.name' => 'Name',
     'employee_id' => 'Employee',
     'model_label' => 'Position',

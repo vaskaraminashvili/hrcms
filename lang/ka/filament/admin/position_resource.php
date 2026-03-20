@@ -13,6 +13,7 @@ return [
     'date_start' => 'დაწყების თარიღი',
     'deleted_at' => 'წაშლილია',
     'department_id' => 'დეპარტამენტი',
+    'department_vacancy_limit' => 'ამ დეპარტამენტში უკვე არის პოზიციების დასაშვები მაქსიმალური რაოდენობა (:max).',
     'employee.name' => 'სახელი',
     'employee_id' => 'თანამშრომელი',
     'model_label' => 'პოზიცია',
