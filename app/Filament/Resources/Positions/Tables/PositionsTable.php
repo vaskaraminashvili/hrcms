@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Positions\Tables;
 
+use App\Enums\DepartmentStatus;
 use App\Enums\PositionStatus;
+use App\Models\Department;
 use App\Models\Position;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -10,6 +12,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class PositionsTable
@@ -92,7 +95,15 @@ class PositionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('department_id')
+                    ->options(
+                        Department::query()
+                            ->whereIn('status', [DepartmentStatus::ACTIVE->value, DepartmentStatus::ARCHIVED->value])
+                            ->orderBy('name')
+                            ->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->attribute('department_id'),
             ])
             ->recordActions([
                 ViewAction::make(),
