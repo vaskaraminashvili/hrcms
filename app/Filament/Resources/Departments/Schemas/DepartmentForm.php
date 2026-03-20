@@ -2,12 +2,12 @@
 
 namespace App\Filament\Resources\Departments\Schemas;
 
+use App\Enums\DepartmentStatus;
 use App\Enums\EnumsDepartmentColor;
 use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -42,7 +42,7 @@ class DepartmentForm
                         )
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
                     TextInput::make('name')
-                    ->label(__('filament/admin/department_resource.name'))
+                        ->label(__('filament/admin/department_resource.name'))
                         ->required()
                         ->maxLength(255),
 
@@ -51,11 +51,12 @@ class DepartmentForm
                         ->numeric()
                         ->default(0),
 
-                    Toggle::make('is_active')
-                        ->label(__('filament/admin/department_resource.is_active'))
-                        ->default(true)
-                        ->columnSpanFull()
-                        ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+                    Select::make('status')
+                        ->label(__('filament/admin/department_resource.status'))
+                        ->options(collect(DepartmentStatus::cases())->mapWithKeys(
+                            fn (DepartmentStatus $case) => [$case->value => $case->label(__('filament/admin/department_resource.status'))]
+                        ))
+                        ->default(DepartmentStatus::ACTIVE->value),
                 ])
                 ->columnSpanFull(),
 
