@@ -17,8 +17,6 @@ class VacationTransfer extends Model
     protected function casts(): array
     {
         return [
-            'from_year' => 'year',
-            'to_year' => 'year',
             'days_count' => 'integer',
         ];
     }

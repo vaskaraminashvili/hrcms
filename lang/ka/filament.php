@@ -78,6 +78,9 @@ return [
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
     'deleted_at' => 'წაშლის თარიღი',
+    'from_year' => 'წლიდან',
+    'to_year' => 'წლამდე',
+    'days_count' => 'დღეების რაოდენობა',
     'position' => 'თანამდებობა',
     'working_days_count' => 'სამუშაო დღეების რაოდენობა',
     'type' => 'ტიპი',
@@ -234,6 +237,10 @@ return [
         'vacations' => [
             'title' => 'შვებულებები',
             'add_new_vacation' => 'შვებულების დამატება',
+        ],
+        'vacation_transfers' => [
+            'title' => 'შვებულების გადაცემები',
+            'add_new_vacation_transfer' => 'შვებულების გადაცემის დამატება',
         ],
     ],
 

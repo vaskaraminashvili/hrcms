@@ -2,23 +2,17 @@
 
 namespace App\Filament\Resources\Positions\RelationManagers;
 
-use App\Filament\Resources\Vacations\Schemas\VacationForm;
-use App\Filament\Resources\Vacations\Tables\VacationsTable;
+use App\Filament\Resources\VacationTransfers\Schemas\VacationTransferForm;
+use App\Filament\Resources\VacationTransfers\Tables\VacationTransfersTable;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class VacationTransferRelationManager extends RelationManager
 {
@@ -26,23 +20,22 @@ class VacationTransferRelationManager extends RelationManager
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
-        return __('filament.relation_managers.vacations.title');
+        return __('filament.relation_managers.vacation_transfers.title');
     }
 
     public function form(Schema $schema): Schema
     {
-        return VacationForm::configure($schema, false);
+        return VacationTransferForm::configure($schema, showPosition: false);
     }
 
     public function table(Table $table): Table
     {
-        return VacationsTable::configure($table, hideEmployeeAndPositionColumns: true)
-            ->recordTitleAttribute('start_date')
+        return VacationTransfersTable::configure($table, hidePositionColumn: true)
+            ->recordTitleAttribute('from_year')
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('filament.relation_managers.vacations.add_new_vacation'))
+                    ->label(__('filament.relation_managers.vacation_transfers.add_new_vacation_transfer'))
                     ->mutateFormDataUsing(function (array $data): array {
-                        $data['employee_id'] = $this->getOwnerRecord()->employee_id;
                         $data['position_id'] = $this->getOwnerRecord()->getKey();
 
                         return $data;
@@ -51,19 +44,11 @@ class VacationTransferRelationManager extends RelationManager
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
-            ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ]));
+            ]);
     }
 }

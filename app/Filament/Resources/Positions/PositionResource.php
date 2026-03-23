@@ -47,6 +47,7 @@ class PositionResource extends Resource
     public static function getRelations(): array
     {
         return [
+            RelationManagers\VacationTransferRelationManager::class,
             RelationManagers\VacationsRelationManager::class,
         ];
     }

@@ -71,6 +71,9 @@ return [
     'created_at' => 'Created at',
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
+    'from_year' => 'From year',
+    'to_year' => 'To year',
+    'days_count' => 'Days count',
 
     'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
 
@@ -202,6 +205,10 @@ return [
         'vacations' => [
             'title' => 'Vacations',
             'add_new_vacation' => 'Add vacation',
+        ],
+        'vacation_transfers' => [
+            'title' => 'Vacation Transfers',
+            'add_new_vacation_transfer' => 'Add vacation transfer',
         ],
     ],
 
