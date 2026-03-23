@@ -9,6 +9,23 @@ return [
     */
     'navigation_label' => 'User Activities',
     'title' => 'User Activities',
+    /*
+     * Used by filament-activity-log and filament-shield vendor resources (same keys).
+     * Prefer “Activity” here to match navigation above; publish RoleResource if roles need different labels.
+     */
+    'model_label' => 'Activity',
+    'plural_model_label' => 'Activities',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity log (filament-activity-log)
+    |--------------------------------------------------------------------------
+    */
+    'event' => 'Event',
+    'subject_type' => 'Subject type',
+    'causer' => [
+        'name' => 'Causer',
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -35,6 +52,8 @@ return [
     'status_default' => 'active',
     'is_active' => 'Active',
     'positions_count' => 'Positions',
+    'guard_name' => 'Guard name',
+    'permissions_count' => 'Permissions',
     'employee_id' => 'Employee',
     'department_id' => 'Department',
     'place_id' => 'Place',
@@ -143,6 +162,9 @@ return [
         ],
         'view_position' => [
             'title' => 'View position',
+        ],
+        'list_roles' => [
+            'title' => 'Roles',
         ],
         'position_resource' => [
             'department_vacancy_limit' => 'This department allows at most :max active position(s).',
