@@ -14,7 +14,7 @@ use Filament\Schemas\Schema;
 
 class VacationForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Schema $schema, bool $showEmployeeAndPosition = true): Schema
     {
         return $schema
             ->components([
@@ -31,7 +31,8 @@ class VacationForm
                     ->label(__('filament.employee_id'))
                     ->live()
                     ->preload()
-                    ->required(),
+                    ->required($showEmployeeAndPosition)
+                    ->visible($showEmployeeAndPosition),
                 Select::make('position_id')
                     ->options(function ($get) {
                         return Position::query()
@@ -46,7 +47,8 @@ class VacationForm
                     })
                     ->columnSpanFull()
                     ->label(__('filament.position'))
-                    ->required(),
+                    ->required($showEmployeeAndPosition)
+                    ->visible($showEmployeeAndPosition),
                 DatePicker::make('start_date')
                     ->required()
                     ->label(__('filament.start_date')),

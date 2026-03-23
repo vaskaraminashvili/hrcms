@@ -199,6 +199,10 @@ return [
             'add_new_position' => 'Add new position',
             'renewal' => 'Renewal',
         ],
+        'vacations' => [
+            'title' => 'Vacations',
+            'add_new_vacation' => 'Add vacation',
+        ],
     ],
 
     'infolist' => [

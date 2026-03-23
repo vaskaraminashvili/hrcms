@@ -226,6 +226,10 @@ return [
             'add_new_position' => 'ახალი თანამდებობის დამატება',
             'renewal' => 'გახანგრძლივება',
         ],
+        'vacations' => [
+            'title' => 'შვებულებები',
+            'add_new_vacation' => 'შვებულების დამატება',
+        ],
     ],
 
     'infolist' => [
