@@ -19,9 +19,7 @@ class VacationPolicySeeder extends Seeder
                 'position_type' => $positionType->value,
                 'name' => $positionType->label(),
                 'description' => fake()->realText(200),
-                'color' => fake()->randomElement(StatusEnum::cases()),
-                'icon' => fake()->randomElement(StatusEnum::cases()),
-                'status' => fake()->randomElement(StatusEnum::cases()),
+                'status' => fake()->randomElement(StatusEnum::cases())->value,
                 'settings' => [['key' => 'days', 'value' => '24']],
             ]);
         }

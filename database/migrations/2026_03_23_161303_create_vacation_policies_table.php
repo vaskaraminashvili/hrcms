@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('position_type')->unique();
             $table->string('name')->nullable();
             $table->text('description')->nullable();
-            $table->string('color')->nullable();
-            $table->string('icon')->nullable();
             $table->string('status')->nullable();
             $table->json('settings')->nullable();
             $table->timestamps();

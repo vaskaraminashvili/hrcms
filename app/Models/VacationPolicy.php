@@ -13,8 +13,6 @@ class VacationPolicy extends Model
         'position_type',
         'name',
         'description',
-        'color',
-        'icon',
         'status',
         'settings',
     ];
@@ -31,15 +29,5 @@ class VacationPolicy extends Model
     public function vacations(): HasMany
     {
         return $this->hasMany(Vacation::class);
-    }
-
-    public function getColorAttribute(): string
-    {
-        return $this->status->color();
-    }
-
-    public function getIconAttribute(): string
-    {
-        return $this->status->icon()->value; // or ->name depending on Filament version
     }
 }

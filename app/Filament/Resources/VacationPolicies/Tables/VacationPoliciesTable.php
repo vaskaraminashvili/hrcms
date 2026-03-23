@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\VacationPolicies\Tables;
 
-use App\Enums\StatusEnum;
 use App\Models\VacationPolicy;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -20,11 +19,11 @@ class VacationPoliciesTable
                 TextColumn::make('name')
                     ->label(__('filament.name'))
                     ->badge()
-                    ->icon(function (string $state, VacationPolicy $record): Heroicon {
-                        return StatusEnum::from($record->status)->icon();
+                    ->icon(function (VacationPolicy $record): Heroicon {
+                        return $record->status->getIcon();
                     })
-                    ->color(function (string $state, VacationPolicy $record): string {
-                        return StatusEnum::from($record->status)->color();
+                    ->color(function (VacationPolicy $record): string {
+                        return $record->status->getColor();
                     })
                     ->searchable(),
             ])

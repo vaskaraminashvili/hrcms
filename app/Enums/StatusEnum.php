@@ -2,9 +2,12 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Icons\Heroicon;
 
-enum StatusEnum: string
+enum StatusEnum: string implements HasColor, HasIcon, HasLabel
 {
     case ACTIVE = 'ACTIVE';
     case SUCCESS = 'SUCCESS';
@@ -13,7 +16,7 @@ enum StatusEnum: string
     case INFO = 'INFO';
     case GRAY = 'GRAY';
 
-    public function color(): string
+    public function getColor(): string
     {
         return match ($this) {
             self::ACTIVE => 'active',
@@ -25,7 +28,7 @@ enum StatusEnum: string
         };
     }
 
-    public function label(): string
+    public function getLabel(): ?string
     {
         return match ($this) {
             self::ACTIVE => 'Active',
@@ -37,7 +40,7 @@ enum StatusEnum: string
         };
     }
 
-    public function icon(): Heroicon
+    public function getIcon(): Heroicon
     {
         return match ($this) {
             self::ACTIVE => Heroicon::OutlinedCheckCircle,
