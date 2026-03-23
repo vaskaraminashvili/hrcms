@@ -13,10 +13,10 @@ class PlaceForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label(__('filament/admin/place_resource.name'))
+                    ->label(__('filament.name'))
                     ->required(),
                 Toggle::make('is_active')
-                    ->label(__('filament/admin/place_resource.is_active'))
+                    ->label(__('filament.is_active'))
                     ->default(true),
             ]);
     }

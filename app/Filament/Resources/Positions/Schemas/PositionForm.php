@@ -33,7 +33,7 @@ class PositionForm
                 )
                 ->preload()
                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
-                ->label(__('filament/admin/position_resource.employee_id'))
+                ->label(__('filament.employee_id'))
                 ->disabled(fn (?Position $record): bool => $record !== null)
                 ->dehydrated()
                 ->required()
@@ -45,7 +45,7 @@ class PositionForm
                     Tab::make('Basic Information')
                         ->schema([
                             Select::make('department_id')
-                                ->label(__('filament/admin/position_resource.department_id'))
+                                ->label(__('filament.department_id'))
                                 ->relationship(
                                     'department',
                                     'name',
@@ -96,20 +96,20 @@ class PositionForm
                                 ->columnSpanFull(),
 
                             Select::make('place_id')
-                                ->label(__('filament/admin/position_resource.place_id'))
+                                ->label(__('filament.place_id'))
                                 ->relationship('place', 'name', fn (Builder $query) => $query->where('is_active', true))
                                 ->searchable()
                                 ->preload()
                                 ->required()
                                 ->columnSpanFull(),
                             Select::make('position_type')
-                                ->label(__('filament/admin/position_resource.position_type'))
+                                ->label(__('filament.position_type'))
                                 ->options(PositionType::class)
                                 ->required()
                                 ->live()
                                 ->columns(1),
                             Radio::make('staff_type')
-                                ->label(__('filament/admin/position_resource.staff_type'))
+                                ->label(__('filament.staff_type'))
                                 ->inline()
                                 ->default(0)
                                 ->options([
@@ -120,9 +120,9 @@ class PositionForm
                                 ->required(),
 
                             DatePicker::make('date_start')
-                                ->label(__('filament/admin/position_resource.date_start')),
+                                ->label(__('filament.date_start')),
                             DatePicker::make('date_end')
-                                ->label(__('filament/admin/position_resource.date_end'))
+                                ->label(__('filament.date_end'))
                                 ->required(function ($get): bool {
                                     if (! $get('status')) {
                                         return false;
@@ -133,19 +133,19 @@ class PositionForm
                                 }),
 
                             TextInput::make('act_number')
-                                ->label(__('filament/admin/position_resource.act_number')),
+                                ->label(__('filament.act_number')),
                             DatePicker::make('act_date')
-                                ->label(__('filament/admin/position_resource.act_date')),
+                                ->label(__('filament.act_date')),
 
                             Select::make('status')
-                                ->label(__('filament/admin/position_resource.status'))
+                                ->label(__('filament.status'))
                                 ->options(PositionStatus::class)
                                 ->required(),
 
                             Section::make()
                                 ->schema([
                                     Radio::make('clinical')
-                                        ->label(__('filament/admin/position_resource.clinical'))
+                                        ->label(__('filament.clinical'))
                                         ->inline()
                                         ->options([
                                             '0' => 'Clinical',
@@ -156,7 +156,7 @@ class PositionForm
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
 
                                     TextInput::make('clinical_text')
-                                        ->label(__('filament/admin/position_resource.clinical_text'))
+                                        ->label(__('filament.clinical_text'))
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type')))
                                         ->required(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
                                 ])
@@ -165,7 +165,7 @@ class PositionForm
                             Section::make()
                                 ->schema([
                                     Toggle::make('automative_renewal')
-                                        ->label(__('filament/admin/position_resource.automative_renewal'))
+                                        ->label(__('filament.automative_renewal'))
                                         ->visible(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type')))
                                         ->required(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type'))),
                                 ])
@@ -173,11 +173,11 @@ class PositionForm
                                 ->visible(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type'))),
 
                             TextInput::make('salary')
-                                ->label(__('filament/admin/position_resource.salary'))
+                                ->label(__('filament.salary'))
                                 ->numeric(),
 
                             RichEditor::make('comment')
-                                ->label(__('filament/admin/position_resource.comment'))
+                                ->label(__('filament.comment'))
                                 ->columnSpanFull(),
                         ])
                         ->columns(2),
