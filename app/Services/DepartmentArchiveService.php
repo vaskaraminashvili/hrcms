@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\DepartmentStatus;
+use App\Enums\PositionStatus;
 use App\Models\Department;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -57,7 +58,7 @@ class DepartmentArchiveService
                 $newPosition->save();
             }
             $original->positions()->update([
-                'status' => DepartmentStatus::ARCHIVED->value,
+                'status' => PositionStatus::Achieved->value,
                 'date_end' => now(),
             ]);
         }

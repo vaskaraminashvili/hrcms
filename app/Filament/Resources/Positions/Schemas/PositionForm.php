@@ -18,6 +18,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -107,6 +108,12 @@ class PositionForm
                                 ->options(PositionType::class)
                                 ->required()
                                 ->live()
+                                ->afterStateHydrated(function (Set $set, mixed $state): void {
+                                    self::applyNonStaffTypeForPositionType($set, $state);
+                                })
+                                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                    self::applyNonStaffTypeForPositionType($set, $state);
+                                })
                                 ->columns(1),
                             Radio::make('staff_type')
                                 ->label(__('filament.staff_type'))
@@ -183,6 +190,17 @@ class PositionForm
                 ])
                 ->columnSpanFull(),
         ]);
+    }
+
+    private static function applyNonStaffTypeForPositionType(Set $set, mixed $positionTypeState): void
+    {
+        $type = $positionTypeState instanceof PositionType
+            ? $positionTypeState
+            : PositionType::tryFrom((string) $positionTypeState);
+
+        if ($type?->isNonStaffPositionType()) {
+            $set('staff_type', '2');
+        }
     }
 
     private static function positionTypeShowsClinical(mixed $positionType): bool
