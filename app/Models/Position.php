@@ -74,4 +74,9 @@ class Position extends Model
     {
         return $this->hasMany(Vacation::class);
     }
+
+    public function vacationTransfers(): HasMany
+    {
+        return $this->hasMany(VacationTransfer::class);
+    }
 }
