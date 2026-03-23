@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             PlaceSeeder::class,
             PositionSeeder::class,
             ShieldSeeder::class,
+            VacationPolicySeeder::class,
         ]);
     }
 }

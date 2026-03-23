@@ -193,6 +193,12 @@ class PositionForm
                                 ->columnSpanFull(),
                         ])
                         ->columns(2),
+                    Tab::make(__('filament.vacation_policies'))
+                        ->schema([
+                            TextInput::make('vacation_policy_id')
+                                ->label(__('filament.vacation_policy_id'))
+                                ->required(),
+                        ]),
                 ])
                 ->columnSpanFull(),
         ]);

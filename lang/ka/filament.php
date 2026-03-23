@@ -64,6 +64,7 @@ return [
     'automative_renewal' => 'ავტომატური გახანგრძლივება',
     'salary' => 'ხელფასი',
     'vacation' => 'შვებულება',
+    'vacation_policies' => 'შვებულების პოლიტიკები',
     'vacation_edit' => 'შვებულების რედაქტირება',
     'vacation_days_per_year' => 'შვებულების დღეები',
     'vacation_type' => 'შვებულების ტიპი',
