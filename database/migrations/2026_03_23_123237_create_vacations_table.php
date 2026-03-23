@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\VacationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,8 +19,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->unsignedInteger('working_days_count');
-            $table->string('type');
-            $table->string('status')->default('pending');
+            $table->string('status')->default(VacationStatus::Pending->value);
             $table->text('reason')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

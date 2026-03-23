@@ -160,6 +160,11 @@ return [
             'model_label' => 'შვებულება',
             'plural_model_label' => 'შვებულებები',
         ],
+        'vacation_policies' => [
+            'navigation_label' => 'შვებულების დროცულებები',
+            'model_label' => 'შვებულების დროცულება',
+            'plural_model_label' => 'შვებულების დროცულებები',
+        ],
     ],
 
     /*

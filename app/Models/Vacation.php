@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\VacationStatus;
-use App\Enums\VacationType;
 use Database\Factories\VacationFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +22,6 @@ class Vacation extends Model
         'start_date',
         'end_date',
         'working_days_count',
-        'type',
         'status',
         'reason',
         'notes',
@@ -35,7 +33,6 @@ class Vacation extends Model
             'start_date' => 'date:d.m.Y',
             'end_date' => 'date:d.m.Y',
             'working_days_count' => 'integer',
-            'type' => VacationType::class,
             'status' => VacationStatus::class,
         ];
     }
@@ -65,12 +62,10 @@ class Vacation extends Model
      */
     public static function sumUsedWorkingDaysForEmployeeTypeAndYear(
         int $employeeId,
-        VacationType $type,
         int $calendarYear,
     ): int {
         return (int) static::query()
             ->where('employee_id', $employeeId)
-            ->where('type', $type)
             ->whereYear('start_date', $calendarYear)
             ->whereIn('status', [
                 VacationStatus::Pending,

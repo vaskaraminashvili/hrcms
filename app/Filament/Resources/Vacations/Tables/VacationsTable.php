@@ -47,10 +47,6 @@ class VacationsTable
                 ->label(__('filament.working_days_count'))
                 ->numeric()
                 ->sortable(),
-            TextColumn::make('type')
-                ->label(__('filament.type'))
-                ->badge()
-                ->searchable(),
             TextColumn::make('status')
                 ->label(__('filament.status'))
                 ->badge()

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Vacations\Schemas;
 
 use App\Enums\VacationStatus;
-use App\Enums\VacationType;
 use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -59,17 +58,11 @@ class VacationForm
                     ->required()
                     ->numeric()
                     ->label(__('filament.working_days_count')),
-                Select::make('type')
-                    ->options(collect(VacationType::cases())->mapWithKeys(
-                        fn (VacationType $case) => [$case->value => $case->label()]
-                    ))
-                    ->required()
-                    ->label(__('filament.type')),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
                         fn (VacationStatus $case) => [$case->value => $case->label()]
                     ))
-                    ->default('pending')
+                    ->default(VacationStatus::Pending->value)
                     ->required()
                     ->label(__('filament.status')),
                 Textarea::make('reason')
