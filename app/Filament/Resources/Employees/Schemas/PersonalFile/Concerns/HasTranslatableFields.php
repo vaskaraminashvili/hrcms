@@ -7,7 +7,7 @@ use Filament\Schemas\Components\Grid;
 
 trait HasTranslatableFields
 {
-    protected static function translatableTextInput(string $name, ?string $label = null, array $required = [true, false]): array
+    protected static function translatableTextInput(string $name, ?string $label = null, array $required = [true, true]): array
     {
         return [
             TextInput::make("{$name}.ka")
@@ -21,7 +21,7 @@ trait HasTranslatableFields
         ];
     }
 
-    protected static function translatableField(string $name, ?string $label = null, array $required = [true, false]): Grid
+    protected static function translatableField(string $name, ?string $label = null, array $required = [false, false]): Grid
     {
         return Grid::make(2)
             ->schema(static::translatableTextInput($name, $label, $required));

@@ -17,12 +17,12 @@ enum PositionType: string implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Emeritus => 'ემერიტუსი',
+            self::Emeritus => 'ემერიტუსი', // არასაშტატო
             self::AdministrativePersonnel => 'ადმინისტრაციული პერსონალი',
             self::AssistantAdministrativePersonnel => 'დამხმარე ადმინისტრაციული პერსონალი',
             self::AcademicPersonnel => 'აკადემიური პერსონალი',
-            self::InvitedTeacher => 'მოწვეული მასწავლებელი',
-            self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული',
+            self::InvitedTeacher => 'მოწვეული მასწავლებელი', // არასაშტატო
+            self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული', // არასაშტატო
             self::AcademicRank => 'აკადემიური წოდება',
         };
     }

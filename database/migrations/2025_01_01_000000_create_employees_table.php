@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('gender')->nullable();
             $table->string('citizenship')->nullable();
-            $table->tinyInteger('education')->nullable();
+            $table->boolean('education')->nullable();
             $table->string('degree')->nullable();
             $table->string('address')->nullable();
             $table->string('pysical_address')->nullable();
