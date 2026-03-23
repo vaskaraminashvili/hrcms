@@ -41,4 +41,13 @@ enum PositionType: string implements HasLabel
     {
         return $this === self::ContractedEmployee;
     }
+
+    public function isNonStaffPositionType(): bool
+    {
+        return in_array($this, [
+            self::Emeritus,
+            self::InvitedTeacher,
+            self::ContractedEmployee,
+        ], true);
+    }
 }
