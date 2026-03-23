@@ -63,6 +63,15 @@ return [
     'clinical_text' => 'კლინიკური დეტალები',
     'automative_renewal' => 'ავტომატური გახანგრძლივება',
     'salary' => 'ხელფასი',
+    'vacation' => 'შვებულება',
+    'vacation_days_per_year' => 'შვებულების დღეები',
+    'vacation_type' => 'შვებულების ტიპი',
+    'vacation_status' => 'შვებულების სტატუსი',
+    'vacation_reason' => 'შვებულების მიზეზი',
+    'vacation_notes' => 'შვებულების შენიშვნები',
+    'vacation_start_date' => 'შვებულების დაწყების თარიღი',
+    'vacation_end_date' => 'შვებულების დასრულების თარიღი',
+    'vacation_working_days_count' => 'შვებულების მუშაობის დღეები',
     'comment' => 'კომენტარი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
@@ -126,6 +135,11 @@ return [
             'navigation_label' => 'დეპარტამენტები',
             'model_label' => 'დეპარტამენტი',
             'plural_model_label' => 'დეპარტამენტები',
+        ],
+        'vacations' => [
+            'navigation_label' => 'შვებულებები',
+            'model_label' => 'შვებულება',
+            'plural_model_label' => 'შვებულებები',
         ],
     ],
 
@@ -288,6 +302,7 @@ return [
             'foreign_languages' => 'უცხოური ენების ფლობის ხარისხი',
             'computer_skills' => 'კომპიუტერული პროგრამების ფლობის ხარისხი',
         ],
+
     ],
 
 ];

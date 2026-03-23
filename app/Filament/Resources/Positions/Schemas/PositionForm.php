@@ -181,6 +181,12 @@ class PositionForm
                             TextInput::make('salary')
                                 ->label(__('filament.salary'))
                                 ->numeric(),
+                            TextInput::make('vacation_days_per_year')
+                                ->label(__('filament.vacation_days_per_year'))
+
+                                ->numeric()
+                                ->default(24)
+                                ->required(),
 
                             RichEditor::make('comment')
                                 ->label(__('filament.comment'))

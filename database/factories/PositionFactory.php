@@ -37,6 +37,7 @@ class PositionFactory extends Factory
             'clinical_text' => fake()->optional(0.7)->realText(200),
             'automative_renewal' => fake()->boolean(),
             'salary' => fake()->numberBetween(1000, 10000),
+            'vacation_days_per_year' => fake()->numberBetween(16, 24),
             'comment' => fake()->optional(0.7)->realText(200),
         ];
     }
