@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('clinical_text')->nullable();
             $table->boolean('automative_renewal')->nullable();
             $table->integer('salary')->nullable();
-            $table->integer('vacation_days_per_year')->nullable();
+            $table->foreignId('vacation_policy_id')->constrained('vacation_policies');
             $table->string('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();

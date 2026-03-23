@@ -31,6 +31,7 @@ class Position extends Model
         'clinical_text',
         'automative_renewal',
         'salary',
+        'vacation_policy_id',
         'comment',
     ];
 
@@ -47,6 +48,11 @@ class Position extends Model
             'status' => PositionStatus::class,
             'position_type' => PositionType::class,
         ];
+    }
+
+    public function vacationPolicy(): BelongsTo
+    {
+        return $this->belongsTo(VacationPolicy::class);
     }
 
     public function place(): BelongsTo

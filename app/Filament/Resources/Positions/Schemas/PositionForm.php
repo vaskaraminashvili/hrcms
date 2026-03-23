@@ -15,16 +15,19 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    public static function configure(Schema $schema, bool $withEmployee = true): Schema
+    public static function configure(Schema $schema, bool $withEmployee = false): Schema
     {
         return $schema->components([
             Select::make('employee_id')
@@ -181,12 +184,6 @@ class PositionForm
                             TextInput::make('salary')
                                 ->label(__('filament.salary'))
                                 ->numeric(),
-                            TextInput::make('vacation_days_per_year')
-                                ->label(__('filament.vacation_days_per_year'))
-
-                                ->numeric()
-                                ->default(24)
-                                ->required(),
 
                             RichEditor::make('comment')
                                 ->label(__('filament.comment'))
@@ -195,10 +192,18 @@ class PositionForm
                         ->columns(2),
                     Tab::make(__('filament.vacation_policies'))
                         ->schema([
-                            TextInput::make('vacation_policy_id')
-                                ->label(__('filament.vacation_policy_id'))
-                                ->required(),
-                        ]),
+                            TextEntry::make('vacationPolicy.name'),
+                            RepeatableEntry::make('vacationPolicy.settings')
+                                ->schema([
+                                    TextEntry::make('key')
+                                        ->size(TextSize::Large)
+                                        ->color('info')
+                                        ->badge(),
+                                    TextEntry::make('value'),
+                                ])
+                                ->columns(2),
+                        ])
+                        ->visible(fn (string $operation): bool => $operation === 'edit'),
                 ])
                 ->columnSpanFull(),
         ]);

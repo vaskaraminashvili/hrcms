@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Place;
 use App\Models\Position;
+use App\Models\VacationPolicy;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -37,7 +38,7 @@ class PositionFactory extends Factory
             'clinical_text' => fake()->optional(0.7)->realText(200),
             'automative_renewal' => fake()->boolean(),
             'salary' => fake()->numberBetween(1000, 10000),
-            'vacation_days_per_year' => fake()->numberBetween(16, 24),
+            'vacation_policy_id' => VacationPolicy::inRandomOrder()->first()->id,
             'comment' => fake()->optional(0.7)->realText(200),
         ];
     }

@@ -18,11 +18,6 @@ class CreateVacation extends CreateRecord
 
         $position = Position::query()->findOrFail($data['position_id']);
 
-        if ($position->vacation_days_per_year === null) {
-            return;
-        }
-
-        $allocation = (int) $position->vacation_days_per_year;
         $used = Vacation::sumUsedWorkingDaysForEmployeeTypeAndYear(
             (int) $data['employee_id'],
             now()->year,
