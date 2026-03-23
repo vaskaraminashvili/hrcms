@@ -40,9 +40,9 @@ class PositionForm
                 ->columnSpanFull()
                 ->visible($withEmployee),
 
-            Tabs::make('Tabs')
+            Tabs::make(__('filament.tabs.container'))
                 ->tabs([
-                    Tab::make('Basic Information')
+                    Tab::make(__('filament.tabs.basic_information'))
                         ->schema([
                             Select::make('department_id')
                                 ->label(__('filament.department_id'))
@@ -86,7 +86,7 @@ class PositionForm
                                             ->count();
 
                                         if ($occupied + 1 > $vacancyLimit) {
-                                            $fail(__('filament/admin/position_resource.department_vacancy_limit', [
+                                            $fail(__('filament.admin.position_resource.department_vacancy_limit', [
                                                 'max' => $vacancyLimit,
                                             ]));
                                         }
@@ -148,10 +148,9 @@ class PositionForm
                                         ->label(__('filament.clinical'))
                                         ->inline()
                                         ->options([
-                                            '0' => 'Clinical',
-                                            '1' => 'Non-clinical',
+                                            '0' => __('filament.clinical_option.clinical'),
+                                            '1' => __('filament.clinical_option.non_clinical'),
                                         ])
-                                        ->label('Clinical')
                                         ->required(fn ($get): bool => self::positionTypeShowsClinical($get('position_type')))
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
 

@@ -11,8 +11,8 @@ class AcademicDegreesSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('degree', 'ხარისხი'),
-            static::translatableField('other', 'სხვა (ხარისხი = სხვა)'),
+            static::translatableField('degree', __('filament.personal_file.academic_degrees.degree')),
+            static::translatableField('other', __('filament.personal_file.academic_degrees.other')),
         ];
     }
 }

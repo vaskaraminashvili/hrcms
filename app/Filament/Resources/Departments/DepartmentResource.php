@@ -90,18 +90,18 @@ class DepartmentResource extends Resource
         ];
     }
 
-        public static function getNavigationLabel(): string
+    public static function getNavigationLabel(): string
     {
-        return __('filament.navigation_label');
+        return __('filament.resources.departments.navigation_label');
     }
 
-        public static function getModelLabel(): string
+    public static function getModelLabel(): string
     {
-        return __('filament.model_label');
+        return __('filament.resources.departments.model_label');
     }
 
-        public static function getPluralModelLabel(): string
+    public static function getPluralModelLabel(): string
     {
-        return __('filament.plural_model_label');
+        return __('filament.resources.departments.plural_model_label');
     }
 }

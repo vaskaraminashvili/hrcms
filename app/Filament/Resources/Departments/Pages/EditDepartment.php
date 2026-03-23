@@ -47,15 +47,12 @@ class EditDepartment extends EditRecord
     {
         return [
             Action::make('saveWithArchive')
-                ->label('Save & Archive')
+                ->label(__('filament.department.save_and_archive'))
                 ->color('primary')
                 ->requiresConfirmation()
-                ->modalHeading('Archive & Duplicate Department?')
-                ->modalDescription(
-                    'Changing the name or parent will archive this department and its positions, 
-                 then create a new duplicate with your changes.'
-                )
-                ->modalSubmitActionLabel('Yes, proceed')
+                ->modalHeading(__('filament.department.modal_archive_heading'))
+                ->modalDescription(__('filament.department.modal_archive_description'))
+                ->modalSubmitActionLabel(__('filament.department.modal_submit'))
                 ->action(function (DepartmentArchiveService $service) {
                     $formData = $this->form->getState();
                     $originalData = $this->record->only(['name', 'parent_id']);
@@ -89,8 +86,8 @@ class EditDepartment extends EditRecord
 
                         Notification::make()
                             ->danger()
-                            ->title('Cannot delete department')
-                            ->body("This department has {$count} position(s) assigned. Reassign or remove them first.")
+                            ->title(__('filament.department.cannot_delete_title'))
+                            ->body(__('filament.department.cannot_delete_body', ['count' => $count]))
                             ->send();
 
                         $action->halt();
@@ -104,15 +101,12 @@ class EditDepartment extends EditRecord
     {
         return [
             Action::make('saveWithArchive')
-                ->label('Save & Archive')
+                ->label(__('filament.department.save_and_archive'))
                 ->color('primary')
                 ->requiresConfirmation()
-                ->modalHeading('Archive & Duplicate Department?')
-                ->modalDescription(
-                    'Changing the name or parent will archive this department and its positions, 
-             then create a new duplicate with your changes.'
-                )
-                ->modalSubmitActionLabel('Yes, proceed')
+                ->modalHeading(__('filament.department.modal_archive_heading'))
+                ->modalDescription(__('filament.department.modal_archive_description'))
+                ->modalSubmitActionLabel(__('filament.department.modal_submit'))
                 ->action(function (DepartmentArchiveService $service) {
                     $formData = $this->form->getState();
                     $originalData = $this->record->only(['name', 'parent_id']);
@@ -133,7 +127,7 @@ class EditDepartment extends EditRecord
                     }
                 }),
             Action::make('cancel')
-                ->label('Cancel')
+                ->label(__('filament.department.cancel'))
                 ->color('gray')
                 ->url(DepartmentResource::getUrl('index')),
 
@@ -159,8 +153,11 @@ class EditDepartment extends EditRecord
 
                 if ($requiredDepth > $this->maxDepth) {
                     Notification::make()
-                        ->title('Cannot move department')
-                        ->body("This move would exceed the maximum depth of {$this->maxDepth} levels (deepest node would reach level {$requiredDepth}).")
+                        ->title(__('filament.department.cannot_move_title'))
+                        ->body(__('filament.department.cannot_move_body', [
+                            'max_depth' => $this->maxDepth,
+                            'required_depth' => $requiredDepth,
+                        ]))
                         ->danger()
                         ->send();
 

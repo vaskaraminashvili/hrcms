@@ -21,9 +21,9 @@ class EmployeeForm
     {
         return $schema
             ->components([
-                Tabs::make('Tabs')
+                Tabs::make(__('filament.tabs.container'))
                     ->tabs([
-                        Tab::make('Basic Information')
+                        Tab::make(__('filament.tabs.basic_information'))
                             ->schema([
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
@@ -54,8 +54,8 @@ class EmployeeForm
                                         Radio::make('education')
                                             ->label(__('filament.education'))
                                             ->options([
-                                                1 => 'საშვალო',
-                                                2 => 'უმაღლესი',
+                                                1 => __('filament.education_level.secondary'),
+                                                2 => __('filament.education_level.higher'),
                                             ])
                                             ->inline()
                                             ->live()
@@ -82,7 +82,7 @@ class EmployeeForm
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
-                                return Tab::make($case->label())
+                                return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record?->{$case->relationship()}()->count() ?? 0)
                                     ->schema([
                                         Repeater::make($case->relationship())

@@ -61,19 +61,19 @@ class PositionResource extends Resource
             'edit' => EditPosition::route('/{record}/edit'),
         ];
     }
-        public static function getNavigationLabel(): string
+
+    public static function getNavigationLabel(): string
     {
-        return __('filament.navigation_label');
-    }
-        public static function getModelLabel(): string
-    {
-        return __('filament.model_label');
-    }
-        public static function getPluralModelLabel(): string
-    {
-        return __('filament.plural_model_label');
+        return __('filament.resources.positions.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.positions.model_label');
+    }
 
-
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.positions.plural_model_label');
+    }
 }

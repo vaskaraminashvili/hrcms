@@ -13,12 +13,12 @@ class TextbooksSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', 'სახელწოდება'),
-            static::translatableField('publisher', 'გამომცემელი'),
-            static::translatableField('co_authors', 'თანაავტორები'),
-            DatePicker::make('published_at')->label('გამოქვეყნების თარიღი'),
+            static::translatableField('title', __('filament.personal_file.textbooks.title')),
+            static::translatableField('publisher', __('filament.personal_file.textbooks.publisher')),
+            static::translatableField('co_authors', __('filament.personal_file.textbooks.co_authors')),
+            DatePicker::make('published_at')->label(__('filament.personal_file.dates.published_at')),
             TextInput::make('page_count')
-                ->label('გვერდების რაოდენობა')
+                ->label(__('filament.personal_file.page_count'))
                 ->numeric(),
         ];
     }

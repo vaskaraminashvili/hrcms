@@ -16,14 +16,14 @@ class ListEmployees extends ListRecords
             CreateAction::make(),
         ];
     }
+
     public function getTitle(): string
     {
-        return __('filament/admin/list_employees.title');
+        return __('filament.admin.list_employees.title');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('filament/admin/list_employees.title');
+        return __('filament.admin.list_employees.title');
     }
-
 }

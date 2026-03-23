@@ -36,7 +36,7 @@ class PositionsTable
                 TextColumn::make('position_type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state?->label(__('filament.position_type')))
-                    ->label('Position Type')
+                    ->label(__('filament.position_type'))
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->label(__('filament.date_start'))
@@ -96,6 +96,7 @@ class PositionsTable
             ])
             ->filters([
                 SelectFilter::make('department_id')
+                    ->label(__('filament.department_id'))
                     ->options(
                         Department::query()
                             ->whereIn('status', [DepartmentStatus::ACTIVE->value, DepartmentStatus::ARCHIVED->value])

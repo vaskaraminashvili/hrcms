@@ -37,8 +37,10 @@ class DepartmentForm
                         ->preload()
                         ->live()
                         ->hint(fn ($state): string => $state
-                            ? 'Level '.(Department::find($state)?->ancestors()->count() + 2)
-                            : 'Level 1 (Root)'
+                            ? __('filament.department_parent_hint_level', [
+                                'level' => (Department::find($state)?->ancestors()->count() ?? 0) + 2,
+                            ])
+                            : __('filament.department_parent_hint_root')
                         )
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
                     TextInput::make('name')
@@ -54,7 +56,7 @@ class DepartmentForm
                     Select::make('status')
                         ->label(__('filament.status'))
                         ->options(collect(DepartmentStatus::cases())->mapWithKeys(
-                            fn (DepartmentStatus $case) => [$case->value => $case->label(__('filament/admin/department_resource.status'))]
+                            fn (DepartmentStatus $case) => [$case->value => __("filament.department_status.{$case->value}")]
                         ))
                         ->default(__('filament.status_default')),
                 ])

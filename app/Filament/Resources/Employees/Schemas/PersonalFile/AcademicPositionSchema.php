@@ -11,7 +11,7 @@ class AcademicPositionSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', 'თანამდებობა'),
+            static::translatableField('title', __('filament.personal_file.academic_position.title')),
         ];
     }
 }

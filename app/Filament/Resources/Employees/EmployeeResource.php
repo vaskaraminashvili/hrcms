@@ -71,19 +71,19 @@ class EmployeeResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-        public static function getNavigationLabel(): string
+
+    public static function getNavigationLabel(): string
     {
-        return __('filament.navigation_label');
-    }
-        public static function getModelLabel(): string
-    {
-        return __('filament.model_label');
-    }
-        public static function getPluralModelLabel(): string
-    {
-        return __('filament.plural_model_label');
+        return __('filament.resources.employees.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.employees.model_label');
+    }
 
-
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.employees.plural_model_label');
+    }
 }

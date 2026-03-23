@@ -11,8 +11,8 @@ class ComputerSkillsSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', 'პროგრამა'),
-            static::translatableField('level', 'ფლობის ხარისხი'),
+            static::translatableField('title', __('filament.personal_file.computer_skills.title')),
+            static::translatableField('level', __('filament.personal_file.computer_skills.level')),
         ];
     }
 }

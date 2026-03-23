@@ -20,7 +20,7 @@ class EmployeeInfolist
                     ->placeholder('-'),
                 TextEntry::make('personal_number'),
                 TextEntry::make('email')
-                    ->label('Email address')
+                    ->label(__('filament.email'))
                     ->placeholder('-'),
                 TextEntry::make('birth_date')
                     ->date(),

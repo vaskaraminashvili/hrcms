@@ -66,19 +66,19 @@ class PlaceResource extends Resource
                 SoftDeletingScope::class,
             ]);
     }
-        public static function getNavigationLabel(): string
+
+    public static function getNavigationLabel(): string
     {
-        return __('filament.navigation_label');
-    }
-        public static function getModelLabel(): string
-    {
-        return __('filament.model_label');
-    }
-        public static function getPluralModelLabel(): string
-    {
-        return __('filament.plural_model_label');
+        return __('filament.resources.places.navigation_label');
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.places.model_label');
+    }
 
-
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.places.plural_model_label');
+    }
 }

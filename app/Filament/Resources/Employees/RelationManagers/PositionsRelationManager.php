@@ -20,13 +20,17 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PositionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'positions';
 
-    protected static ?string $title = 'Positions';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('filament.relation_managers.positions.title');
+    }
 
     public function form(Schema $schema): Schema
     {
@@ -67,11 +71,11 @@ class PositionsRelationManager extends RelationManager
                     ->date()
                     ->sortable(),
                 IconColumn::make('automative_renewal')
-                    ->label('Renewal')
+                    ->label(__('filament.relation_managers.positions.renewal'))
                     ->alignCenter()
                     ->boolean(),
                 TextColumn::make('salary')
-                    ->label('Salary')
+                    ->label(__('filament.salary'))
                     ->money('GEL')
                     ->sortable(),
                 TextColumn::make('comment')
@@ -95,7 +99,7 @@ class PositionsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Add New Position'),
+                    ->label(__('filament.relation_managers.positions.add_new_position')),
             ])
             ->recordActions([
                 EditAction::make(),

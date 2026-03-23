@@ -12,11 +12,11 @@ class EducationSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('institution', 'დაწესებულება'),
-            static::translatableField('program', 'პროგრამა'),
-            static::translatableField('specialty', 'სპეციალობა'),
-            DatePicker::make('started_at')->label('დაწყების თარიღი'),
-            DatePicker::make('ended_at')->label('დასრულების თარიღი'),
+            static::translatableField('institution', __('filament.personal_file.education.institution')),
+            static::translatableField('program', __('filament.personal_file.education.program')),
+            static::translatableField('specialty', __('filament.personal_file.education.specialty')),
+            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
+            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
         ];
     }
 }
