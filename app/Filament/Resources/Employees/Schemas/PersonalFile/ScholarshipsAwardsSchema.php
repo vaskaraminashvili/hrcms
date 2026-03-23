@@ -12,9 +12,9 @@ class ScholarshipsAwardsSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', 'სახელწოდება'),
-            static::translatableField('issuer', 'გამცემელი'),
-            DatePicker::make('issued_at')->label('გაცემის თარიღი'),
+            static::translatableField('title', __('filament.personal_file.scholarships_awards.title')),
+            static::translatableField('issuer', __('filament.personal_file.scholarships_awards.issuer')),
+            DatePicker::make('issued_at')->label(__('filament.personal_file.dates.issued_at')),
         ];
     }
 }

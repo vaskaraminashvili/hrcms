@@ -30,39 +30,41 @@ class DepartmentForm
             Section::make()
                 ->schema([
                     Select::make('parent_id')
-                        ->label(__('filament/admin/department_resource.parent_id'))
+                        ->label(__('filament.parent_id'))
                         ->options($parentOptions)
                         ->nullable()
                         ->searchable()
                         ->preload()
                         ->live()
                         ->hint(fn ($state): string => $state
-                            ? 'Level '.(Department::find($state)?->ancestors()->count() + 2)
-                            : 'Level 1 (Root)'
+                            ? __('filament.department_parent_hint_level', [
+                                'level' => (Department::find($state)?->ancestors()->count() ?? 0) + 2,
+                            ])
+                            : __('filament.department_parent_hint_root')
                         )
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
                     TextInput::make('name')
-                        ->label(__('filament/admin/department_resource.name'))
+                        ->label(__('filament.name'))
                         ->required()
                         ->maxLength(255),
 
                     TextInput::make('vacancy_count')
-                        ->label(__('filament/admin/department_resource.vacancy_count'))
+                        ->label(__('filament.vacancy_count'))
                         ->numeric()
                         ->default(0),
 
                     Select::make('status')
-                        ->label(__('filament/admin/department_resource.status'))
+                        ->label(__('filament.status'))
                         ->options(collect(DepartmentStatus::cases())->mapWithKeys(
-                            fn (DepartmentStatus $case) => [$case->value => $case->label(__('filament/admin/department_resource.status'))]
+                            fn (DepartmentStatus $case) => [$case->value => __("filament.department_status.{$case->value}")]
                         ))
-                        ->default(DepartmentStatus::ACTIVE->value),
+                        ->default(__('filament.status_default')),
                 ])
                 ->columnSpanFull(),
 
             // Select::make('color')
             //     ->options(collect(EnumsDepartmentColor::cases())->mapWithKeys(
-            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label(__('filament/admin/department_resource.color'))]
+            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label(__('filament.color'))]
             //     ))
             //     ->nullable()
             //     ->searchable()

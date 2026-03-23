@@ -20,14 +20,14 @@ class EmployeesTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label(__('filament/admin/employee_resource.name'))
+                    ->label(__('filament.name'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->name.' '.$record->surname;
                     })
                     ->searchable(['name', 'surname']),
 
                 TextColumn::make('name_eng')
-                    ->label(__('filament/admin/employee_resource.name_eng'))
+                    ->label(__('filament.name_eng'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->name_eng.' '.$record->surrname_eng;
                     })
@@ -35,62 +35,62 @@ class EmployeesTable
 
                 TextColumn::make('personal_number')
                     ->badge()
-                    ->label(__('filament/admin/employee_resource.personal_number'))
+                    ->label(__('filament.personal_number'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->personal_number;
                     })
                     ->color('success')
                     ->searchable(),
                 TextColumn::make('positions_count')
-                    ->label(__('filament/admin/employee_resource.positions_count'))
+                    ->label(__('filament.positions_count'))
                     ->alignCenter()
                     ->icon('heroicon-o-briefcase')
                     ->counts('positions')
                     ->sortable(),
                 TextColumn::make('email')
-                    ->label(__('filament/admin/employee_resource.email'))
+                    ->label(__('filament.email'))
                     ->searchable(),
                 TextColumn::make('birth_date')
-                    ->label(__('filament/admin/employee_resource.birth_date'))
+                    ->label(__('filament.birth_date'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('gender')
-                    ->label(__('filament/admin/employee_resource.gender'))
+                    ->label(__('filament.gender'))
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 TextColumn::make('citizenship')
-                    ->label(__('filament/admin/employee_resource.citizenship'))
+                    ->label(__('filament.citizenship'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('education')
-                    ->label(__('filament/admin/employee_resource.education'))
+                    ->label(__('filament.education'))
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('degree')
-                    ->label(__('filament/admin/employee_resource.degree'))
+                    ->label(__('filament.degree'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('address')
-                    ->label(__('filament/admin/employee_resource.address'))
+                    ->label(__('filament.address'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('pysical_address')
-                    ->label(__('filament/admin/employee_resource.pysical_address'))
+                    ->label(__('filament.pysical_address'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
-                    ->label(__('filament/admin/employee_resource.created_at'))
+                    ->label(__('filament.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('filament/admin/employee_resource.updated_at'))
+                    ->label(__('filament.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label(__('filament/admin/employee_resource.deleted_at'))
+                    ->label(__('filament.deleted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

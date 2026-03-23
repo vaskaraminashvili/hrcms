@@ -12,10 +12,10 @@ class TrainingsSeminarsSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('institution', 'დაწესებულება'),
-            static::translatableField('topic', 'თემა'),
-            DatePicker::make('started_at')->label('დაწყების თარიღი'),
-            DatePicker::make('ended_at')->label('დასრულების თარიღი'),
+            static::translatableField('institution', __('filament.personal_file.trainings_seminars.institution')),
+            static::translatableField('topic', __('filament.personal_file.trainings_seminars.topic')),
+            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
+            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
         ];
     }
 }

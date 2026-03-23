@@ -23,7 +23,7 @@ class PositionsTable
 
             ->columns([
                 TextColumn::make('employee.name')
-                    ->label(__('filament/admin/position_resource.employee.name'))
+                    ->label(__('filament.employee.name'))
                     ->formatStateUsing(function (string $state, Position $record): string {
                         return $record->employee->name.' '.$record->employee->surname;
                     })
@@ -35,67 +35,68 @@ class PositionsTable
                     ->sortable(),
                 TextColumn::make('position_type')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state?->label(__('filament/admin/position_resource.position_type')))
-                    ->label('Position Type')
+                    ->formatStateUsing(fn ($state) => $state?->label(__('filament.position_type')))
+                    ->label(__('filament.position_type'))
                     ->sortable(),
                 TextColumn::make('date_start')
-                    ->label(__('filament/admin/position_resource.date_start'))
+                    ->label(__('filament.date_start'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('date_end')
-                    ->label(__('filament/admin/position_resource.date_end'))
+                    ->label(__('filament.date_end'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
-                    ->label(__('filament/admin/position_resource.status'))
+                    ->label(__('filament.status'))
                     ->badge()
                     ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
                     ->color(fn (PositionStatus $state): string|array|null => $state->getColor())
                     ->alignCenter()
                     ->searchable(),
                 TextColumn::make('salary')
-                    ->label(__('filament/admin/position_resource.salary'))
+                    ->label(__('filament.salary'))
                     ->money('GEL')
                     ->sortable(),
                 TextColumn::make('act_number')
-                    ->label(__('filament/admin/position_resource.act_number'))
+                    ->label(__('filament.act_number'))
                     ->alignCenter()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('act_date')
-                    ->label(__('filament/admin/position_resource.act_date'))
+                    ->label(__('filament.act_date'))
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('automative_renewal')
-                    ->label(__('filament/admin/position_resource.automative_renewal'))
+                    ->label(__('filament.automative_renewal'))
                     ->alignCenter()
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('comment')
-                    ->label(__('filament/admin/position_resource.comment'))
+                    ->label(__('filament.comment'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
-                    ->label(__('filament/admin/position_resource.created_at'))
+                    ->label(__('filament.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label(__('filament/admin/position_resource.updated_at'))
+                    ->label(__('filament.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
-                    ->label(__('filament/admin/position_resource.deleted_at'))
+                    ->label(__('filament.deleted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('department_id')
+                    ->label(__('filament.department_id'))
                     ->options(
                         Department::query()
                             ->whereIn('status', [DepartmentStatus::ACTIVE->value, DepartmentStatus::ARCHIVED->value])

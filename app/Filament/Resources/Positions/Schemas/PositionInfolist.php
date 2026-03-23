@@ -19,7 +19,7 @@ class PositionInfolist
                     ->formatStateUsing(fn ($state) => $state?->label())
                     ->placeholder('-'),
                 TextEntry::make('department.name')
-                    ->label('Department'),
+                    ->label(__('filament.infolist.department')),
                 TextEntry::make('date_start')
                     ->date()
                     ->placeholder('-'),

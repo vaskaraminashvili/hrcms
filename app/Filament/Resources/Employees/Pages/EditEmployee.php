@@ -22,14 +22,14 @@ class EditEmployee extends EditRecord
             RestoreAction::make(),
         ];
     }
+
     public function getTitle(): string
     {
-        return __('filament/admin/edit_employee.title');
+        return __('filament.admin.edit_employee.title');
     }
 
     public static function getNavigationLabel(): string
     {
-        return __('filament/admin/edit_employee.title');
+        return __('filament.admin.edit_employee.title');
     }
-
 }

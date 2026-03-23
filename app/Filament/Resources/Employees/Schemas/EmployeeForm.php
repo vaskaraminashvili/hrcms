@@ -21,47 +21,47 @@ class EmployeeForm
     {
         return $schema
             ->components([
-                Tabs::make('Tabs')
+                Tabs::make(__('filament.tabs.container'))
                     ->tabs([
-                        Tab::make('Basic Information')
+                        Tab::make(__('filament.tabs.basic_information'))
                             ->schema([
                                 TextInput::make('name')
-                                    ->label(__('filament/admin/employee_resource.name'))
+                                    ->label(__('filament.name'))
                                     ->required(),
                                 TextInput::make('surname')
-                                    ->label(__('filament/admin/employee_resource.surname'))
+                                    ->label(__('filament.surname'))
                                     ->required(),
                                 TextInput::make('name_eng')
-                                    ->label(__('filament/admin/employee_resource.name_eng')),
+                                    ->label(__('filament.name_eng')),
                                 TextInput::make('surrname_eng')
-                                    ->label(__('filament/admin/employee_resource.surrname_eng')),
+                                    ->label(__('filament.surrname_eng')),
                                 TextInput::make('personal_number')
-                                    ->label(__('filament/admin/employee_resource.personal_number'))
+                                    ->label(__('filament.personal_number'))
                                     ->required(),
                                 TextInput::make('email')
-                                    ->label(__('filament/admin/employee_resource.email'))
+                                    ->label(__('filament.email'))
                                     ->email(),
                                 DatePicker::make('birth_date')
-                                    ->label(__('filament/admin/employee_resource.birth_date'))
+                                    ->label(__('filament.birth_date'))
                                     ->required(),
                                 Select::make('gender')
                                     ->options(Gender::class)
-                                    ->default(Gender::MALE->value)
-                                    ->label(__('filament/admin/employee_resource.gender')),
+                                    ->default(__('filament.gender_default'))
+                                    ->label(__('filament.gender')),
 
                                 Section::make()
                                     ->schema([
                                         Radio::make('education')
-                                            ->label(__('filament/admin/employee_resource.education'))
+                                            ->label(__('filament.education'))
                                             ->options([
-                                                1 => 'საშვალო',
-                                                2 => 'უმაღლესი',
+                                                1 => __('filament.education_level.secondary'),
+                                                2 => __('filament.education_level.higher'),
                                             ])
                                             ->inline()
                                             ->live()
                                             ->required(),
                                         Select::make('degree')
-                                            ->label(__('filament/admin/employee_resource.degree'))
+                                            ->label(__('filament.degree'))
                                             ->options(Education::class)
                                             ->visible(fn ($get): bool => (int) $get('education') === 2)
                                             ->required(fn ($get): bool => (int) $get('education') === 2),
@@ -69,20 +69,20 @@ class EmployeeForm
                                     ->columns(2)
                                     ->columnSpanFull(),
                                 TextInput::make('citizenship')
-                                    ->label(__('filament/admin/employee_resource.citizenship')),
+                                    ->label(__('filament.citizenship')),
                                 TextInput::make('address')
                                     ->columnSpan(2)
-                                    ->label(__('filament/admin/employee_resource.address')),
+                                    ->label(__('filament.address')),
                                 TextInput::make('pysical_address')
                                     ->columnSpan(2)
-                                    ->label(__('filament/admin/employee_resource.pysical_address')),
+                                    ->label(__('filament.pysical_address')),
                             ])
                             ->columns(2),
                         ...array_map(
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
-                                return Tab::make($case->label())
+                                return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record?->{$case->relationship()}()->count() ?? 0)
                                     ->schema([
                                         Repeater::make($case->relationship())

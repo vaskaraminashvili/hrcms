@@ -92,7 +92,7 @@ class CreateDepartment extends CreateRecord
     {
         return [
             Action::make('backToTree')
-                ->label('Back to Tree')
+                ->label(__('filament.create_department.back_to_tree'))
                 ->icon('heroicon-o-arrow-left')
                 ->color('gray')
                 ->url(static::getResource()::getUrl('index')),

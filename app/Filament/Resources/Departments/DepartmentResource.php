@@ -92,16 +92,16 @@ class DepartmentResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return __('filament/admin/department_resource.navigation_label');
+        return __('filament.resources.departments.navigation_label');
     }
 
     public static function getModelLabel(): string
     {
-        return __('filament/admin/department_resource.model_label');
+        return __('filament.resources.departments.model_label');
     }
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament/admin/department_resource.plural_model_label');
+        return __('filament.resources.departments.plural_model_label');
     }
 }

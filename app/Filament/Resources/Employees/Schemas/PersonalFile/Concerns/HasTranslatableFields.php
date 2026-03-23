@@ -11,11 +11,15 @@ trait HasTranslatableFields
     {
         return [
             TextInput::make("{$name}.ka")
-                ->label($label ? "{$label} (ქართული)" : 'ქართული')
+                ->label($label
+                    ? __('filament.personal_file.field_locale_georgian', ['field' => $label])
+                    : __('filament.personal_file.locale_georgian'))
                 ->columnSpan(1)
                 ->required($required[0]),
             TextInput::make("{$name}.en")
-                ->label($label ? "{$label} (English)" : 'English')
+                ->label($label
+                    ? __('filament.personal_file.field_locale_english', ['field' => $label])
+                    : __('filament.personal_file.locale_english'))
                 ->columnSpan(1)
                 ->required($required[1]),
         ];

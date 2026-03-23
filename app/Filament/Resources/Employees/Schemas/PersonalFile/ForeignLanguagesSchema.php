@@ -11,8 +11,8 @@ class ForeignLanguagesSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('language', 'ენა'),
-            static::translatableField('level', 'ფლობის ხარისხი'),
+            static::translatableField('language', __('filament.personal_file.foreign_languages.language')),
+            static::translatableField('level', __('filament.personal_file.foreign_languages.level')),
         ];
     }
 }

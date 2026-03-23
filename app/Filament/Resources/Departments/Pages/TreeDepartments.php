@@ -14,7 +14,7 @@ class TreeDepartments extends TreePage
     {
         return [
             Action::make('newDepartment')
-                ->label('New Department')
+                ->label(__('filament.tree_departments.new_department'))
                 ->icon('heroicon-o-plus')
                 ->url(DepartmentResource::getUrl('create')),
         ];
