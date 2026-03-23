@@ -72,6 +72,8 @@ return [
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
 
+    'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
+
     'employee' => [
         'name' => 'Employee',
     ],

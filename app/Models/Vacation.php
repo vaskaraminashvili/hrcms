@@ -56,4 +56,26 @@ class Vacation extends Model
     {
         return $this->belongsTo(Position::class);
     }
+
+    /**
+     * Sum working days already booked for an employee for a vacation type and calendar year
+     * (year is taken from {@see Vacation::$start_date}).
+     *
+     * Pending and approved requests consume the balance; rejected and cancelled do not.
+     */
+    public static function sumUsedWorkingDaysForEmployeeTypeAndYear(
+        int $employeeId,
+        VacationType $type,
+        int $calendarYear,
+    ): int {
+        return (int) static::query()
+            ->where('employee_id', $employeeId)
+            ->where('type', $type)
+            ->whereYear('start_date', $calendarYear)
+            ->whereIn('status', [
+                VacationStatus::Pending,
+                VacationStatus::Approved,
+            ])
+            ->sum('working_days_count');
+    }
 }

@@ -4,10 +4,12 @@ namespace App\Filament\Resources\Vacations\Schemas;
 
 use App\Enums\VacationStatus;
 use App\Enums\VacationType;
+use App\Models\Position;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 
 class VacationForm
@@ -18,28 +20,62 @@ class VacationForm
             ->components([
                 Select::make('employee_id')
                     ->relationship('employee', 'name')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
+                    ->searchable(
+                        ['name', 'surname', 'personal_number']
+                    )
+                    ->afterStateUpdated(function (Set $set, mixed $state) {
+                        $set('position_id', null);
+                    })
+                    ->columnSpanFull()
+                    ->label(__('filament.employee_id'))
+                    ->live()
+                    ->preload()
                     ->required(),
                 Select::make('position_id')
-                    ->relationship('position', 'id')
+                    ->options(function ($get) {
+                        return Position::query()
+                            ->where('employee_id', $get('employee_id'))
+                            ->with(['department', 'place'])
+                            ->get()
+                            ->mapWithKeys(function (Position $position) {
+                                return [
+                                    $position->id => $position->place->name.'/'.$position->department->name,
+                                ];
+                            });
+                    })
+                    ->columnSpanFull()
+                    ->label(__('filament.position'))
                     ->required(),
                 DatePicker::make('start_date')
-                    ->required(),
+                    ->required()
+                    ->label(__('filament.start_date')),
                 DatePicker::make('end_date')
-                    ->required(),
+                    ->required()
+                    ->label(__('filament.end_date')),
                 TextInput::make('working_days_count')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->label(__('filament.working_days_count')),
                 Select::make('type')
-                    ->options(VacationType::class)
-                    ->required(),
+                    ->options(collect(VacationType::cases())->mapWithKeys(
+                        fn (VacationType $case) => [$case->value => $case->label()]
+                    ))
+                    ->required()
+                    ->label(__('filament.type')),
                 Select::make('status')
-                    ->options(VacationStatus::class)
+                    ->options(collect(VacationStatus::cases())->mapWithKeys(
+                        fn (VacationStatus $case) => [$case->value => $case->label()]
+                    ))
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->label(__('filament.status')),
                 Textarea::make('reason')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->label(__('filament.reason')),
                 Textarea::make('notes')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->label(__('filament.notes')),
             ]);
     }
 }
