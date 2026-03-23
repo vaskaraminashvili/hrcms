@@ -29,7 +29,8 @@ class VacationsTable
                     ->formatStateUsing(function (string $state, Vacation $record): string {
                         return $record->position->place->name.'/'.$record->position->department->name;
                     })
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('start_date')
                     ->label(__('filament.start_date'))
                     ->date()
