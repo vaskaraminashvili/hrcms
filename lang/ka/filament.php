@@ -79,6 +79,8 @@ return [
     'available_vacation_days' => 'ხელმისაწვდომი  დღეები',
     'total_vacation_days' => 'საერთო  დღეები',
     'transferred_days' => 'გადმოტანილი  დღეები',
+    'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
+    'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
     'comment' => 'კომენტარი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
@@ -101,8 +103,6 @@ return [
     'status' => 'სტატუსი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
-
-    'vacation_insufficient_balance' => 'ამ ტიპისა და წლისთვის საკმარისი შვებულების დღეები არ არის. წლიური ლიმიტი: :allocation, დარჩენილი: :remaining.',
 
     'employee' => [
         'name' => 'თანამშრომელი',

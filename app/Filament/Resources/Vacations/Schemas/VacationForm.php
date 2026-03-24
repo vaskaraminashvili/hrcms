@@ -57,6 +57,7 @@ class VacationForm
                 TextInput::make('working_days_count')
                     ->required()
                     ->numeric()
+                    ->minValue(1)
                     ->label(__('filament.working_days_count')),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(

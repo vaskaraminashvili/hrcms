@@ -4,9 +4,8 @@ namespace App\Filament\Resources\Vacations\Pages;
 
 use App\Filament\Resources\Vacations\VacationResource;
 use App\Models\Position;
-use App\Models\Vacation;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Validation\ValidationException;
 
 class CreateVacation extends CreateRecord
 {
@@ -16,24 +15,24 @@ class CreateVacation extends CreateRecord
     {
         $data = $this->form->getState();
 
-        $position = Position::query()->findOrFail($data['position_id']);
-
-        $used = Vacation::sumUsedWorkingDaysForEmployeeTypeAndYear(
-            (int) $data['employee_id'],
-            now()->year,
-        );
+        $position = Position::find($data['position_id']);
+        $available = $position->available_vacation_days;
         $requested = (int) $data['working_days_count'];
 
-        if ($used + $requested <= $allocation) {
-            return;
-        }
+        if ($available < $requested || $available == 0) {
+            Notification::make()
+                ->title(__('filament.vacation_insufficient_balance'))
+                ->body(__('filament.vacation_insufficient_balance_body', [
+                    'available' => $available,
+                    'requested' => $requested,
+                ]))
+                ->seconds(5)
+                ->duration(10000)
+                ->color('warning')
+                ->warning()
+                ->send();
 
-        $remaining = max(0, $allocation - $used);
-        throw ValidationException::withMessages([
-            'working_days_count' => __('filament.vacation_insufficient_balance', [
-                'remaining' => $remaining,
-                'allocation' => $allocation,
-            ]),
-        ]);
+            $this->halt();
+        }
     }
 }
