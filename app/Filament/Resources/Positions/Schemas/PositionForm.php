@@ -43,11 +43,27 @@ class PositionForm
                 ->required()
                 ->columnSpanFull()
                 ->visible($withEmployee),
+            Section::make()
+                ->label(__('filament.vacation_days'))
+                ->schema([
+                    TextEntry::make('transferred_days')
+                        ->label(__('filament.transferred_days')),
+                    TextEntry::make('total_vacation_days')
+                        ->label(__('filament.total_vacation_days')),
+                    TextEntry::make('used_vacation_days')
+                        ->label(__('filament.used_vacation_days')),
 
+                    TextEntry::make('available_vacation_days')
+                        ->label(__('filament.available_vacation_days'))
+                        ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
             Tabs::make(__('filament.tabs.container'))
                 ->tabs([
                     Tab::make(__('filament.tabs.basic_information'))
                         ->schema([
+
                             Select::make('department_id')
                                 ->label(__('filament.department_id'))
                                 ->relationship(

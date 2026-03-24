@@ -23,6 +23,7 @@ class VacationTransfersTable
             TextColumn::make('from_year'),
             TextColumn::make('to_year'),
             TextColumn::make('days_count')
+                ->alignCenter()
                 ->numeric()
                 ->sortable(),
             TextColumn::make('created_at')
