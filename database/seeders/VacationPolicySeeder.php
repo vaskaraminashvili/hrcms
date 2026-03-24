@@ -20,7 +20,11 @@ class VacationPolicySeeder extends Seeder
                 'name' => $positionType->label(),
                 'description' => fake()->realText(200),
                 'status' => fake()->randomElement(StatusEnum::cases())->value,
-                'settings' => [['key' => 'days', 'value' => '24']],
+                'settings' => [
+                    ['key' => 'days', 'value' => '24'],
+                    ['key' => 'saturday_allowed', 'value' => true],
+                    ['key' => 'sunday_allowed', 'value' => false],
+                ],
             ]);
         }
     }

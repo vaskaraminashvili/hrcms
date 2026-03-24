@@ -81,6 +81,7 @@ return [
     'transferred_days' => 'გადმოტანილი  დღეები',
     'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
     'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
+    'working_days_count_helper_text' => 'შაბათი: :saturday_allowed, კვირა: :sunday_allowed.',
     'comment' => 'კომენტარი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
