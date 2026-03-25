@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Positions\Tables;
 
 use App\Enums\DepartmentStatus;
 use App\Enums\PositionStatus;
+use App\Enums\PositionType;
 use App\Models\Department;
 use App\Models\Position;
 use Filament\Actions\BulkActionGroup;
@@ -14,6 +15,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PositionsTable
 {
@@ -30,13 +32,34 @@ class PositionsTable
                     ->description(function (Position $record): string {
                         return $record->department->name;
                     })
-                    ->searchable(['employee.name', 'employee.surname'])
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $pattern = '%'.$search.'%';
+
+                        $query->whereHas('employee', function (Builder $employeeQuery) use ($pattern): void {
+                            $employeeQuery
+                                ->where('name', 'like', $pattern)
+                                ->orWhere('surname', 'like', $pattern);
+                        })
+                            ->orWhereHas('department', function (Builder $departmentQuery) use ($pattern): void {
+                                $departmentQuery
+                                    ->where('name', 'like', $pattern);
+                            });
+                    })
 
                     ->sortable(),
                 TextColumn::make('position_type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state?->label(__('filament.position_type')))
                     ->label(__('filament.position_type'))
+                    ->searchable(query: function (Builder $query, string $search): void {
+
+                        $positionTypes = PositionType::fromLabel($search);
+                        if ($positionTypes) {
+
+                            $pattern = '%'.$positionTypes->value.'%';
+                            $query->where('position_type', 'like', $pattern);
+                        }
+                    })
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->label(__('filament.date_start'))

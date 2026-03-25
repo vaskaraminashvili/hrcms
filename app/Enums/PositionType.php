@@ -27,6 +27,12 @@ enum PositionType: string implements HasLabel
         };
     }
 
+    public static function fromLabel(string $search): ?self
+    {
+        return collect(self::cases())
+            ->first(fn ($case) => str_contains($case->getLabel(), $search));
+    }
+
     public function label(): string
     {
         return $this->getLabel() ?? '';
