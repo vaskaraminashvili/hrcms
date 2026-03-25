@@ -10,6 +10,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -18,6 +19,11 @@ class VacationForm
 {
     public static function configure(Schema $schema, bool $showEmployeeAndPosition = true): Schema
     {
+        $cols = 4;
+        if (! $showEmployeeAndPosition) {
+            $cols = 2;
+        }
+
         return $schema
             ->components([
                 Select::make('employee_id')
@@ -57,16 +63,16 @@ class VacationForm
                     ->required()
                     ->live()
                     ->label(__('filament.start_date'))
-                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                        self::recalculateDays($get, $set);
+                    ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
+                        self::recalculateDays($get, $set, self::resolvePosition($get, $livewire));
                     }),
 
                 DatePicker::make('end_date')
                     ->required()
                     ->live()
                     ->label(__('filament.end_date'))
-                    ->afterStateUpdated(function (Get $get, Set $set, $state) {
-                        self::recalculateDays($get, $set);
+                    ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
+                        self::recalculateDays($get, $set, self::resolvePosition($get, $livewire));
                     }),
 
                 TextInput::make('working_days_count')
@@ -75,9 +81,10 @@ class VacationForm
                     ->required()
                     ->numeric()
                     ->minValue(1)
-                    ->helperText(function (Get $get) {
-                        $positionId = $get('position_id');
-                        $position = Position::with('vacationPolicy')->find($positionId);
+                    ->helperText(function (Get $get, Set $set, mixed $livewire) use ($showEmployeeAndPosition) {
+                        $position = $showEmployeeAndPosition
+                            ? Position::with('vacationPolicy')->find($get('position_id'))
+                            : self::resolvePosition($get, $livewire);
                         if (! $position) {
                             return null;
                         }
@@ -109,22 +116,26 @@ class VacationForm
                     ->columnSpanFull()
                     ->label(__('filament.notes')),
             ])
-            ->columns(4);
+            ->columns($cols);
     }
 
-    private static function recalculateDays(Get $get, Set $set): void
+    private static function resolvePosition(Get $get, mixed $livewire): ?Position
+    {
+        if ($livewire instanceof RelationManager) {
+            $owner = $livewire->getOwnerRecord();
+
+            return $owner instanceof Position ? $owner : null;
+        }
+
+        return Position::with('vacationPolicy')->find($get('position_id'));
+    }
+
+    private static function recalculateDays(Get $get, Set $set, ?Position $record): void
     {
         $startDate = $get('start_date');
         $endDate = $get('end_date');
-        $positionId = $get('position_id');
-
-        if (! $startDate || ! $endDate || ! $positionId) {
-            return;
-        }
-
-        $position = Position::with('vacationPolicy')->find($positionId);
-
-        if (! $position) {
+        $position = $record ? $record->load('vacationPolicy') : Position::with('vacationPolicy')->find($get('position_id'));
+        if (! $startDate || ! $endDate || ! $position) {
             return;
         }
 
@@ -141,7 +152,6 @@ class VacationForm
             }
             $count++;
         }
-
         $set('working_days_count', $count);
     }
 }

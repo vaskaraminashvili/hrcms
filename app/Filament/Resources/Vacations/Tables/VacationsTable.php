@@ -30,8 +30,7 @@ class VacationsTable
                 ->formatStateUsing(function (string $state, Vacation $record): string {
                     return $record->position->place->name.'/'.$record->position->department->name;
                 })
-                ->searchable()
-                ->toggleable(isToggledHiddenByDefault: true);
+                ->searchable();
         }
 
         $columns = array_merge($columns, [

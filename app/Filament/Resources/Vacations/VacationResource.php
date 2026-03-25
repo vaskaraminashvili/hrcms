@@ -29,7 +29,7 @@ class VacationResource extends Resource
 
     public static function table(Table $table): Table
     {
-        return VacationsTable::configure($table);
+        return VacationsTable::configure($table, false);
     }
 
     public static function getRelations(): array
