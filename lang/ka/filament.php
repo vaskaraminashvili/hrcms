@@ -82,6 +82,13 @@ return [
     'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
     'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
     'working_days_count_helper_text' => 'შაბათი: :saturday_allowed, კვირა: :sunday_allowed.',
+    'vacation_policy_settings' => [
+        'days' => 'დღეები',
+        'saturday_allowed' => 'შაბათი ითვლება',
+        'sunday_allowed' => 'კვირა ითვლება',
+        'yes' => 'კი',
+        'no' => 'არა',
+    ],
     'comment' => 'კომენტარი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',

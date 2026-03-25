@@ -212,10 +212,23 @@ class PositionForm
                             RepeatableEntry::make('vacationPolicy.settings')
                                 ->schema([
                                     TextEntry::make('key')
+                                        ->hiddenLabel(true)
+                                        ->size(TextSize::Large)
+                                        ->formatStateUsing(fn (string $state): string => __("filament.vacation_policy_settings.{$state}"))
+                                        ->color('info')
+                                        ->badge(),
+                                    TextEntry::make('value')
+                                        ->formatStateUsing(function ($state) {
+                                            if (is_bool($state)) {
+                                                return $state ? __('filament.vacation_policy_settings.yes') : __('filament.vacation_policy_settings.no');
+                                            } else {
+                                                return $state;
+                                            }
+                                        })
+                                        ->hiddenLabel(true)
                                         ->size(TextSize::Large)
                                         ->color('info')
                                         ->badge(),
-                                    TextEntry::make('value'),
                                 ])
                                 ->columns(2),
                         ])
