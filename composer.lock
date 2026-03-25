@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ebea1ffc9b2f4f01b32eaf9f881ae88a",
+    "content-hash": "8ad6099336a9dc0ae18c69e407a2191a",
     "packages": [
         {
             "name": "alizharb/filament-activity-log",
@@ -703,6 +703,85 @@
                 }
             ],
             "time": "2024-07-16T11:13:48+00:00"
+        },
+        {
+            "name": "cms-multi/filament-clear-cache",
+            "version": "3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cms-multi/filament-clear-cache.git",
+                "reference": "55942621065fbfdbf693fc490ef0fe029e26f1a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cms-multi/filament-clear-cache/zipball/55942621065fbfdbf693fc490ef0fe029e26f1a2",
+                "reference": "55942621065fbfdbf693fc490ef0fe029e26f1a2",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^4.0 || ^5.0",
+                "filament/notifications": "^4.0 || ^5.0",
+                "illuminate/contracts": "^11.0 || ^12.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.15"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.0",
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0",
+                "pestphp/pest-plugin-livewire": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "FilamentClearCache": "CmsMulti\\FilamentClearCache\\Facades\\FilamentClearCache"
+                    },
+                    "providers": [
+                        "CmsMulti\\FilamentClearCache\\FilamentClearCacheServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "CmsMulti\\FilamentClearCache\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "howdu",
+                    "email": "cms.multi2@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Clear your cache easily from within filament",
+            "homepage": "https://github.com/cms-multi/filament-clear-cache",
+            "keywords": [
+                "filament-clear-cache",
+                "filamentphp",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/cms-multi/filament-clear-cache/issues",
+                "source": "https://github.com/cms-multi/filament-clear-cache"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/howdu",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-03-11T18:10:38+00:00"
         },
         {
             "name": "craft-forge/filament-language-switcher",
