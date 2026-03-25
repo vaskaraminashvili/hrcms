@@ -15,16 +15,19 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    public static function configure(Schema $schema, bool $withEmployee = true): Schema
+    public static function configure(Schema $schema, bool $withEmployee = false): Schema
     {
         return $schema->components([
             Select::make('employee_id')
@@ -40,11 +43,27 @@ class PositionForm
                 ->required()
                 ->columnSpanFull()
                 ->visible($withEmployee),
+            Section::make()
+                ->label(__('filament.vacation_days'))
+                ->schema([
+                    TextEntry::make('transferred_days')
+                        ->label(__('filament.transferred_days')),
+                    TextEntry::make('total_vacation_days')
+                        ->label(__('filament.total_vacation_days')),
+                    TextEntry::make('used_vacation_days')
+                        ->label(__('filament.used_vacation_days')),
 
+                    TextEntry::make('available_vacation_days')
+                        ->label(__('filament.available_vacation_days'))
+                        ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+                ])
+                ->columns(4)
+                ->columnSpanFull(),
             Tabs::make(__('filament.tabs.container'))
                 ->tabs([
                     Tab::make(__('filament.tabs.basic_information'))
                         ->schema([
+
                             Select::make('department_id')
                                 ->label(__('filament.department_id'))
                                 ->relationship(
@@ -187,6 +206,33 @@ class PositionForm
                                 ->columnSpanFull(),
                         ])
                         ->columns(2),
+                    Tab::make(__('filament.vacation_policies'))
+                        ->schema([
+                            TextEntry::make('vacationPolicy.name'),
+                            RepeatableEntry::make('vacationPolicy.settings')
+                                ->schema([
+                                    TextEntry::make('key')
+                                        ->hiddenLabel(true)
+                                        ->size(TextSize::Large)
+                                        ->formatStateUsing(fn (string $state): string => __("filament.vacation_policy_settings.{$state}"))
+                                        ->color('info')
+                                        ->badge(),
+                                    TextEntry::make('value')
+                                        ->formatStateUsing(function ($state) {
+                                            if (is_bool($state)) {
+                                                return $state ? __('filament.vacation_policy_settings.yes') : __('filament.vacation_policy_settings.no');
+                                            } else {
+                                                return $state;
+                                            }
+                                        })
+                                        ->hiddenLabel(true)
+                                        ->size(TextSize::Large)
+                                        ->color('info')
+                                        ->badge(),
+                                ])
+                                ->columns(2),
+                        ])
+                        ->visible(fn (string $operation): bool => $operation === 'edit'),
                 ])
                 ->columnSpanFull(),
         ]);

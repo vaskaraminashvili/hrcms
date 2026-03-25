@@ -19,7 +19,7 @@ use UnitEnum;
 
 class PlaceResource extends Resource
 {
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
     protected static ?string $model = Place::class;
 

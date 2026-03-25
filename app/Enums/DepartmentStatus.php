@@ -11,9 +11,9 @@ enum DepartmentStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::ACTIVE => 'Active',
-            self::ARCHIVED => 'Archived',
-            self::INACTIVE => 'Inactive',
+            self::ACTIVE => 'აქტიური',
+            self::ARCHIVED => 'დაარქივებული',
+            self::INACTIVE => 'გათიშული',
         };
     }
 }

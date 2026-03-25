@@ -8,6 +8,7 @@ use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Position extends Model
@@ -30,6 +31,7 @@ class Position extends Model
         'clinical_text',
         'automative_renewal',
         'salary',
+        'vacation_policy_id',
         'comment',
     ];
 
@@ -48,6 +50,11 @@ class Position extends Model
         ];
     }
 
+    public function vacationPolicy(): BelongsTo
+    {
+        return $this->belongsTo(VacationPolicy::class);
+    }
+
     public function place(): BelongsTo
     {
         return $this->belongsTo(Place::class);
@@ -61,5 +68,63 @@ class Position extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function vacations(): HasMany
+    {
+        return $this->hasMany(Vacation::class);
+    }
+
+    public function vacationTransfers(): HasMany
+    {
+        return $this->hasMany(VacationTransfer::class);
+    }
+
+    /**
+     * Days granted by policy for this position type.
+     * Reads the "days" key from the JSON settings field.
+     */
+    public function getPolicyDaysAttribute(): int
+    {
+        $settings = $this->vacationPolicy?->settings ?? [];
+
+        $days = collect($settings)
+            ->firstWhere('key', 'days')['value'] ?? 0;
+
+        return (int) $days;
+    }
+
+    /**
+     * Days transferred from the previous year (current year only).
+     */
+    public function getTransferredDaysAttribute(): int
+    {
+        return (int) $this->vacationTransfers()
+            ->where('to_year', now()->year)
+            ->sum('days_count');
+    }
+
+    /**
+     * Total days available this year = policy days + transferred days.
+     */
+    public function getTotalVacationDaysAttribute(): int
+    {
+        return $this->policy_days + $this->transferred_days;
+    }
+
+    /**
+     * Days already used (sum of approved vacations).
+     */
+    public function getUsedVacationDaysAttribute(): int
+    {
+        return (int) $this->vacations()->sum('working_days_count');
+    }
+
+    /**
+     * Remaining / available days = total - used.
+     */
+    public function getAvailableVacationDaysAttribute(): int
+    {
+        return max(0, $this->total_vacation_days - $this->used_vacation_days);
     }
 }
