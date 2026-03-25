@@ -6,12 +6,8 @@ use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
@@ -50,6 +46,8 @@ class PositionsRelationManager extends RelationManager
                     ->formatStateUsing(fn ($state) => $state?->label())
                     ->sortable(),
                 TextColumn::make('place.name')
+                    ->limit(50)
+                    ->tooltip(fn (string $state): string => $state)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('date_start')
@@ -66,18 +64,22 @@ class PositionsRelationManager extends RelationManager
                     ->searchable(),
                 TextColumn::make('act_number')
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('act_date')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('automative_renewal')
                     ->label(__('filament.relation_managers.positions.renewal'))
                     ->alignCenter()
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('salary')
                     ->label(__('filament.salary'))
                     ->money('GEL')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('comment')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -103,13 +105,9 @@ class PositionsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),

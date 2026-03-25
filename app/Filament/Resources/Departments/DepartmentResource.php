@@ -10,11 +10,11 @@ use App\Models\Department;
 use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
-use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
@@ -46,15 +46,16 @@ class DepartmentResource extends Resource
         return $tree
             ->fields([
                 DepartmentTextField::make('name'),
-                DepartmentTextField::make('vacancy_count')
-                    ->formatStateUsing(function (int $state, Department $record): string {
-                        if ($record->children()->exists()) {
-                            return '';
-                        }
+                // DepartmentTextField::make('vacancy_count')
+                //     ->formatStateUsing(function (int $state, Department $record): string {
+                //         if ($record->children()->exists()) {
+                //             return '';
+                //         }
 
-                        return 'Vacancies: '.$state;
-                    })
-                    ->alignEnd(),
+                //         return 'Vacancies: '.$state;
+
+                //     })
+                //     ->alignEnd(),
                 DepartmentStatusIconField::make('status')
                     ->boolean()
                     ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')
@@ -78,7 +79,22 @@ class DepartmentResource extends Resource
                     ),
             ])
             ->maxDepth(6)
-            ->reorderable(false);
+            ->reorderable(false)
+        // ->modifyQueryUsing(function (Builder $query): Builder {
+        //     $table = $query->getModel()->getTable();
+
+        //     return $query->select([
+        //         "{$table}.id",
+        //         "{$table}.parent_id",
+        //         "{$table}.order",
+        //         "{$table}.name",
+        //         "{$table}.slug",
+        //         "{$table}.status",
+        //         "{$table}.vacancy_count",
+        //         "{$table}.color",
+        //     ]);
+        // })
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children', 'parent', 'positions']));
     }
 
     public static function getPages(): array

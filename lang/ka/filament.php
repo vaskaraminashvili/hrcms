@@ -111,6 +111,11 @@ return [
     'status' => 'სტატუსი',
     'created_at' => 'შექმნის თარიღი',
     'updated_at' => 'განახლების თარიღი',
+    'search_by_name' => 'ძებნა სახელით ან გვარით',
+    'name' => 'სახელი',
+    'surname' => 'გვარი',
+    'name_eng' => 'სახელი ქართულად',
+    'surrname_eng' => 'გვარი ქართულად',
 
     'employee' => [
         'name' => 'თანამშრომელი',
@@ -235,6 +240,8 @@ return [
 
     'tree_departments' => [
         'new_department' => 'ახალი დეპარტამენტი',
+        'show_archived' => 'არქივის ჩვენება',
+        'hide_archived' => 'არქივის დამალვა',
     ],
 
     'create_department' => [

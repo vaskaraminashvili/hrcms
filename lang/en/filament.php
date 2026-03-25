@@ -190,6 +190,8 @@ return [
 
     'tree_departments' => [
         'new_department' => 'New department',
+        'show_archived' => 'Show archived',
+        'hide_archived' => 'Hide archived',
     ],
 
     'create_department' => [

@@ -108,6 +108,7 @@ class EmployeesTable
                     ForceDeleteBulkAction::make(),
                     RestoreBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->filtersFormColumns(2);
     }
 }

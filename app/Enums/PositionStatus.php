@@ -43,7 +43,7 @@ enum PositionStatus: string implements HasColor, HasLabel
             self::ElectedIndefinite => 'success',
             self::ElectedIndefiniteAttestation => 'warning',
             self::Agreement => 'gray',
-            self::Achieved => 'gray',
+            self::Achieved => 'warning',
         };
     }
 }

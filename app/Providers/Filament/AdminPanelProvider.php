@@ -74,6 +74,7 @@ class AdminPanelProvider extends PanelProvider
             ->font(
                 fn () => app()->getLocale() === 'ka' ? 'Noto Sans Georgian' : 'Inter',
                 provider: GoogleFontProvider::class
-            );
+            )
+            ->globalSearch(false);
     }
 }

@@ -7,6 +7,7 @@ use App\Enums\EnumsDepartmentColor;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Openplain\FilamentTreeView\Concerns\HasTreeStructure;
@@ -32,7 +33,13 @@ class Department extends Model
     protected function level(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->name.' | Level '.(Department::find($this->parent_id)?->ancestors()->count() + 2) ?? 'Level 1 (Root)',
+            get: function (): string {
+                if ($this->parent_id === null) {
+                    return $this->name.' | Level 1 (Root)';
+                }
+
+                return $this->name.' | Level '.($this->ancestors()->count() + 1);
+            },
         );
     }
 
@@ -61,5 +68,15 @@ class Department extends Model
     {
         return LogOptions::defaults()
             ->logAll();
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Department::class, 'parent_id');
     }
 }
