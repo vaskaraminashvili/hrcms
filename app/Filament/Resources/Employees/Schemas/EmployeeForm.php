@@ -9,6 +9,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -86,17 +87,29 @@ class EmployeeForm
                                     ->badge(fn ($record) => $record?->{$case->relationship()}()->count() ?? 0)
                                     ->schema([
                                         Repeater::make($case->relationship())
+                                            ->label($case->label())
                                             ->relationship()
-                                            ->schema($schemaClass::schema())
+                                            ->schema(array_merge(
+                                                $schemaClass::schema(),
+                                                [
+                                                    SpatieMediaLibraryFileUpload::make('attachments')
+                                                        ->label(__('filament.personal_file.attachments'))
+                                                        ->collection($case->mediaCollectionName())
+                                                        ->removeUploadedFileButtonPosition('right')
+                                                        ->multiple()
+                                                        ->openable()
+                                                        ->downloadable()
+                                                        ->columnSpanFull()
+                                                        ->extraAttributes(['class' => 'attachments-upload']),
+                                                ],
+                                            ))
+
+                                            ->collapsed()
                                             ->collapsible()
                                             ->reorderable()
                                             ->columnSpanFull()
-                                            ->itemLabel(function (array $state) use ($case): ?string {
-                                                $field = $case->itemLabelField();
-                                                $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
-
-                                                return is_string($value) ? $value : null;
-                                            }),
+                                            ->addActionLabel(__('filament.add_record'))
+                                            ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
                                     ]);
                             },
                             PersonalFile::cases()

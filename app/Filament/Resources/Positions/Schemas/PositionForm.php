@@ -182,8 +182,7 @@ class PositionForm
 
                                     TextInput::make('clinical_text')
                                         ->label(__('filament.clinical_text'))
-                                        ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type')))
-                                        ->required(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
+                                        ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
                                 ])
                                 ->columnSpanFull()
                                 ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),

@@ -1,11 +1,20 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-Bl8_pkJy.css",
+    "file": "assets/app-CT7ZPeVH.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
     "names": [
       "app.css"
+    ]
+  },
+  "resources/css/filament/admin/custom.css": {
+    "file": "assets/custom-BbtzlwhS.css",
+    "src": "resources/css/filament/admin/custom.css",
+    "isEntry": true,
+    "name": "custom",
+    "names": [
+      "custom.css"
     ]
   },
   "resources/js/app.js": {

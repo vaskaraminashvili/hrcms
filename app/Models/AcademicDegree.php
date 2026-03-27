@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Enums\PersonalFile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Translatable\HasTranslations;
 
-class AcademicDegree extends Model
+class AcademicDegree extends Model implements HasMedia
 {
-    use HasFactory, HasTranslations, SoftDeletes;
+    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
 
     protected $table = 'academic_degrees';
 
@@ -20,18 +23,17 @@ class AcademicDegree extends Model
         'other',
     ];
 
-    public array $translatable = ['degree', 'other'];
-
-    protected function casts(): array
-    {
-        return [
-            'degree' => 'array',
-            'other' => 'array',
-        ];
-    }
+    protected $casts = [
+        'other' => 'array',
+    ];
 
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection(PersonalFile::ACADEMIC_DEGREES->mediaCollectionName());
     }
 }

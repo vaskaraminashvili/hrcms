@@ -116,6 +116,7 @@ return [
     'surname' => 'გვარი',
     'name_eng' => 'სახელი ქართულად',
     'surrname_eng' => 'გვარი ქართულად',
+    'add_record' => 'ჩანაწერის დამატება',
 
     'employee' => [
         'name' => 'თანამშრომელი',
@@ -269,6 +270,8 @@ return [
     ],
 
     'personal_file' => [
+        'attachments' => 'დანართები',
+
         'locale_georgian' => 'ქართული',
         'locale_english' => 'ინგლისური',
         'field_locale_georgian' => ':field (ქართული)',
@@ -286,7 +289,7 @@ return [
 
         'academic_degrees' => [
             'degree' => 'ხარისხი',
-            'other' => 'სხვა (ხარისხი = სხვა)',
+            'other' => 'სხვა',
         ],
         'academic_position' => [
             'title' => 'თანამდებობა',

@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('academic_positions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->json('title');       // e.g. {"ka": "ასისტენტ პროფესორი", "en": "Assistant Professor"}
+            $table->string('title');       // e.g. {"ka": "ასისტენტ პროფესორი", "en": "Assistant Professor"}
             $table->timestamps();
             $table->softDeletes();
         });

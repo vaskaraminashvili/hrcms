@@ -15,13 +15,18 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use MWGuerra\FileManager\Filament\Pages\FileManager;
+use MWGuerra\FileManager\Filament\Pages\FileSystem;
+use MWGuerra\FileManager\FileManagerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -71,11 +76,19 @@ class AdminPanelProvider extends PanelProvider
                     ->pluralLabel('Logs')
                     ->navigationGroup('System'),
                 FilamentClearCachePlugin::make(),
+                FileManagerPlugin::make([
+                    FileManager::class,              // Database mode - full CRUD file manager
+                    FileSystem::class,
+                ]),
 
             ])
             ->font(
                 fn () => app()->getLocale() === 'ka' ? 'Noto Sans Georgian' : 'Inter',
                 provider: GoogleFontProvider::class
+            )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): string => Vite::withEntryPoints(['resources/css/filament/admin/custom.css'])->toHtml()
             )
             ->globalSearch(false);
     }

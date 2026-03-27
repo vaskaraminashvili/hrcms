@@ -43,6 +43,14 @@ enum PersonalFile: string
         );
     }
 
+    /**
+     * Spatie Media Library collection name for files attached to repeater items in this section.
+     */
+    public function mediaCollectionName(): string
+    {
+        return $this->value;
+    }
+
     public function relationship(): string
     {
         return match ($this) {
@@ -82,5 +90,70 @@ enum PersonalFile: string
             self::FOREIGN_LANGUAGES => 'language',
             self::COMPUTER_SKILLS => 'title',
         };
+    }
+
+    /**
+     * Human-readable repeater item label from nested form state.
+     *
+     * @param  array<string, mixed>  $state
+     */
+    public function resolveItemLabelFromState(array $state): ?string
+    {
+
+        return match ($this) {
+            self::ACADEMIC_POSITION => self::resolveAcademicPositionItemLabel($state),
+            self::ACADEMIC_DEGREES => self::resolveAcademicDegreeItemLabelFromState($state),
+            self::FOREIGN_LANGUAGES => self::resolveForeignLanguageItemLabelFromState($state),
+            default => $this->resolveTranslatableItemLabel($state),
+        };
+    }
+
+    private static function resolveAcademicDegreeItemLabelFromState(array $state): ?string
+    {
+        $raw = $state['degree'] ?? null;
+
+        if (! is_string($raw) || $raw === '') {
+            return null;
+        }
+
+        return AcademicDegree::tryFrom($raw)?->getLabel();
+    }
+
+    private static function resolveForeignLanguageItemLabelFromState(array $state): ?string
+    {
+
+        $raw = $state['language'] ?? null;
+
+        if (! is_string($raw) || $raw === '') {
+            return null;
+        }
+        $label = $raw.' - '.__('filament.personal_file.foreign_languages.level').': '.LanguageProficiency::tryFrom($state['level'])?->getLabel();
+
+        return $label;
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private static function resolveAcademicPositionItemLabel(array $state): ?string
+    {
+        $raw = $state['title'] ?? null;
+
+        if (! is_string($raw) || $raw === '') {
+            return null;
+        }
+
+        return AcademicPosition::tryFrom($raw)?->getLabel();
+    }
+
+    /**
+     * @param  array<string, mixed>  $state
+     */
+    private function resolveTranslatableItemLabel(array $state): ?string
+    {
+        $field = $this->itemLabelField();
+        $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 }

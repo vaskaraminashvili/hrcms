@@ -59,7 +59,6 @@ class VacationForm
                     ->visible($showEmployeeAndPosition),
 
                 DatePicker::make('start_date')
-                    ->minDate(now())
                     ->required()
                     ->live()
                     ->label(__('filament.start_date'))
