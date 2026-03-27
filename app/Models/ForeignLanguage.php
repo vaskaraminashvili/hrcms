@@ -20,16 +20,6 @@ class ForeignLanguage extends Model
         'level',
     ];
 
-    public array $translatable = ['language', 'level'];
-
-    protected function casts(): array
-    {
-        return [
-            'language' => 'array',
-            'level' => 'array',
-        ];
-    }
-
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);

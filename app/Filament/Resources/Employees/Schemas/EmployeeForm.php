@@ -86,17 +86,15 @@ class EmployeeForm
                                     ->badge(fn ($record) => $record?->{$case->relationship()}()->count() ?? 0)
                                     ->schema([
                                         Repeater::make($case->relationship())
+                                            ->label($case->label())
                                             ->relationship()
                                             ->schema($schemaClass::schema())
+                                            ->collapsed()
                                             ->collapsible()
                                             ->reorderable()
                                             ->columnSpanFull()
-                                            ->itemLabel(function (array $state) use ($case): ?string {
-                                                $field = $case->itemLabelField();
-                                                $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
-
-                                                return is_string($value) ? $value : null;
-                                            }),
+                                            ->addActionLabel(__('filament.add_record'))
+                                            ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
                                     ]);
                             },
                             PersonalFile::cases()

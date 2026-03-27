@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('foreign_languages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->json('language');  // {"ka": "ინგლისური", "en": "English"}
-            $table->json('level');     // {"ka": "კარგად", "en": "Good"}
+            $table->string('language');  // {"ka": "ინგლისური", "en": "English"}
+            $table->string('level');     // {"ka": "კარგად", "en": "Good"}
             $table->timestamps();
             $table->softDeletes();
         });

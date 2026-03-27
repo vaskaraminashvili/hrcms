@@ -116,6 +116,7 @@ return [
     'surname' => 'გვარი',
     'name_eng' => 'სახელი ქართულად',
     'surrname_eng' => 'გვარი ქართულად',
+    'add_record' => 'ჩანაწერის დამატება',
 
     'employee' => [
         'name' => 'თანამშრომელი',
@@ -286,7 +287,7 @@ return [
 
         'academic_degrees' => [
             'degree' => 'ხარისხი',
-            'other' => 'სხვა (ხარისხი = სხვა)',
+            'other' => 'სხვა',
         ],
         'academic_position' => [
             'title' => 'თანამდებობა',

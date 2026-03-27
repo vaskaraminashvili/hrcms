@@ -20,15 +20,9 @@ class AcademicDegree extends Model
         'other',
     ];
 
-    public array $translatable = ['degree', 'other'];
-
-    protected function casts(): array
-    {
-        return [
-            'degree' => 'array',
-            'other' => 'array',
-        ];
-    }
+    protected $casts = [
+        'other' => 'array',
+    ];
 
     public function employee(): BelongsTo
     {

@@ -9,8 +9,6 @@ enum LanguageProficiency: string
     case ADVANCED = 'ADVANCED';
     case NATIVE = 'NATIVE';
 
-
-
     public function getLabel(): string
     {
         return match ($this) {
@@ -29,4 +27,5 @@ enum LanguageProficiency: string
             self::ADVANCED => 'success',
             self::NATIVE => 'danger',
         };
+    }
 }

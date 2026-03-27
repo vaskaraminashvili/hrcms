@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Enums\AcademicPosition;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use Filament\Forms\Components\Select;
 
 class AcademicPositionSchema
 {
@@ -11,7 +13,11 @@ class AcademicPositionSchema
     public static function schema(): array
     {
         return [
-            static::translatableField('title', __('filament.personal_file.academic_position.title')),
+            Select::make('title')
+                ->label(__('filament.personal_file.academic_position.title'))
+                ->options(collect(AcademicPosition::cases())->mapWithKeys(
+                    fn (AcademicPosition $case) => [$case->value => $case->getLabel()]
+                )),
         ];
     }
 }

@@ -19,15 +19,6 @@ class AcademicPosition extends Model
         'title',
     ];
 
-    public array $translatable = ['title'];
-
-    protected function casts(): array
-    {
-        return [
-            'title' => 'array',
-        ];
-    }
-
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
