@@ -95,10 +95,15 @@ class EmployeeForm
                                                     SpatieMediaLibraryFileUpload::make('attachments')
                                                         ->label(__('filament.personal_file.attachments'))
                                                         ->collection($case->mediaCollectionName())
+                                                        ->removeUploadedFileButtonPosition('right')
                                                         ->multiple()
-                                                        ->columnSpanFull(),
+                                                        ->openable()
+                                                        ->downloadable()
+                                                        ->columnSpanFull()
+                                                        ->extraAttributes(['class' => 'attachments-upload']),
                                                 ],
                                             ))
+
                                             ->collapsed()
                                             ->collapsible()
                                             ->reorderable()

@@ -21,6 +21,7 @@
         "livewire/blaze": "^1.0",
         "livewire/livewire": "^4.0",
         "mominalzaraa/filament-localization": "^2.0",
+        "mwguerra/filemanager": "2.0",
         "openplain/filament-tree-view": "^0.5.4",
         "spatie/laravel-translatable": "^6.13"
     },
