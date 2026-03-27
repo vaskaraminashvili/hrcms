@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
 use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
@@ -69,6 +70,7 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Log')
                     ->pluralLabel('Logs')
                     ->navigationGroup('System'),
+                FilamentClearCachePlugin::make(),
 
             ])
             ->font(
