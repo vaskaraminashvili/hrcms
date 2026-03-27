@@ -9,50 +9,106 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Position extends Model
 {
     /** @use HasFactory<PositionFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'employee_id',
         'department_id',
         'place_id',
-        'position_type',
-        'date_start',
-        'date_end',
-        'status',
-        'act_number',
-        'act_date',
-        'staff_type',
-        'clinical',
-        'clinical_text',
-        'automative_renewal',
-        'salary',
-        'vacation_policy_id',
-        'comment',
     ];
 
-    protected function casts(): array
+    protected $with = [
+        'detail',
+    ];
+
+    public function getActivitylogOptions(): LogOptions
     {
-        return [
-            'salary' => 'integer',
-            'date_start' => 'date',
-            'date_end' => 'date',
-            'act_date' => 'date',
-            'staff_type' => 'boolean',
-            'clinical' => 'boolean',
-            'automative_renewal' => 'boolean',
-            'status' => PositionStatus::class,
-            'position_type' => PositionType::class,
-        ];
+        return LogOptions::defaults()
+            ->logOnly(['place_id', 'employee_id', 'department_id'])
+            ->dontSubmitEmptyLogs();
     }
 
-    public function vacationPolicy(): BelongsTo
+    public function detail(): HasOne
     {
-        return $this->belongsTo(VacationPolicy::class);
+        return $this->hasOne(PositionDetail::class);
+    }
+
+    public function getPositionTypeAttribute(): ?PositionType
+    {
+        return $this->detail?->position_type;
+    }
+
+    public function getDateStartAttribute(): mixed
+    {
+        return $this->detail?->date_start;
+    }
+
+    public function getDateEndAttribute(): mixed
+    {
+        return $this->detail?->date_end;
+    }
+
+    public function getStatusAttribute(): ?PositionStatus
+    {
+        return $this->detail?->status;
+    }
+
+    public function getActNumberAttribute(): ?string
+    {
+        return $this->detail?->act_number;
+    }
+
+    public function getActDateAttribute(): mixed
+    {
+        return $this->detail?->act_date;
+    }
+
+    public function getStaffTypeAttribute(): mixed
+    {
+        return $this->detail?->staff_type;
+    }
+
+    public function getClinicalAttribute(): ?bool
+    {
+        return $this->detail?->clinical;
+    }
+
+    public function getClinicalTextAttribute(): ?string
+    {
+        return $this->detail?->clinical_text;
+    }
+
+    public function getAutomativeRenewalAttribute(): ?bool
+    {
+        return $this->detail?->automative_renewal;
+    }
+
+    public function getSalaryAttribute(): ?int
+    {
+        return $this->detail?->salary;
+    }
+
+    public function getVacationPolicyIdAttribute(): ?int
+    {
+        return $this->detail?->vacation_policy_id;
+    }
+
+    public function getCommentAttribute(): ?string
+    {
+        return $this->detail?->comment;
+    }
+
+    public function getVacationPolicyAttribute(): ?VacationPolicy
+    {
+        return $this->detail?->vacationPolicy;
     }
 
     public function place(): BelongsTo

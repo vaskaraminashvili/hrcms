@@ -16,23 +16,9 @@ return new class extends Migration
             $table->foreignId('place_id')->constrained('places');
             $table->foreignId('employee_id')->constrained('employees');
             $table->foreignId('department_id')->constrained('departments');
-            $table->date('date_start')->nullable();
-            $table->date('date_end')->nullable();
-            $table->string('status')->nullable();
-            $table->string('act_number')->nullable();
-            $table->date('act_date')->nullable();
-            $table->boolean('staff_type')->nullable()->default(false);
-            $table->boolean('clinical')->nullable()->default(false);
-            $table->string('clinical_text')->nullable();
-            $table->boolean('automative_renewal')->nullable();
-            $table->integer('salary')->nullable();
-            $table->foreignId('vacation_policy_id')->constrained('vacation_policies');
-            $table->string('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->index(['date_start', 'date_end']);
-            $table->index(['status']);
-            $table->index(['salary']);
+            $table->unique(['place_id', 'employee_id', 'department_id'], 'positions_place_employee_department_unique');
             $table->index(['department_id']);
         });
     }

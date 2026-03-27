@@ -3,9 +3,12 @@
 namespace App\Filament\Resources\Positions\Pages;
 
 use App\Filament\Resources\Positions\PositionResource;
+use App\Services\PositionFormPersistence;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class EditPosition extends EditRecord
 {
@@ -27,5 +30,32 @@ class EditPosition extends EditRecord
     public static function getNavigationLabel(): string
     {
         return __('filament.admin.edit_position.title');
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $this->getRecord()->loadMissing('detail');
+        if ($this->getRecord()->detail) {
+            return array_merge($data, Arr::except(
+                $this->getRecord()->detail->attributesToArray(),
+                ['id', 'position_id', 'created_at', 'updated_at'],
+            ));
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        PositionFormPersistence::updatePositionAndDetail($record, $data);
+
+        return $record->refresh();
     }
 }

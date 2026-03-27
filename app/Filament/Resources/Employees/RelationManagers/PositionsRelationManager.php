@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
+use App\Models\Position;
+use App\Services\PositionFormPersistence;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
@@ -18,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 
 class PositionsRelationManager extends RelationManager
 {
@@ -44,7 +47,11 @@ class PositionsRelationManager extends RelationManager
                 TextColumn::make('position_type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state?->label())
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): void {
+                        $query->join('position_details', 'positions.id', '=', 'position_details.position_id')
+                            ->orderBy('position_details.position_type', $direction)
+                            ->select('positions.*');
+                    }),
                 TextColumn::make('place.name')
                     ->limit(50)
                     ->tooltip(fn (string $state): string => $state)
@@ -52,19 +59,36 @@ class PositionsRelationManager extends RelationManager
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->date()
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): void {
+                        $query->join('position_details', 'positions.id', '=', 'position_details.position_id')
+                            ->orderBy('position_details.date_start', $direction)
+                            ->select('positions.*');
+                    }),
                 TextColumn::make('date_end')
                     ->date()
-                    ->sortable(),
+                    ->sortable(query: function (Builder $query, string $direction): void {
+                        $query->join('position_details', 'positions.id', '=', 'position_details.position_id')
+                            ->orderBy('position_details.date_end', $direction)
+                            ->select('positions.*');
+                    }),
                 TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
                     ->color(fn (PositionStatus $state): string => $state->getColor())
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->whereHas('detail', fn (Builder $detailQuery): Builder => $detailQuery->where('status', 'like', '%'.$search.'%'));
+                    })
+                    ->sortable(query: function (Builder $query, string $direction): void {
+                        $query->join('position_details', 'positions.id', '=', 'position_details.position_id')
+                            ->orderBy('position_details.status', $direction)
+                            ->select('positions.*');
+                    }),
                 TextColumn::make('act_number')
                     ->alignCenter()
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->whereHas('detail', fn (Builder $detailQuery): Builder => $detailQuery->where('act_number', 'like', '%'.$search.'%'));
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('act_date')
                     ->date()
@@ -78,10 +102,16 @@ class PositionsRelationManager extends RelationManager
                 TextColumn::make('salary')
                     ->label(__('filament.salary'))
                     ->money('GEL')
-                    ->sortable()
+                    ->sortable(query: function (Builder $query, string $direction): void {
+                        $query->join('position_details', 'positions.id', '=', 'position_details.position_id')
+                            ->orderBy('position_details.salary', $direction)
+                            ->select('positions.*');
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('comment')
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->whereHas('detail', fn (Builder $detailQuery): Builder => $detailQuery->where('comment', 'like', '%'.$search.'%'));
+                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -101,10 +131,29 @@ class PositionsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('filament.relation_managers.positions.add_new_position')),
+                    ->label(__('filament.relation_managers.positions.add_new_position'))
+                    ->using(function (array $data, RelationManager $livewire): Model {
+                        $data = PositionFormPersistence::prepareDataForCreate($data);
+
+                        return PositionFormPersistence::createFromValidatedData($data, $livewire->getOwnerRecord());
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        $record = Position::query()->find($data['id']);
+                        if ($record?->detail) {
+                            return array_merge($data, Arr::except(
+                                $record->detail->attributesToArray(),
+                                ['id', 'position_id', 'created_at', 'updated_at'],
+                            ));
+                        }
+
+                        return $data;
+                    })
+                    ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table): void {
+                        PositionFormPersistence::updatePositionAndDetail($record, $data);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

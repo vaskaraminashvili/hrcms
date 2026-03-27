@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\Positions\Pages;
 
 use App\Filament\Resources\Positions\PositionResource;
-use App\Models\VacationPolicy;
+use App\Services\PositionFormPersistence;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class CreatePosition extends CreateRecord
 {
@@ -15,12 +16,20 @@ class CreatePosition extends CreateRecord
         return static::getResource()::getUrl('index');
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['vacation_policy_id'] = VacationPolicy::query()
-            ->where('position_type', $data['position_type']->value)
-            ->first()->id;
+        return PositionFormPersistence::prepareDataForCreate($data);
+    }
 
-        return $data;
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    protected function handleRecordCreation(array $data): Model
+    {
+        return PositionFormPersistence::createFromValidatedData($data, $this->getParentRecord());
     }
 }

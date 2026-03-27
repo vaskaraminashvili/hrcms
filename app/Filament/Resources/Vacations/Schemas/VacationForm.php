@@ -82,7 +82,7 @@ class VacationForm
                     ->minValue(1)
                     ->helperText(function (Get $get, Set $set, mixed $livewire) use ($showEmployeeAndPosition) {
                         $position = $showEmployeeAndPosition
-                            ? Position::with('vacationPolicy')->find($get('position_id'))
+                            ? Position::with('detail.vacationPolicy')->find($get('position_id'))
                             : self::resolvePosition($get, $livewire);
                         if (! $position) {
                             return null;
@@ -126,14 +126,14 @@ class VacationForm
             return $owner instanceof Position ? $owner : null;
         }
 
-        return Position::with('vacationPolicy')->find($get('position_id'));
+        return Position::with('detail.vacationPolicy')->find($get('position_id'));
     }
 
     private static function recalculateDays(Get $get, Set $set, ?Position $record): void
     {
         $startDate = $get('start_date');
         $endDate = $get('end_date');
-        $position = $record ? $record->load('vacationPolicy') : Position::with('vacationPolicy')->find($get('position_id'));
+        $position = $record ? $record->load('detail.vacationPolicy') : Position::with('detail.vacationPolicy')->find($get('position_id'));
         if (! $startDate || ! $endDate || ! $position) {
             return;
         }
