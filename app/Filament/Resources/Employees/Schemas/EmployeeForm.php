@@ -9,6 +9,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -88,7 +89,16 @@ class EmployeeForm
                                         Repeater::make($case->relationship())
                                             ->label($case->label())
                                             ->relationship()
-                                            ->schema($schemaClass::schema())
+                                            ->schema(array_merge(
+                                                $schemaClass::schema(),
+                                                [
+                                                    SpatieMediaLibraryFileUpload::make('attachments')
+                                                        ->label(__('filament.personal_file.attachments'))
+                                                        ->collection($case->mediaCollectionName())
+                                                        ->multiple()
+                                                        ->columnSpanFull(),
+                                                ],
+                                            ))
                                             ->collapsed()
                                             ->collapsible()
                                             ->reorderable()

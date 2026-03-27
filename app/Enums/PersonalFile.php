@@ -43,6 +43,14 @@ enum PersonalFile: string
         );
     }
 
+    /**
+     * Spatie Media Library collection name for files attached to repeater items in this section.
+     */
+    public function mediaCollectionName(): string
+    {
+        return $this->value;
+    }
+
     public function relationship(): string
     {
         return match ($this) {

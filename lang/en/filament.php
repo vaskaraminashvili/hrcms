@@ -219,6 +219,8 @@ return [
     ],
 
     'personal_file' => [
+        'attachments' => 'Attachments',
+
         'locale_georgian' => 'Georgian',
         'locale_english' => 'English',
         'field_locale_georgian' => ':field (Georgian)',

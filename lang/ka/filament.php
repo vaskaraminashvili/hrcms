@@ -270,6 +270,8 @@ return [
     ],
 
     'personal_file' => [
+        'attachments' => 'დანართები',
+
         'locale_georgian' => 'ქართული',
         'locale_english' => 'ინგლისური',
         'field_locale_georgian' => ':field (ქართული)',
