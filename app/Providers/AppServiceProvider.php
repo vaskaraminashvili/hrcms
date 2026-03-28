@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Position;
+use App\Observers\PositionObserver;
 use Carbon\CarbonImmutable;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->registerFilamentAssets();
+        Position::observe(PositionObserver::class);
     }
 
     protected function registerFilamentAssets(): void

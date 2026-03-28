@@ -38,15 +38,10 @@ class EditPosition extends EditRecord
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $this->getRecord()->loadMissing('detail');
-        if ($this->getRecord()->detail) {
-            return array_merge($data, Arr::except(
-                $this->getRecord()->detail->attributesToArray(),
-                ['id', 'position_id', 'created_at', 'updated_at'],
-            ));
-        }
-
-        return $data;
+        return array_merge($data, Arr::except(
+            $this->getRecord()->attributesToArray(),
+            ['id', 'created_at', 'updated_at'],
+        ));
     }
 
     /**

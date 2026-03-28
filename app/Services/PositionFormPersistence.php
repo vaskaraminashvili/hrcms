@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Enums\PositionType;
 use App\Models\Employee;
 use App\Models\Position;
-use App\Models\PositionDetail;
 use App\Models\VacationPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -15,17 +14,9 @@ class PositionFormPersistence
     /**
      * @return array<string, mixed>
      */
-    public static function extractPositionData(array $data): array
+    public static function extractFillableData(array $data): array
     {
-        return Arr::only($data, ['place_id', 'employee_id', 'department_id']);
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function extractDetailData(array $data): array
-    {
-        return Arr::only($data, (new PositionDetail)->getFillable());
+        return Arr::only($data, (new Position)->getFillable());
     }
 
     /**
@@ -51,10 +42,9 @@ class PositionFormPersistence
      */
     public static function createFromValidatedData(array $data, ?Model $parentEmployee = null): Position
     {
-        $detailData = self::extractDetailData($data);
-        $positionData = self::extractPositionData($data);
+        $fillable = self::extractFillableData(self::prepareDataForCreate($data));
 
-        $position = new Position($positionData);
+        $position = new Position($fillable);
 
         if ($parentEmployee instanceof Employee) {
             $parentEmployee->positions()->save($position);
@@ -62,9 +52,7 @@ class PositionFormPersistence
             $position->save();
         }
 
-        $position->detail()->create($detailData);
-
-        return $position->fresh(['detail']);
+        return $position->fresh();
     }
 
     /**
@@ -72,10 +60,6 @@ class PositionFormPersistence
      */
     public static function updatePositionAndDetail(Position $position, array $data): void
     {
-        $position->update(self::extractPositionData($data));
-        $position->detail()->updateOrCreate(
-            ['position_id' => $position->id],
-            self::extractDetailData($data),
-        );
+        $position->update(self::extractFillableData($data));
     }
 }
