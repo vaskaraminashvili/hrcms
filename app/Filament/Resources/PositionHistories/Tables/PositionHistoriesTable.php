@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class PositionHistoriesTable
@@ -52,8 +53,28 @@ class PositionHistoriesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('affects_salary')
+                    ->label('Salary'),
+                TernaryFilter::make('affects_status')
+                    ->label('Status'),
+                TernaryFilter::make('affects_position_type')
+                    ->label('Position type'),
+                TernaryFilter::make('affects_staff_type')
+                    ->label('Staff type'),
+                TernaryFilter::make('affects_date_start')
+                    ->label('Date start'),
+                TernaryFilter::make('affects_date_end')
+                    ->label('Date end'),
+                TernaryFilter::make('affects_clinical')
+                    ->label('Clinical'),
+                TernaryFilter::make('affects_vacation_policy')
+                    ->label('Vacation policy'),
+                TernaryFilter::make('affects_place')
+                    ->label('Place'),
+                TernaryFilter::make('affects_act_number')
+                    ->label('Act number'),
             ])
+            ->filtersFormColumns(4)
             ->recordActions([
                 ViewAction::make(),
             ])
