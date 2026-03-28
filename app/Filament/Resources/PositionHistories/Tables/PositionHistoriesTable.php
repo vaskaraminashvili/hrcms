@@ -3,25 +3,82 @@
 namespace App\Filament\Resources\PositionHistories\Tables;
 
 use App\Enums\PositionHistoryAffectField;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Models\PositionHistory;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PositionHistoriesTable
 {
     public static function configure(Table $table): Table
     {
+
+        $filters = Filters::getFilters();
+
         return $table
             ->columns([
-                TextColumn::make('position.id')
-                    ->searchable(),
-                TextColumn::make('changed_by')
+                TextColumn::make('creted')
+                    ->getStateUsing(fn (PositionHistory $record) => $record->created_at->format('d.m.Y'))
+                    ->date()
+                    ->sortable(query: function (Builder $query, string $direction): Builder {
+                        return $query
+                            ->orderBy('created_at', $direction);
+                    })
+                    ->label(__('filament.created_at')),
+                TextColumn::make('employee')
+                    ->getStateUsing(function (PositionHistory $record) {
+                        $name = $record->position->employee->name.' '.$record->position->employee->surname;
+
+                        return $name;
+                    })
+                    ->searchable(true, function (Builder $query, string $search): void {
+                        $query->whereHas('position.employee', function (Builder $query) use ($search): void {
+                            $query->where('name', 'like', '%'.$search.'%')
+                                ->orWhere('surname', 'like', '%'.$search.'%');
+                        });
+                    })
+                    ->label(__('filament.employee_id')),
+
+                TextColumn::make('changes')
+                    ->getStateUsing(function (PositionHistory $record) {
+                        $changes = collect(PositionHistoryAffectField::cases())
+                            ->mapWithKeys(fn (PositionHistoryAffectField $field) => [
+                                $field->getLabel() => $field->isAffectedByDirty($record->changed_fields),
+                            ])
+                            ->filter(fn ($value, $key) => $value)
+                            ->keys()
+                            ->implode(', ');
+
+                        return $changes;
+                    })
+                    ->wrap()
+                    ->lineClamp(3)
+                    ->label(__('filament.changes')),
+                TextColumn::make('position.department.name')
+                    ->wrap()
+                    ->searchable(true, function (Builder $query, string $search): void {
+                        $query->whereHas('position.department', function (Builder $query) use ($search): void {
+                            $query->where('name', 'like', '%'.$search.'%');
+                        });
+                    })
+                    ->label(__('filament.department_id')),
+                TextColumn::make('position.place.name')
+                    ->wrap()
+                    ->copyable()
+                    ->searchable(true, function (Builder $query, string $search): void {
+                        $query->whereHas('position.place', function (Builder $query) use ($search): void {
+                            $query->where('name', 'like', '%'.$search.'%');
+                        });
+                    })
+                    ->label(__('filament.place_id')),
+
+                TextColumn::make('changedBy.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label(__('filament.changed_by')),
                 TextColumn::make('event_type')
                     ->searchable(),
                 ...collect(PositionHistoryAffectField::cases())
@@ -39,23 +96,21 @@ class PositionHistoriesTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
             ])
-            ->filters(
-                collect(PositionHistoryAffectField::cases())
-                    ->filter(fn (PositionHistoryAffectField $field) => $field->showInFilter())
-                    ->map(fn (PositionHistoryAffectField $field) => TernaryFilter::make($field->value)
-                        ->label($field->getLabel()))
-                    ->values()
-                    ->all()
-            )
+            ->groups([
+                Group::make('position.employee.id')
+                    ->getTitleFromRecordUsing(function (PositionHistory $record): string {
+                        return ucfirst($record->position->employee->name).' '.ucfirst($record->position->employee->surname);
+                    })
+                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('created_at', $direction))
+                    ->label(__('filament.employee_id')),
+            ])
+            ->defaultSort('id', 'desc')
+            ->filters($filters)
             ->filtersFormColumns(4)
             ->recordActions([
                 ViewAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

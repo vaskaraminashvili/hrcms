@@ -82,6 +82,7 @@ return [
     'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
     'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
     'working_days_count_helper_text' => 'შაბათი: :saturday_allowed, კვირა: :sunday_allowed.',
+    'changes' => 'ცვლილებები',
     'vacation_policy_settings' => [
         'days' => 'დღეები',
         'saturday_allowed' => 'შაბათი ითვლება',
@@ -117,7 +118,10 @@ return [
     'name_eng' => 'სახელი ქართულად',
     'surrname_eng' => 'გვარი ქართულად',
     'add_record' => 'ჩანაწერის დამატება',
-
+    'range_selected' => 'ცვლილების პერიოდი: :from - :to',
+    'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
+    'position_history_title' => 'თანამდებობის ისტორია',
+    'changed_by' => 'ვინ შეცვალა',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',
@@ -219,6 +223,11 @@ return [
             'navigation_label' => 'შვებულების დროცულებები',
             'model_label' => 'შვებულების დროცულება',
             'plural_model_label' => 'შვებულების დროცულებები',
+        ],
+        'position_histories' => [
+            'navigation_label' => 'თანამდებობის ისტორია',
+            'model_label' => 'თანამდებობის ისტორია',
+            'plural_model_label' => 'თანამდებობის ისტორია',
         ],
     ],
 

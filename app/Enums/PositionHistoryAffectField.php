@@ -56,6 +56,15 @@ enum PositionHistoryAffectField: string implements HasLabel
     public function showInTableColumn(): bool
     {
         return match ($this) {
+            self::Salary => false,
+            self::Status => false,
+            self::PositionType => false,
+            self::StaffType => false,
+            self::DateStart => false,
+            self::DateEnd => false,
+            self::Clinical => false,
+            self::Place => false,
+            self::ActNumber => false,
             default => true,
         };
     }
@@ -80,8 +89,10 @@ enum PositionHistoryAffectField: string implements HasLabel
         };
     }
 
-    public function isAffectedByDirty(array $dirty): bool
+    public function isAffectedByDirty(?array $dirty): bool
     {
+        $dirty ??= [];
+
         foreach ($this->positionDirtyKeys() as $key) {
             if (array_key_exists($key, $dirty)) {
                 return true;

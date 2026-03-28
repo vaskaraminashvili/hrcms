@@ -12,6 +12,7 @@ use UnitEnum;
 /**
  * Maps snapshot / diff keys to display formatting for history views.
  * Labels use {@see self::labelForSnapshotKey()} and `filament.changed_fields.{key}` when present.
+ * Diff and snapshot cell text use {@see self::formatDiffSegment()} and {@see self::formatDiffValue()}.
  */
 enum PositionHistorySnapshotField: string
 {
@@ -20,7 +21,7 @@ enum PositionHistorySnapshotField: string
      *
      * @var list<string>
      */
-    public const EXCLUDED_FROM_HISTORY = ['employee_id', 'department_id', 'vacation_policy_id'];
+    public const EXCLUDED_FROM_HISTORY = ['employee_id', 'department_id', 'vacation_policy_id', 'updated_at'];
 
     case Comment = 'comment';
     case PlaceId = 'place_id';
@@ -48,6 +49,51 @@ enum PositionHistorySnapshotField: string
         }
 
         return str($key)->replace('_', ' ')->title()->toString();
+    }
+
+    /**
+     * @param  array<string, mixed>|mixed  $diff
+     */
+    public static function formatDiffSegment(mixed $diff, ?string $key = null): string
+    {
+        if (! is_array($diff)) {
+            return self::formatDiffValue($diff, $key);
+        }
+
+        if (! array_key_exists('from', $diff) && ! array_key_exists('to', $diff)) {
+            return json_encode($diff, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
+        return self::formatDiffValue($diff['from'] ?? null, $key).' → '.self::formatDiffValue($diff['to'] ?? null, $key);
+    }
+
+    public static function formatDiffValue(mixed $value, ?string $key = null): string
+    {
+        if ($value === null) {
+            return 'null';
+        }
+
+        if (is_array($value)) {
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        }
+
+        if ($value instanceof UnitEnum) {
+            if ($value instanceof HasLabel) {
+                return (string) ($value->getLabel() ?? ($value instanceof \BackedEnum ? $value->value : $value->name));
+            }
+
+            return $value instanceof \BackedEnum ? (string) $value->value : $value->name;
+        }
+
+        if ($key !== null && ($field = self::tryFrom($key))) {
+            return $field->formatValue($value);
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+
+        return (string) $value;
     }
 
     public function getLabel(): ?string

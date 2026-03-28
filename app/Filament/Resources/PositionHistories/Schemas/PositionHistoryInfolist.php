@@ -10,8 +10,6 @@ use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Contracts\HasLabel;
-use UnitEnum;
 
 class PositionHistoryInfolist
 {
@@ -21,7 +19,7 @@ class PositionHistoryInfolist
             ->components([
 
                 // ── Meta ────────────────────────────────────────────────────
-                Section::make('Event')
+                Section::make(__('filament.position_history_section_event'))
                     ->columns(3)
                     ->schema([
                         TextEntry::make('event_type')
@@ -33,28 +31,41 @@ class PositionHistoryInfolist
                                 default => 'gray',
                             }),
                         TextEntry::make('position.employee.name')
-                            ->label('Employee')
+                            ->label(__('filament.position_history_employee'))
                             ->formatStateUsing(fn ($record) => $record->position->employee->name.' '.
                                 $record->position->employee->surname
                             ),
                         TextEntry::make('position.department.name')
-                            ->label('Department'),
+                            ->label(__('filament.position_history_department')),
                         TextEntry::make('changedBy.name')
-                            ->label('Changed by')
-                            ->default('System'),
+                            ->label(__('filament.position_history_changed_by'))
+                            ->default(__('filament.position_history_changed_by_system')),
                         TextEntry::make('created_at')
-                            ->label('Changed at')
+                            ->label(__('filament.position_history_changed_at'))
                             ->dateTime('d M Y, H:i'),
                     ]),
-
+                // ── Affected fields (boolean flags) ─────────────────────────
+                Section::make(__('filament.position_history_section_affects'))
+                    ->description(__('filament.position_history_affects_description'))
+                    ->columns(5)
+                    ->schema(
+                        collect(PositionHistoryAffectField::cases())
+                            ->filter(fn (PositionHistoryAffectField $field) => $field->showInInfolist())
+                            ->map(fn (PositionHistoryAffectField $field) => IconEntry::make($field->value)
+                                ->alignCenter()
+                                ->label($field->getLabel())
+                                ->boolean())
+                            ->values()
+                            ->all()
+                    ),
                 // ── What changed ────────────────────────────────────────────
-                Section::make('Changed fields')
-                    ->description('Before and after values for this save')
+                Section::make(__('filament.position_history_section_changed_fields'))
+                    ->description(__('filament.position_history_changed_fields_description'))
                     ->schema([
                         KeyValueEntry::make('changed_fields')
                             ->label('')
-                            ->keyLabel('Field')
-                            ->valueLabel('Change')
+                            ->keyLabel(__('filament.position_history_kv_field'))
+                            ->valueLabel(__('filament.position_history_kv_change'))
                             ->getStateUsing(function (PositionHistory $record): array {
                                 $changed = $record->changed_fields;
                                 if (empty($changed) || ! is_array($changed)) {
@@ -64,7 +75,7 @@ class PositionHistoryInfolist
                                 return collect($changed)
                                     ->except(PositionHistorySnapshotField::EXCLUDED_FROM_HISTORY)
                                     ->mapWithKeys(fn ($diff, $field) => [
-                                        PositionHistorySnapshotField::labelForSnapshotKey($field) => self::formatDiffSegment($diff, $field),
+                                        PositionHistorySnapshotField::labelForSnapshotKey($field) => PositionHistorySnapshotField::formatDiffSegment($diff, $field),
                                     ])
                                     ->all();
                             })
@@ -72,33 +83,19 @@ class PositionHistoryInfolist
 
                         TextEntry::make('no_changes')
                             ->label('')
-                            ->default('Initial record — no diff available')
+                            ->default(__('filament.position_history_initial_no_diff'))
                             ->visible(fn ($record) => empty($record->changed_fields)),
                     ]),
 
-                // ── Affected fields (boolean flags) ─────────────────────────
-                Section::make('Affects')
-                    ->description('Which tracked fields were touched in this save')
-                    ->columns(5)
-                    ->schema(
-                        collect(PositionHistoryAffectField::cases())
-                            ->filter(fn (PositionHistoryAffectField $field) => $field->showInInfolist())
-                            ->map(fn (PositionHistoryAffectField $field) => IconEntry::make($field->value)
-                                ->label($field->getLabel())
-                                ->boolean())
-                            ->values()
-                            ->all()
-                    ),
-
                 // ── Full snapshot ────────────────────────────────────────────
-                Section::make('Full snapshot')
-                    ->description('Complete state of the position at the time of this change')
+                Section::make(__('filament.position_history_section_full_snapshot'))
+                    ->description(__('filament.position_history_full_snapshot_description'))
                     ->collapsed()   // collapsed by default — it's a lot of data
                     ->schema([
                         KeyValueEntry::make('snapshot')
                             ->label('')
-                            ->keyLabel('Field')
-                            ->valueLabel('Value')
+                            ->keyLabel(__('filament.position_history_kv_field'))
+                            ->valueLabel(__('filament.position_history_kv_value'))
                             ->getStateUsing(function (PositionHistory $record): array {
                                 $snapshot = $record->snapshot;
                                 if (empty($snapshot) || ! is_array($snapshot)) {
@@ -110,57 +107,12 @@ class PositionHistoryInfolist
                                     ->mapWithKeys(fn ($value, $key) => [
                                         PositionHistorySnapshotField::labelForSnapshotKey($key) => $value === null
                                             ? '—'
-                                            : self::formatDiffValue($value, $key),
+                                            : PositionHistorySnapshotField::formatDiffValue($value, $key),
                                     ])
                                     ->all();
                             }),
                     ]),
 
             ]);
-    }
-
-    /**
-     * @param  array<string, mixed>|mixed  $diff
-     */
-    private static function formatDiffSegment(mixed $diff, ?string $key = null): string
-    {
-        if (! is_array($diff)) {
-            return self::formatDiffValue($diff, $key);
-        }
-
-        if (! array_key_exists('from', $diff) && ! array_key_exists('to', $diff)) {
-            return json_encode($diff, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-        }
-
-        return self::formatDiffValue($diff['from'] ?? null, $key).' → '.self::formatDiffValue($diff['to'] ?? null, $key);
-    }
-
-    private static function formatDiffValue(mixed $value, ?string $key = null): string
-    {
-        if ($value === null) {
-            return 'null';
-        }
-
-        if (is_array($value)) {
-            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
-        }
-
-        if ($value instanceof UnitEnum) {
-            if ($value instanceof HasLabel) {
-                return (string) ($value->getLabel() ?? ($value instanceof \BackedEnum ? $value->value : $value->name));
-            }
-
-            return $value instanceof \BackedEnum ? (string) $value->value : $value->name;
-        }
-
-        if ($key !== null && ($field = PositionHistorySnapshotField::tryFrom($key))) {
-            return $field->formatValue($value);
-        }
-
-        if (is_bool($value)) {
-            return $value ? 'true' : 'false';
-        }
-
-        return (string) $value;
     }
 }
