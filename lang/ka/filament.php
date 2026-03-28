@@ -134,6 +134,21 @@ return [
         'deleted_at' => 'წაშლის თარიღი',
         'comment' => 'კომენტარი',
         'place_id' => 'ადგილი',
+        'staff_type' => 'შტატი',
+        'clinical' => 'კლინიკური',
+    ],
+
+    'position_history_affects' => [
+        'Salary' => 'ხელფასი',
+        'Status' => 'სტატუსი',
+        'PositionType' => 'თანამდებობის ტიპი',
+        'StaffType' => 'საშტატო / არა საშტატო',
+        'DateStart' => 'დაწყების თარიღი',
+        'DateEnd' => 'დასრულების თარიღი',
+        'Clinical' => 'კლინიკური',
+        'Place' => 'ადგილი',
+        'ActNumber' => 'აქტის ნომერი',
+        'ClinicalText' => 'კლინიკური დეტალები',
     ],
 
     'employee' => [

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
 use App\Models\Position;
 use App\Models\PositionHistory;
@@ -27,19 +28,11 @@ class PositionHistoryFactory extends Factory
             'snapshot' => [
                 'salary' => fake()->numberBetween(1000, 10000),
                 'status' => fake()->randomElement(PositionStatus::cases())->value,
-                'employee_id' => fake()->numberBetween(1, 1000),
             ],
             'changed_fields' => fake()->boolean(40) ? ['salary' => ['from' => 1200, 'to' => 1500]] : null,
-            'affects_salary' => fake()->boolean(),
-            'affects_status' => fake()->boolean(),
-            'affects_position_type' => fake()->boolean(),
-            'affects_staff_type' => fake()->boolean(),
-            'affects_date_start' => fake()->boolean(),
-            'affects_date_end' => fake()->boolean(),
-            'affects_clinical' => fake()->boolean(),
-            'affects_vacation_policy' => fake()->boolean(),
-            'affects_place' => fake()->boolean(),
-            'affects_act_number' => fake()->boolean(),
+            ...collect(PositionHistoryAffectField::cases())
+                ->mapWithKeys(fn (PositionHistoryAffectField $field) => [$field->value => fake()->boolean()])
+                ->all(),
         ];
     }
 }

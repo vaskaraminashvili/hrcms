@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PositionHistories\Tables;
 
+use App\Enums\PositionHistoryAffectField;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
@@ -23,26 +24,13 @@ class PositionHistoriesTable
                     ->sortable(),
                 TextColumn::make('event_type')
                     ->searchable(),
-                IconColumn::make('affects_salary')
-                    ->boolean(),
-                IconColumn::make('affects_status')
-                    ->boolean(),
-                IconColumn::make('affects_position_type')
-                    ->boolean(),
-                IconColumn::make('affects_staff_type')
-                    ->boolean(),
-                IconColumn::make('affects_date_start')
-                    ->boolean(),
-                IconColumn::make('affects_date_end')
-                    ->boolean(),
-                IconColumn::make('affects_clinical')
-                    ->boolean(),
-                IconColumn::make('affects_vacation_policy')
-                    ->boolean(),
-                IconColumn::make('affects_place')
-                    ->boolean(),
-                IconColumn::make('affects_act_number')
-                    ->boolean(),
+                ...collect(PositionHistoryAffectField::cases())
+                    ->filter(fn (PositionHistoryAffectField $field) => $field->showInTableColumn())
+                    ->map(fn (PositionHistoryAffectField $field) => IconColumn::make($field->value)
+                        ->label($field->getLabel())
+                        ->boolean())
+                    ->values()
+                    ->all(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -52,28 +40,14 @@ class PositionHistoriesTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                TernaryFilter::make('affects_salary')
-                    ->label('Salary'),
-                TernaryFilter::make('affects_status')
-                    ->label('Status'),
-                TernaryFilter::make('affects_position_type')
-                    ->label('Position type'),
-                TernaryFilter::make('affects_staff_type')
-                    ->label('Staff type'),
-                TernaryFilter::make('affects_date_start')
-                    ->label('Date start'),
-                TernaryFilter::make('affects_date_end')
-                    ->label('Date end'),
-                TernaryFilter::make('affects_clinical')
-                    ->label('Clinical'),
-                TernaryFilter::make('affects_vacation_policy')
-                    ->label('Vacation policy'),
-                TernaryFilter::make('affects_place')
-                    ->label('Place'),
-                TernaryFilter::make('affects_act_number')
-                    ->label('Act number'),
-            ])
+            ->filters(
+                collect(PositionHistoryAffectField::cases())
+                    ->filter(fn (PositionHistoryAffectField $field) => $field->showInFilter())
+                    ->map(fn (PositionHistoryAffectField $field) => TernaryFilter::make($field->value)
+                        ->label($field->getLabel()))
+                    ->values()
+                    ->all()
+            )
             ->filtersFormColumns(4)
             ->recordActions([
                 ViewAction::make(),

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PositionHistoryAffectField;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,7 +22,6 @@ class PositionHistory extends Model
         'affects_date_start',
         'affects_date_end',
         'affects_clinical',
-        'affects_vacation_policy',
         'affects_place',
         'affects_act_number',
     ];
@@ -36,7 +36,6 @@ class PositionHistory extends Model
         'affects_date_start' => 'boolean',
         'affects_date_end' => 'boolean',
         'affects_clinical' => 'boolean',
-        'affects_vacation_policy' => 'boolean',
         'affects_place' => 'boolean',
         'affects_act_number' => 'boolean',
     ];
@@ -69,34 +68,34 @@ class PositionHistory extends Model
         return $query->whereHas('position', fn ($q) => $q->where('department_id', $departmentId));
     }
 
+    public function scopeWhereAffects(Builder $query, PositionHistoryAffectField $field): Builder
+    {
+        return $query->where($field->value, true);
+    }
+
     public function scopeSalaryChanges(Builder $query): Builder
     {
-        return $query->where('affects_salary', true);
+        return $query->whereAffects(PositionHistoryAffectField::Salary);
     }
 
     public function scopeStatusChanges(Builder $query): Builder
     {
-        return $query->where('affects_status', true);
+        return $query->whereAffects(PositionHistoryAffectField::Status);
     }
 
     public function scopePositionTypeChanges(Builder $query): Builder
     {
-        return $query->where('affects_position_type', true);
+        return $query->whereAffects(PositionHistoryAffectField::PositionType);
     }
 
     public function scopeStaffTypeChanges(Builder $query): Builder
     {
-        return $query->where('affects_staff_type', true);
+        return $query->whereAffects(PositionHistoryAffectField::StaffType);
     }
 
     public function scopeClinicalChanges(Builder $query): Builder
     {
-        return $query->where('affects_clinical', true);
-    }
-
-    public function scopeVacationPolicyChanges(Builder $query): Builder
-    {
-        return $query->where('affects_vacation_policy', true);
+        return $query->whereAffects(PositionHistoryAffectField::Clinical);
     }
 
     public function scopeInDateRange(Builder $query, string $from, string $to): Builder

@@ -2,18 +2,15 @@
 
 namespace App\Filament\Resources\PositionHistories\Schemas;
 
-use App\Enums\PositionStatus;
-use App\Enums\PositionType;
-use App\Models\Place;
+use App\Enums\PositionHistoryAffectField;
+use App\Enums\PositionHistorySnapshotField;
 use App\Models\PositionHistory;
-use App\Models\VacationPolicy;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Number;
+use Filament\Support\Contracts\HasLabel;
 use UnitEnum;
 
 class PositionHistoryInfolist
@@ -65,8 +62,9 @@ class PositionHistoryInfolist
                                 }
 
                                 return collect($changed)
+                                    ->except(PositionHistorySnapshotField::EXCLUDED_FROM_HISTORY)
                                     ->mapWithKeys(fn ($diff, $field) => [
-                                        __('filament.changed_fields.'.$field) => self::formatDiffSegment($diff, $field),
+                                        PositionHistorySnapshotField::labelForSnapshotKey($field) => self::formatDiffSegment($diff, $field),
                                     ])
                                     ->all();
                             })
@@ -82,38 +80,15 @@ class PositionHistoryInfolist
                 Section::make('Affects')
                     ->description('Which tracked fields were touched in this save')
                     ->columns(5)
-                    ->schema([
-                        IconEntry::make('affects_salary')
-                            ->label('Salary')
-                            ->boolean(),
-                        IconEntry::make('affects_status')
-                            ->label('Status')
-                            ->boolean(),
-                        IconEntry::make('affects_position_type')
-                            ->label('Position type')
-                            ->boolean(),
-                        IconEntry::make('affects_staff_type')
-                            ->label('Staff type')
-                            ->boolean(),
-                        IconEntry::make('affects_date_start')
-                            ->label('Date start')
-                            ->boolean(),
-                        IconEntry::make('affects_date_end')
-                            ->label('Date end')
-                            ->boolean(),
-                        IconEntry::make('affects_clinical')
-                            ->label('Clinical')
-                            ->boolean(),
-                        IconEntry::make('affects_vacation_policy')
-                            ->label('Vacation policy')
-                            ->boolean(),
-                        IconEntry::make('affects_place')
-                            ->label('Place')
-                            ->boolean(),
-                        IconEntry::make('affects_act_number')
-                            ->label('Act number')
-                            ->boolean(),
-                    ]),
+                    ->schema(
+                        collect(PositionHistoryAffectField::cases())
+                            ->filter(fn (PositionHistoryAffectField $field) => $field->showInInfolist())
+                            ->map(fn (PositionHistoryAffectField $field) => IconEntry::make($field->value)
+                                ->label($field->getLabel())
+                                ->boolean())
+                            ->values()
+                            ->all()
+                    ),
 
                 // ── Full snapshot ────────────────────────────────────────────
                 Section::make('Full snapshot')
@@ -131,8 +106,9 @@ class PositionHistoryInfolist
                                 }
 
                                 return collect($snapshot)
+                                    ->except(PositionHistorySnapshotField::EXCLUDED_FROM_HISTORY)
                                     ->mapWithKeys(fn ($value, $key) => [
-                                        str($key)->replace('_', ' ')->title()->toString() => $value === null
+                                        PositionHistorySnapshotField::labelForSnapshotKey($key) => $value === null
                                             ? '—'
                                             : self::formatDiffValue($value, $key),
                                     ])
@@ -166,39 +142,19 @@ class PositionHistoryInfolist
         }
 
         if (is_array($value)) {
-            if ($key === 'vacation_policy') {
-                return VacationPolicy::find($value['id'])->name;
-            }
-
             return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         }
 
         if ($value instanceof UnitEnum) {
+            if ($value instanceof HasLabel) {
+                return (string) ($value->getLabel() ?? ($value instanceof \BackedEnum ? $value->value : $value->name));
+            }
+
             return $value instanceof \BackedEnum ? (string) $value->value : $value->name;
         }
 
-        if ($key === 'date_start' || $key === 'date_end' || $key === 'act_date' || $key === 'created_at' || $key === 'updated_at') {
-            return Carbon::parse($value)->format('d-m-Y');
-        }
-
-        if ($key === 'position_type') {
-            return PositionType::from($value)->getLabel();
-        }
-
-        if ($key === 'comment') {
-            return strip_tags($value);
-        }
-
-        if ($key === 'place_id') {
-            return Place::find($value)->name;
-        }
-
-        if ($key === 'salary') {
-            return Number::currency(intval($value), 'GEL', 'ka', 0); //
-        }
-
-        if ($key === 'status') {
-            return PositionStatus::from($value)->getLabel(); //
+        if ($key !== null && ($field = PositionHistorySnapshotField::tryFrom($key))) {
+            return $field->formatValue($value);
         }
 
         if (is_bool($value)) {

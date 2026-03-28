@@ -75,6 +75,38 @@ return [
     'to_year' => 'To year',
     'days_count' => 'Days count',
 
+    'changed_fields' => [
+        'salary' => 'Salary',
+        'position_type' => 'Position type',
+        'status' => 'Position status',
+        'date_start' => 'Start date',
+        'date_end' => 'End date',
+        'vacation_policy' => 'Vacation policy',
+        'clinical_text' => 'Clinical details',
+        'automative_renewal' => 'Automatic renewal',
+        'act_number' => 'Act number',
+        'act_date' => 'Act date',
+        'updated_at' => 'Updated at',
+        'created_at' => 'Created at',
+        'deleted_at' => 'Deleted at',
+        'comment' => 'Comment',
+        'place_id' => 'Place',
+        'staff_type' => 'Staff type',
+        'clinical' => 'Clinical',
+    ],
+
+    'position_history_affects' => [
+        'Salary' => 'Salary',
+        'Status' => 'Status',
+        'PositionType' => 'Position type',
+        'StaffType' => 'Staff type',
+        'DateStart' => 'Date start',
+        'DateEnd' => 'Date end',
+        'Clinical' => 'Clinical',
+        'Place' => 'Place',
+        'ActNumber' => 'Act number',
+    ],
+
     'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
 
     'employee' => [
