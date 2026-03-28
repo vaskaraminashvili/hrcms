@@ -118,6 +118,24 @@ return [
     'surrname_eng' => 'გვარი ქართულად',
     'add_record' => 'ჩანაწერის დამატება',
 
+    'changed_fields' => [
+        'salary' => 'ხელფასი',
+        'position_type' => 'თანამდებობის ტიპი',
+        'status' => 'თანამდებობის სტატუსი',
+        'date_start' => 'დაწყების თარიღი',
+        'date_end' => 'დასრულების თარიღი',
+        'vacation_policy' => 'შვებულების პოლიტიკა',
+        'clinical_text' => 'კლინიკური დეტალები',
+        'automative_renewal' => 'ავტომატური გახანგრძლივება',
+        'act_number' => 'აქტის ნომერი',
+        'act_date' => 'აქტის თარიღი',
+        'updated_at' => 'განახლების თარიღი',
+        'created_at' => 'შექმნის თარიღი',
+        'deleted_at' => 'წაშლის თარიღი',
+        'comment' => 'კომენტარი',
+        'place_id' => 'ადგილი',
+    ],
+
     'employee' => [
         'name' => 'თანამშრომელი',
     ],

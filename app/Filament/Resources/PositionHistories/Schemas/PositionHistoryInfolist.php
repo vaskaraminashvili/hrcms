@@ -2,14 +2,18 @@
 
 namespace App\Filament\Resources\PositionHistories\Schemas;
 
+use App\Enums\PositionStatus;
+use App\Enums\PositionType;
+use App\Models\Place;
 use App\Models\PositionHistory;
 use App\Models\VacationPolicy;
-use DateTimeInterface;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Number;
 use UnitEnum;
 
 class PositionHistoryInfolist
@@ -62,7 +66,7 @@ class PositionHistoryInfolist
 
                                 return collect($changed)
                                     ->mapWithKeys(fn ($diff, $field) => [
-                                        str($field)->replace('_', ' ')->title()->toString() => self::formatDiffSegment($diff),
+                                        __('filament.changed_fields.'.$field) => self::formatDiffSegment($diff, $field),
                                     ])
                                     ->all();
                             })
@@ -142,17 +146,17 @@ class PositionHistoryInfolist
     /**
      * @param  array<string, mixed>|mixed  $diff
      */
-    private static function formatDiffSegment(mixed $diff): string
+    private static function formatDiffSegment(mixed $diff, ?string $key = null): string
     {
         if (! is_array($diff)) {
-            return self::formatDiffValue($diff);
+            return self::formatDiffValue($diff, $key);
         }
 
         if (! array_key_exists('from', $diff) && ! array_key_exists('to', $diff)) {
             return json_encode($diff, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
         }
 
-        return self::formatDiffValue($diff['from'] ?? null).' → '.self::formatDiffValue($diff['to'] ?? null);
+        return self::formatDiffValue($diff['from'] ?? null, $key).' → '.self::formatDiffValue($diff['to'] ?? null, $key);
     }
 
     private static function formatDiffValue(mixed $value, ?string $key = null): string
@@ -173,8 +177,28 @@ class PositionHistoryInfolist
             return $value instanceof \BackedEnum ? (string) $value->value : $value->name;
         }
 
-        if ($value instanceof DateTimeInterface) {
-            return $value->format('Y-m-d H:i:s');
+        if ($key === 'date_start' || $key === 'date_end' || $key === 'act_date' || $key === 'created_at' || $key === 'updated_at') {
+            return Carbon::parse($value)->format('d-m-Y');
+        }
+
+        if ($key === 'position_type') {
+            return PositionType::from($value)->getLabel();
+        }
+
+        if ($key === 'comment') {
+            return strip_tags($value);
+        }
+
+        if ($key === 'place_id') {
+            return Place::find($value)->name;
+        }
+
+        if ($key === 'salary') {
+            return Number::currency(intval($value), 'GEL', 'ka', 0); //
+        }
+
+        if ($key === 'status') {
+            return PositionStatus::from($value)->getLabel(); //
         }
 
         if (is_bool($value)) {
