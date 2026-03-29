@@ -77,6 +77,15 @@ class EmployeeForm
                                 TextInput::make('pysical_address')
                                     ->columnSpan(2)
                                     ->label(__('filament.pysical_address')),
+                                SpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
+                                    ->label(__('filament.personal_file.attachments'))
+                                    ->collection('basic_information_attachments')
+                                    ->removeUploadedFileButtonPosition('right')
+                                    ->multiple()
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull()
+                                    ->extraAttributes(['class' => 'attachments-upload']),
                             ])
                             ->columns(2),
                         ...array_map(
@@ -89,27 +98,22 @@ class EmployeeForm
                                         Repeater::make($case->relationship())
                                             ->label($case->label())
                                             ->relationship()
-                                            ->schema(array_merge(
-                                                $schemaClass::schema(),
-                                                [
-                                                    SpatieMediaLibraryFileUpload::make('attachments')
-                                                        ->label(__('filament.personal_file.attachments'))
-                                                        ->collection($case->mediaCollectionName())
-                                                        ->removeUploadedFileButtonPosition('right')
-                                                        ->multiple()
-                                                        ->openable()
-                                                        ->downloadable()
-                                                        ->columnSpanFull()
-                                                        ->extraAttributes(['class' => 'attachments-upload']),
-                                                ],
-                                            ))
-
+                                            ->schema($schemaClass::schema())
                                             ->collapsed()
                                             ->collapsible()
                                             ->reorderable()
                                             ->columnSpanFull()
                                             ->addActionLabel(__('filament.add_record'))
                                             ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
+                                        SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                            ->label(__('filament.personal_file.attachments'))
+                                            ->collection($case->mediaCollectionName())
+                                            ->removeUploadedFileButtonPosition('right')
+                                            ->multiple()
+                                            ->openable()
+                                            ->downloadable()
+                                            ->columnSpanFull()
+                                            ->extraAttributes(['class' => 'attachments-upload']),
                                     ]);
                             },
                             PersonalFile::cases()
