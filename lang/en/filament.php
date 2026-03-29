@@ -92,6 +92,15 @@ return [
     'position_history_full_snapshot_description' => 'Complete state of the position at the time of this change',
     'position_history_kv_value' => 'Value',
 
+    'save' => 'Save',
+    'save_history' => 'Save with history',
+
+    'position_edit' => [
+        'modal_save_history_heading' => 'Save with position history?',
+        'modal_save_history_description' => 'This will add an entry to the position history for the changes you are saving.',
+        'modal_save_history_submit' => 'Save with history',
+    ],
+
     'changed_fields' => [
         'salary' => 'Salary',
         'position_type' => 'Position type',

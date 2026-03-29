@@ -52,6 +52,13 @@ return [
     'permissions_count' => 'უფლებების რაოდენობა',
     'employee_id' => 'თანამშრომელი',
     'department_id' => 'დეპარტამენტი',
+    'save' => 'შენახვა',
+    'save_history' => 'შენახვა ისტორიით',
+    'position_edit' => [
+        'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
+        'modal_save_history_description' => 'შენახული ცვლილებები ჩაიწერება თანამდებობის ისტორიაში აუდიტისთვის.',
+        'modal_save_history_submit' => 'შენახვა ისტორიით',
+    ],
     'place_id' => 'ადგილი',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
