@@ -21,7 +21,7 @@ enum PositionHistorySnapshotField: string
      *
      * @var list<string>
      */
-    public const EXCLUDED_FROM_HISTORY = ['employee_id', 'department_id', 'vacation_policy_id', 'updated_at'];
+    public const EXCLUDED_FROM_HISTORY = ['updated_at'];
 
     case Comment = 'comment';
     case PlaceId = 'place_id';
