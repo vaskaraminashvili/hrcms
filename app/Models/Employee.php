@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Gender;
+use App\Enums\PersonalFile;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Employee extends Model
+class Employee extends Model implements HasMedia
 {
     /** @use HasFactory<EmployeeFactory> */
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -110,5 +113,12 @@ class Employee extends Model
     {
         return LogOptions::defaults()
             ->logAll();
+    }
+
+    public function registerMediaCollections(): void
+    {
+        foreach (PersonalFile::cases() as $personalFile) {
+            $this->addMediaCollection($personalFile->mediaCollectionName());
+        }
     }
 }
