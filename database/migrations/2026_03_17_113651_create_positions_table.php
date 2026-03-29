@@ -6,40 +6,36 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('positions', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
+            $table->foreignId('department_id')->constrained('departments')->cascadeOnDelete();
             $table->foreignId('place_id')->constrained('places');
-            $table->foreignId('employee_id')->constrained('employees');
-            $table->foreignId('department_id')->constrained('departments');
+            $table->foreignId('vacation_policy_id')->constrained('vacation_policies');
+
+            $table->string('position_type')->nullable();
             $table->date('date_start')->nullable();
             $table->date('date_end')->nullable();
             $table->string('status')->nullable();
             $table->string('act_number')->nullable();
             $table->date('act_date')->nullable();
-            $table->boolean('staff_type')->nullable()->default(false);
-            $table->boolean('clinical')->nullable()->default(false);
+            $table->string('staff_type')->nullable();
+            $table->boolean('clinical')->default(false)->nullable();
             $table->string('clinical_text')->nullable();
             $table->boolean('automative_renewal')->nullable();
             $table->integer('salary')->nullable();
-            $table->foreignId('vacation_policy_id')->constrained('vacation_policies');
             $table->string('comment')->nullable();
+
             $table->timestamps();
-            $table->softDeletes();
-            $table->index(['date_start', 'date_end']);
-            $table->index(['status']);
-            $table->index(['salary']);
-            $table->index(['department_id']);
+
+            // One position per employee per department
+            $table->unique(['employee_id', 'department_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('positions');

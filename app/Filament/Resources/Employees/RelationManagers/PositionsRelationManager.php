@@ -4,20 +4,20 @@ namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
+use App\Models\Position;
+use App\Services\PositionFormPersistence;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Arr;
 
 class PositionsRelationManager extends RelationManager
 {
@@ -61,7 +61,10 @@ class PositionsRelationManager extends RelationManager
                     ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
                     ->color(fn (PositionStatus $state): string => $state->getColor())
                     ->alignCenter()
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->where('status', 'like', '%'.$search.'%');
+                    })
+                    ->sortable(),
                 TextColumn::make('act_number')
                     ->alignCenter()
                     ->searchable()
@@ -91,30 +94,34 @@ class PositionsRelationManager extends RelationManager
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                TrashedFilter::make(),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label(__('filament.relation_managers.positions.add_new_position')),
+                    ->label(__('filament.relation_managers.positions.add_new_position'))
+                    ->using(function (array $data, RelationManager $livewire): Model {
+                        $data = PositionFormPersistence::prepareDataForCreate($data);
+
+                        return PositionFormPersistence::createFromValidatedData($data, $livewire->getOwnerRecord());
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data): array {
+                        $record = Position::query()->find($data['id']);
+
+                        return array_merge($data, Arr::except(
+                            $record?->attributesToArray() ?? [],
+                            ['id', 'created_at', 'updated_at'],
+                        ));
+                    })
+                    ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table): void {
+                        PositionFormPersistence::updatePositionAndDetail($record, $data);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
-            ])
-            ->modifyQueryUsing(fn (Builder $query) => $query
-                ->withoutGlobalScopes([
-                    SoftDeletingScope::class,
-                ]));
+            ]);
     }
 }

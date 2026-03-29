@@ -7,10 +7,8 @@ use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Models\Department;
 use App\Models\Position;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -45,6 +43,7 @@ class PositionsTable
                                     ->where('name', 'like', $pattern);
                             });
                     })
+                    ->wrap()
 
                     ->sortable(),
                 TextColumn::make('position_type')
@@ -60,25 +59,29 @@ class PositionsTable
                             $query->where('position_type', 'like', $pattern);
                         }
                     })
+
                     ->sortable(),
                 TextColumn::make('date_start')
                     ->label(__('filament.date_start'))
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('date_end')
                     ->label(__('filament.date_end'))
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->label(__('filament.status'))
                     ->badge()
                     ->formatStateUsing(fn (PositionStatus $state): string => $state->getLabel())
                     ->color(fn (PositionStatus $state): string|array|null => $state->getColor())
                     ->alignCenter()
+
                     ->searchable(),
                 TextColumn::make('salary')
                     ->label(__('filament.salary'))
-                    ->money('GEL')
+                    ->money('GEL', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('act_number')
                     ->label(__('filament.act_number'))
@@ -111,11 +114,6 @@ class PositionsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('deleted_at')
-                    ->label(__('filament.deleted_at'))
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('department_id')
@@ -130,13 +128,28 @@ class PositionsTable
                     ->attribute('department_id'),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                EditAction::make()
+                    ->label('')
+                    ->icon('heroicon-o-pencil'),
+                Action::make('position_history')
+                    ->label('')
+                    ->icon('heroicon-o-clock')
+                    ->url(function (Position $record): string {
+
+                        $attributes['filters[department_id][value]'] = $record->department_id;
+                        $attributes['filters[place_id][value]'] = $record->place_id;
+                        $attributes['filters[created_at][created_until]'] = now()->format('Y-m-d');
+
+                        if ($record->employee->name) {
+                            $attributes['search'] = $record->employee->name.' '.$record->employee->surname;
+                        }
+
+                        return route('filament.admin.resources.position-histories.index', $attributes);
+                    })
+                    ->openUrlInNewTab(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+
             ])->recordUrl(
                 fn (Position $record): string => route('filament.admin.resources.positions.edit', ['record' => $record]),
             );

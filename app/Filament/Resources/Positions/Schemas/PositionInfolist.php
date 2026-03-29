@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Positions\Schemas;
 
-use App\Models\Position;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
@@ -47,9 +46,6 @@ class PositionInfolist
                 TextEntry::make('updated_at')
                     ->dateTime()
                     ->placeholder('-'),
-                TextEntry::make('deleted_at')
-                    ->dateTime()
-                    ->visible(fn (Position $record): bool => $record->trashed()),
             ]);
     }
 }

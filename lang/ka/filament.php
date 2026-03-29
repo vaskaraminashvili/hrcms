@@ -52,6 +52,13 @@ return [
     'permissions_count' => 'უფლებების რაოდენობა',
     'employee_id' => 'თანამშრომელი',
     'department_id' => 'დეპარტამენტი',
+    'save' => 'შენახვა',
+    'save_history' => 'შენახვა ისტორიით',
+    'position_edit' => [
+        'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
+        'modal_save_history_description' => 'შენახული ცვლილებები ჩაიწერება თანამდებობის ისტორიაში აუდიტისთვის.',
+        'modal_save_history_submit' => 'შენახვა ისტორიით',
+    ],
     'place_id' => 'ადგილი',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
@@ -82,6 +89,7 @@ return [
     'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
     'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
     'working_days_count_helper_text' => 'შაბათი: :saturday_allowed, კვირა: :sunday_allowed.',
+    'changes' => 'ცვლილებები',
     'vacation_policy_settings' => [
         'days' => 'დღეები',
         'saturday_allowed' => 'შაბათი ითვლება',
@@ -103,7 +111,7 @@ return [
     'notes' => 'შენიშვნები',
     'start_date' => 'დაწყების თარიღი',
     'end_date' => 'დასრულების თარიღი',
-    'position' => 'თანამდებობა',
+    'place' => 'ადგილი',
     'start_date' => 'დაწყების თარიღი',
     'end_date' => 'დასრულების თარიღი',
     'working_days_count' => 'სამუშაო დღეების რაოდენობა',
@@ -117,6 +125,42 @@ return [
     'name_eng' => 'სახელი ქართულად',
     'surrname_eng' => 'გვარი ქართულად',
     'add_record' => 'ჩანაწერის დამატება',
+    'range_selected' => 'ცვლილების პერიოდი: :from - :to',
+    'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
+    'position_history_title' => 'თანამდებობის ისტორია',
+    'changed_by' => 'ვინ შეცვალა',
+    'changed_fields' => [
+        'salary' => 'ხელფასი',
+        'position_type' => 'თანამდებობის ტიპი',
+        'status' => 'თანამდებობის სტატუსი',
+        'date_start' => 'დაწყების თარიღი',
+        'date_end' => 'დასრულების თარიღი',
+        'vacation_policy' => 'შვებულების პოლიტიკა',
+        'clinical_text' => 'კლინიკური დეტალები',
+        'automative_renewal' => 'ავტომატური გახანგრძლივება',
+        'act_number' => 'აქტის ნომერი',
+        'act_date' => 'აქტის თარიღი',
+        'updated_at' => 'განახლების თარიღი',
+        'created_at' => 'შექმნის თარიღი',
+        'deleted_at' => 'წაშლის თარიღი',
+        'comment' => 'კომენტარი',
+        'place_id' => 'ადგილი',
+        'staff_type' => 'შტატი',
+        'clinical' => 'კლინიკური',
+    ],
+
+    'position_history_affects' => [
+        'Salary' => 'ხელფასი',
+        'Status' => 'სტატუსი',
+        'PositionType' => 'თანამდებობის ტიპი',
+        'StaffType' => 'საშტატო / არა საშტატო',
+        'DateStart' => 'დაწყების თარიღი',
+        'DateEnd' => 'დასრულების თარიღი',
+        'Clinical' => 'კლინიკური',
+        'Place' => 'ადგილი',
+        'ActNumber' => 'აქტის ნომერი',
+        'ClinicalText' => 'კლინიკური დეტალები',
+    ],
 
     'employee' => [
         'name' => 'თანამშრომელი',
@@ -187,6 +231,11 @@ return [
             'model_label' => 'შვებულების დროცულება',
             'plural_model_label' => 'შვებულების დროცულებები',
         ],
+        'position_histories' => [
+            'navigation_label' => 'თანამდებობის ისტორია',
+            'model_label' => 'თანამდებობის ისტორია',
+            'plural_model_label' => 'თანამდებობის ისტორია',
+        ],
     ],
 
     /*
@@ -228,6 +277,7 @@ return [
     ],
 
     'department' => [
+        'name' => 'დეპარტამენტი',
         'save_and_archive' => 'შენახვა და არქივში გადატანა',
         'modal_archive_heading' => 'დეპარტამენტის არქივირება და დუბლირება?',
         'modal_archive_description' => 'სახელის ან მშობლის შეცვლისას ეს დეპარტამენტი და მისი თანამდებობები არქივში გადავა, შემდეგ კი შეიქმნება ახალი ასლი თქვენი ცვლილებებით.',

@@ -30,6 +30,7 @@ class PositionForm
     public static function configure(Schema $schema, bool $withEmployee = false): Schema
     {
         return $schema->components([
+
             Select::make('employee_id')
                 ->relationship('employee', 'name')
                 ->searchable(
@@ -43,6 +44,19 @@ class PositionForm
                 ->required()
                 ->columnSpanFull()
                 ->visible($withEmployee),
+            Section::make()
+                ->schema([
+                    TextEntry::make('employee.name')
+                        ->label(__('filament.employee_id'))
+                        ->formatStateUsing(function ($state, $record) {
+                            return $record->employee?->name.' '.$record->employee?->surname;
+                        })
+                        ->size('lg')
+                        ->disabled(fn (?Position $record): bool => $record !== null)
+                        ->columnSpanFull()
+                        ->visible(! $withEmployee),
+                ])
+                ->columnSpanFull(),
             Section::make()
                 ->label(__('filament.vacation_days'))
                 ->schema([

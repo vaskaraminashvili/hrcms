@@ -9,17 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Position extends Model
 {
     /** @use HasFactory<PositionFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'employee_id',
         'department_id',
         'place_id',
+        'vacation_policy_id',
         'position_type',
         'date_start',
         'date_end',
@@ -31,7 +33,6 @@ class Position extends Model
         'clinical_text',
         'automative_renewal',
         'salary',
-        'vacation_policy_id',
         'comment',
     ];
 
@@ -42,12 +43,28 @@ class Position extends Model
             'date_start' => 'date',
             'date_end' => 'date',
             'act_date' => 'date',
-            'staff_type' => 'boolean',
             'clinical' => 'boolean',
             'automative_renewal' => 'boolean',
             'status' => PositionStatus::class,
             'position_type' => PositionType::class,
         ];
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'place_id',
+                'employee_id',
+                'department_id',
+                'vacation_policy_id',
+                'position_type',
+                'date_start',
+                'date_end',
+                'status',
+                'salary',
+            ])
+            ->dontSubmitEmptyLogs();
     }
 
     public function vacationPolicy(): BelongsTo
@@ -78,6 +95,11 @@ class Position extends Model
     public function vacationTransfers(): HasMany
     {
         return $this->hasMany(VacationTransfer::class);
+    }
+
+    public function histories(): HasMany
+    {
+        return $this->hasMany(PositionHistory::class);
     }
 
     /**
