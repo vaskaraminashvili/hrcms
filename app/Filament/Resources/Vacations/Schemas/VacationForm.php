@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Vacations\Schemas;
 
 use App\Enums\VacationStatus;
 use App\Models\Position;
+use App\Services\VacationWorkingDaysCalculator;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
@@ -81,7 +81,8 @@ class VacationForm
                     ->required()
                     ->numeric()
                     ->minValue(1)
-                    ->helperText(function (Get $get, Set $set, mixed $livewire) use ($showEmployeeAndPosition) {
+                    ->live()
+                    ->helperText(function (Get $get, mixed $livewire) use ($showEmployeeAndPosition) {
                         $position = $showEmployeeAndPosition
                             ? Position::with('vacationPolicy')->find($get('position_id'))
                             : self::resolvePosition($get, $livewire);
@@ -93,9 +94,31 @@ class VacationForm
                         $saturdayAllowed = (bool) ($settings->firstWhere('key', 'saturday_allowed')['value'] ?? false);
                         $sundayAllowed = (bool) ($settings->firstWhere('key', 'sunday_allowed')['value'] ?? false);
 
+                        $saturdayLabel = $saturdayAllowed
+                            ? __('filament.vacation_policy_settings.yes')
+                            : __('filament.vacation_policy_settings.no');
+                        $sundayLabel = $sundayAllowed
+                            ? __('filament.vacation_policy_settings.yes')
+                            : __('filament.vacation_policy_settings.no');
+
+                        $publicHolidaysLine = '';
+                        $startDate = $get('start_date');
+                        $endDate = $get('end_date');
+                        if ($startDate && $endDate) {
+                            $excluded = app(VacationWorkingDaysCalculator::class)->countPublicHolidaysExcludedInRange(
+                                Carbon::parse($startDate),
+                                Carbon::parse($endDate),
+                                $position,
+                            );
+                            $publicHolidaysLine = $excluded === 0
+                                ? __('filament.working_days_count_helper_public_holidays_none')
+                                : __('filament.working_days_count_helper_public_holidays_some', ['count' => $excluded]);
+                        }
+
                         return __('filament.working_days_count_helper_text', [
-                            'saturday_allowed' => $saturdayAllowed ? 'ითვლება' : 'არ ითვლება',
-                            'sunday_allowed' => $sundayAllowed ? 'ითვლება' : 'არ ითვლება',
+                            'saturday' => $saturdayLabel,
+                            'sunday' => $sundayLabel,
+                            'public_holidays_line' => $publicHolidaysLine,
                         ]);
                     })
                     ->label(__('filament.working_days_count')),
@@ -148,19 +171,11 @@ class VacationForm
             return;
         }
 
-        $settings = collect($position->vacationPolicy?->settings ?? []);
-        $saturdayAllowed = (bool) ($settings->firstWhere('key', 'saturday_allowed')['value'] ?? false);
-        $sundayAllowed = (bool) ($settings->firstWhere('key', 'sunday_allowed')['value'] ?? false);
-        $count = 0;
-        foreach (CarbonPeriod::create(Carbon::parse($startDate), Carbon::parse($endDate)) as $date) {
-            if ($date->isSaturday() && ! $saturdayAllowed) {
-                continue;
-            }
-            if ($date->isSunday() && ! $sundayAllowed) {
-                continue;
-            }
-            $count++;
-        }
+        $count = app(VacationWorkingDaysCalculator::class)->countWorkingDaysInRange(
+            Carbon::parse($startDate),
+            Carbon::parse($endDate),
+            $position,
+        );
         $set('working_days_count', $count);
     }
 }
