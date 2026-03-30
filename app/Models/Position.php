@@ -11,11 +11,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Position extends Model
+class Position extends Model implements HasMedia
 {
     /** @use HasFactory<PositionFactory> */
-    use HasFactory, LogsActivity;
+    use HasFactory, InteractsWithMedia, LogsActivity;
 
     protected $fillable = [
         'employee_id',
@@ -148,5 +150,10 @@ class Position extends Model
     public function getAvailableVacationDaysAttribute(): int
     {
         return max(0, $this->total_vacation_days - $this->used_vacation_days);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('position');
     }
 }

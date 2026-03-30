@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Vacation extends Model
+class Vacation extends Model implements HasMedia
 {
     /** @use HasFactory<VacationFactory> */
-    use HasFactory, LogsActivity, SoftDeletes;
+    use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     protected $fillable = [
         'employee_id',
@@ -72,5 +74,10 @@ class Vacation extends Model
                 VacationStatus::Approved,
             ])
             ->sum('working_days_count');
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('vacation');
     }
 }

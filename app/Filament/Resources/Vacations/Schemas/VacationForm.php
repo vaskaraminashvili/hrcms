@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -114,6 +115,15 @@ class VacationForm
                 Textarea::make('notes')
                     ->columnSpanFull()
                     ->label(__('filament.notes')),
+                SpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
+                    ->label(__('filament.position_file_attachments'))
+                    ->collection('position')
+                    ->removeUploadedFileButtonPosition('right')
+                    ->multiple()
+                    ->openable()
+                    ->downloadable()
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'attachments-upload']),
             ])
             ->columns($cols);
     }

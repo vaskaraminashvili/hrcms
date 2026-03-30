@@ -13,6 +13,7 @@ use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -217,6 +218,15 @@ class PositionForm
                             RichEditor::make('comment')
                                 ->label(__('filament.comment'))
                                 ->columnSpanFull(),
+                            SpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
+                                ->label(__('filament.position_file_attachments'))
+                                ->collection('position')
+                                ->removeUploadedFileButtonPosition('right')
+                                ->multiple()
+                                ->openable()
+                                ->downloadable()
+                                ->columnSpanFull()
+                                ->extraAttributes(['class' => 'attachments-upload']),
                         ])
                         ->columns(2),
                     Tab::make(__('filament.vacation_policies'))
