@@ -109,6 +109,7 @@ class EmployeesTable
                     RestoreBulkAction::make(),
                 ]),
             ])
+            ->defaultSort('id', 'desc')
             ->filtersFormColumns(2);
     }
 }
