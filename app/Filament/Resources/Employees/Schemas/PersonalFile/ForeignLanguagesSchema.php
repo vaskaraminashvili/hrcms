@@ -17,8 +17,7 @@ class ForeignLanguagesSchema
                     fn (LanguageProficiency $case) => [$case->value => $case->getLabel()]
                 )),
             TextInput::make('language')
-                ->label(__('filament.personal_file.foreign_languages.language'))
-                ->required(),
+                ->label(__('filament.personal_file.foreign_languages.language')),
         ];
     }
 }

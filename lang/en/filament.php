@@ -135,6 +135,18 @@ return [
 
     'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
 
+    'working_days_count_helper_text' => 'Saturday: :saturday, Sunday: :sunday.:public_holidays_line',
+    'working_days_count_helper_public_holidays_none' => ' No public holidays on working days in this period.',
+    'working_days_count_helper_public_holidays_some' => ' :count public holiday day(s) excluded (not counted toward vacation balance).',
+
+    'vacation_policy_settings' => [
+        'days' => 'Days',
+        'saturday_allowed' => 'Saturday counts',
+        'sunday_allowed' => 'Sunday counts',
+        'yes' => 'Yes',
+        'no' => 'No',
+    ],
+
     'employee' => [
         'name' => 'Employee',
     ],
@@ -194,7 +206,30 @@ return [
             'model_label' => 'Department',
             'plural_model_label' => 'Departments',
         ],
+        'public_holidays' => [
+            'navigation_label' => 'Public holidays',
+            'model_label' => 'Public holiday',
+            'plural_model_label' => 'Public holidays',
+        ],
     ],
+
+    'date' => 'Date',
+
+    'public_holiday_kind' => [
+        'regular' => 'Regular (statutory)',
+        'exceptional' => 'Exceptional (e.g. snow, disaster)',
+        'yearly_planned' => 'Planned yearly holidays',
+    ],
+
+    'public_holiday_start_date' => 'Range start',
+    'public_holiday_end_date' => 'Range end',
+    'public_holiday_name' => 'Label',
+    'public_holiday_name_placeholder' => 'Optional description',
+    'public_holiday_series_id' => 'Batch ID',
+    'public_holiday_invalid_range_title' => 'Invalid date range',
+    'public_holiday_invalid_range_body' => 'The end date must be on or after the start date.',
+    'public_holiday_duplicate_days_title' => 'Some days already exist',
+    'public_holiday_duplicate_days_body' => 'One or more dates in this range are already registered as public holidays. Remove or edit existing rows first.',
 
     /*
     |--------------------------------------------------------------------------

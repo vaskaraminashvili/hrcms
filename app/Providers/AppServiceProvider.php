@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\Position;
+use App\Models\PublicHoliday;
 use App\Observers\PositionObserver;
+use App\Observers\PublicHolidayObserver;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Filament\Support\Assets\Css;
@@ -31,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->registerFilamentAssets();
         Position::observe(PositionObserver::class);
+        PublicHoliday::observe(PublicHolidayObserver::class);
         Carbon::setLocale(config('app.locale'));
     }
 

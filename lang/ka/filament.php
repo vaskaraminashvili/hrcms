@@ -88,7 +88,9 @@ return [
     'transferred_days' => 'გადმოტანილი  დღეები',
     'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
     'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
-    'working_days_count_helper_text' => 'შაბათი: :saturday_allowed, კვირა: :sunday_allowed.',
+    'working_days_count_helper_text' => 'შაბათი: :saturday, კვირა: :sunday.:public_holidays_line',
+    'working_days_count_helper_public_holidays_none' => ' საჯარო დასვენების დღეები ამ პერიოდში სამუშაო დღეებში არ არის.',
+    'working_days_count_helper_public_holidays_some' => ' საჯარო დასვენების :count დღე არ ითვლება შვებულების ბალანსში.',
     'changes' => 'ცვლილებები',
     'vacation_policy_settings' => [
         'days' => 'დღეები',
@@ -221,6 +223,11 @@ return [
             'model_label' => 'დეპარტამენტი',
             'plural_model_label' => 'დეპარტამენტები',
         ],
+        'public_holidays' => [
+            'navigation_label' => 'სახელმწიფო დღესასწაულები',
+            'model_label' => 'სახელმწიფო დღესასწაული',
+            'plural_model_label' => 'სახელმწიფო დღესასწაულები',
+        ],
         'vacations' => [
             'navigation_label' => 'შვებულებები',
             'model_label' => 'შვებულება',
@@ -237,6 +244,25 @@ return [
             'plural_model_label' => 'თანამდებობის ისტორია',
         ],
     ],
+
+    'date' => 'თარიღი',
+
+    'public_holiday_kind' => [
+        'title' => 'სახელმწიფო დღესასწაულების ტიპი',
+        'regular' => 'რეგულარული (სავალდებულო)',
+        'exceptional' => 'გამონაკლისი (მაგ. თოვლი, სტიქია)',
+        'yearly_planned' => 'დაგეგმილი წლიური დასვენება',
+    ],
+
+    'public_holiday_start_date' => 'დიაპაზონის დასაწყისი',
+    'public_holiday_end_date' => 'დიაპაზონის დასასრული',
+    'public_holiday_name' => 'დასახელება',
+    'public_holiday_name_placeholder' => 'არასავალდებულო აღწერა',
+    'public_holiday_series_id' => 'პარტიის ID',
+    'public_holiday_invalid_range_title' => 'არასწორი თარიღების დიაპაზონი',
+    'public_holiday_invalid_range_body' => 'დასასრული თარიღი უნდა იყოს დასაწყისის ტოლი ან მის შემდეგ.',
+    'public_holiday_duplicate_days_title' => 'ზოგიერთი დღე უკვე არსებობს',
+    'public_holiday_duplicate_days_body' => 'ამ დიაპაზონში ერთი ან მეტი თარიღი უკვე დარეგისტრირებულია. წაშალეთ ან შეცვალეთ არსებული ჩანაწერები.',
 
     /*
     |--------------------------------------------------------------------------
