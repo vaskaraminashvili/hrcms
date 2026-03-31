@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Positions\Schemas;
 use App\Enums\DepartmentStatus;
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
+use App\Filament\Schemas\StateCasts\ClinicalRadioStateCast;
 use App\Models\Department;
 use App\Models\Position;
 use Closure;
@@ -30,6 +31,7 @@ class PositionForm
 {
     public static function configure(Schema $schema, bool $withEmployee = false): Schema
     {
+
         return $schema->components([
 
             Select::make('employee_id')
@@ -44,7 +46,7 @@ class PositionForm
                 ->dehydrated()
                 ->required()
                 ->columnSpanFull()
-                ->visible(! $withEmployee),
+                ->hidden(! $withEmployee),
             Section::make()
                 ->schema([
                     TextEntry::make('employee.name')
@@ -194,6 +196,7 @@ class PositionForm
                                             '0' => __('filament.clinical_option.clinical'),
                                             '1' => __('filament.clinical_option.non_clinical'),
                                         ])
+                                        ->stateCast(new ClinicalRadioStateCast)
                                         ->required(fn ($get): bool => self::positionTypeShowsClinical($get('position_type')))
                                         ->visible(fn ($get): bool => self::positionTypeShowsClinical($get('position_type'))),
 
