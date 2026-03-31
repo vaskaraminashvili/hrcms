@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Positions\Pages;
 
 use App\Filament\Resources\Positions\PositionResource;
+use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Models\Position;
 use App\Services\PositionFormPersistence;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
@@ -24,6 +26,11 @@ class EditPosition extends EditRecord
     public static function getNavigationLabel(): string
     {
         return __('filament.admin.edit_position.title');
+    }
+
+    public function form(Schema $schema): Schema
+    {
+        return PositionForm::configure($schema, true);
     }
 
     /**

@@ -44,7 +44,7 @@ class PositionForm
                 ->dehydrated()
                 ->required()
                 ->columnSpanFull()
-                ->visible($withEmployee),
+                ->visible(! $withEmployee),
             Section::make()
                 ->schema([
                     TextEntry::make('employee.name')
@@ -54,9 +54,9 @@ class PositionForm
                         })
                         ->size('lg')
                         ->disabled(fn (?Position $record): bool => $record !== null)
-                        ->columnSpanFull()
-                        ->visible(! $withEmployee),
+                        ->columnSpanFull(),
                 ])
+                ->visible($withEmployee)
                 ->columnSpanFull(),
             Section::make()
                 ->label(__('filament.vacation_days'))
@@ -72,6 +72,8 @@ class PositionForm
                         ->label(__('filament.available_vacation_days'))
                         ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
                 ])
+                ->visible($withEmployee)
+
                 ->columns(4)
                 ->columnSpanFull(),
             Tabs::make(__('filament.tabs.container'))
