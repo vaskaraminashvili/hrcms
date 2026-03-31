@@ -38,6 +38,8 @@ class EmployeeForm
                                     ->label(__('filament.surrname_eng')),
                                 TextInput::make('personal_number')
                                     ->label(__('filament.personal_number'))
+                                    ->unique()
+                                    ->length(11)
                                     ->required(),
                                 TextInput::make('email')
                                     ->label(__('filament.email'))
@@ -99,6 +101,7 @@ class EmployeeForm
                                     ->schema([
                                         Repeater::make($case->relationship())
                                             ->label($case->label())
+                                            ->default([])
                                             ->relationship()
                                             ->schema($schemaClass::schema())
                                             ->collapsed()
