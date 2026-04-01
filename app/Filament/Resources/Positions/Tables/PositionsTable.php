@@ -148,6 +148,7 @@ class PositionsTable
                     })
                     ->openUrlInNewTab(),
             ])
+            ->defaultSort('id', 'desc')
             ->toolbarActions([
 
             ])->recordUrl(

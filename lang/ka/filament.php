@@ -52,6 +52,7 @@ return [
     'permissions_count' => 'უფლებების რაოდენობა',
     'employee_id' => 'თანამშრომელი',
     'department_id' => 'დეპარტამენტი',
+    'cancel' => 'გაუქმება',
     'save' => 'შენახვა',
     'save_history' => 'შენახვა ისტორიით',
     'position_edit' => [

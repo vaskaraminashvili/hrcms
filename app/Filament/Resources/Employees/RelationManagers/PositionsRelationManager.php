@@ -6,6 +6,7 @@ use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Models\Position;
 use App\Services\PositionFormPersistence;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
@@ -18,6 +19,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\HtmlString;
 
 class PositionsRelationManager extends RelationManager
 {
@@ -106,6 +108,46 @@ class PositionsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make()
+                    ->modalDescription(function (EditAction $action): HtmlString {
+                        /** @var Position $record */
+                        $record = $action->getRecord();
+                        $record->loadMissing('employee');
+
+                        $attributes['filters[department_id][value]'] = $record->department_id;
+                        $attributes['filters[place_id][value]'] = $record->place_id;
+                        $attributes['filters[created_at][created_until]'] = now()->format('Y-m-d');
+
+                        if ($record->employee?->name) {
+                            $attributes['search'] = $record->employee->name.' '.$record->employee->surname;
+                        }
+
+                        $url = route('filament.admin.resources.position-histories.index', $attributes);
+
+                        return new HtmlString(
+                            '<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="fi-link fi-ac-link-action inline-flex items-center gap-x-1 text-sm font-medium text-primary-600 hover:underline dark:text-primary-400">'
+                            .'<span>'.e(__('filament.position_history_title')).'</span>'
+                            .'</a>'
+                        );
+                    })
+                    ->modalFooterActions(function (EditAction $action): array {
+                        return [
+                            $action->makeModalSubmitAction('save', ['skipPositionObserver' => true])
+                                ->label(__('filament.save'))
+                                ->color('gray')
+                                ->keyBindings(['mod+s']),
+                            $action->makeModalSubmitAction('saveWithHistory', ['skipPositionObserver' => false])
+                                ->label(__('filament.save_history'))
+                                ->color('primary')
+                                ->requiresConfirmation()
+                                ->modalHeading(__('filament.position_edit.modal_save_history_heading'))
+                                ->modalDescription(__('filament.position_edit.modal_save_history_description'))
+                                ->modalSubmitActionLabel(__('filament.position_edit.modal_save_history_submit')),
+                            Action::make('cancel')
+                                ->label(__('filament.cancel'))
+                                ->close()
+                                ->color('gray'),
+                        ];
+                    })
                     ->mutateRecordDataUsing(function (array $data): array {
                         $record = Position::query()->find($data['id']);
 
@@ -115,7 +157,17 @@ class PositionsRelationManager extends RelationManager
                         ));
                     })
                     ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table): void {
-                        PositionFormPersistence::updatePositionAndDetail($record, $data);
+                        $skipObserver = (bool) ($livewire->getMountedAction()?->getArguments()['skipPositionObserver'] ?? false);
+
+                        if ($skipObserver) {
+                            Position::withoutEvents(
+                                fn () => PositionFormPersistence::updatePositionAndDetail($record, $data),
+                            );
+                        } else {
+                            PositionFormPersistence::updatePositionAndDetail($record, $data);
+                        }
+
+                        $record->refresh();
                     }),
             ])
             ->toolbarActions([
