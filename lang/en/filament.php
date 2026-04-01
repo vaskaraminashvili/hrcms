@@ -370,6 +370,7 @@ return [
             'title' => 'Title',
             'place' => 'Publication venue',
             'co_authors' => 'Co-authors',
+            'download_template' => 'Download Excel template',
             'import' => 'Import from Excel',
             'import_modal_heading' => 'Import publications',
             'import_submit' => 'Import',
