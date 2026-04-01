@@ -48,6 +48,9 @@ class PublicationsSchema
                         ->acceptedFileTypes([
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                             'application/vnd.ms-excel',
+                            // Some servers detect .xlsx as zip or octet-stream (Office files are ZIP-based).
+                            'application/zip',
+                            'application/octet-stream',
                         ])
                         ->required(),
                 ])
