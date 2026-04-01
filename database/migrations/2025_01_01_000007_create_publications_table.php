@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
             $table->json('title');
             $table->json('place')->nullable();
-            $table->date('published_at')->nullable();
+            $table->year('published_at')->nullable();
             $table->json('co_authors')->nullable();
             $table->unsignedInteger('page_count')->nullable();
             $table->timestamps();

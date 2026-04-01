@@ -23,7 +23,7 @@ class EmployeeFactory extends Factory
             'surname' => fake()->lastName(),
             'name_eng' => fake()->optional(0.7)->firstName(),
             'surrname_eng' => fake()->optional(0.7)->lastName(),
-            'personal_number' => fake()->unique()->numerify('##########'),
+            'personal_number' => fake()->unique()->numerify('###########'),
             'email' => fake()->optional(0.8)->safeEmail(),
             'birth_date' => fake()->dateTimeBetween('-60 years', '-18 years')->format('Y-m-d'),
             'gender' => fake()->optional(0.9)->randomElement(['male', 'female']),

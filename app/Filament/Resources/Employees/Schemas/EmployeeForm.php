@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Employees\Schemas;
 use App\Enums\Education;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\PublicationsSchema;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
@@ -94,32 +95,38 @@ class EmployeeForm
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
+                                $tabSchema = [
+                                    Repeater::make($case->relationship())
+                                        ->label($case->label())
+                                        ->default([])
+                                        ->relationship()
+                                        ->schema($schemaClass::schema())
+                                        ->collapsed()
+                                        ->collapsible()
+                                        ->reorderable()
+                                        ->columnSpanFull()
+                                        ->addActionLabel(__('filament.add_record'))
+                                        ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
+                                    SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                        ->label(__('filament.personal_file.attachments'))
+                                        ->collection($case->mediaCollectionName())
+                                        ->removeUploadedFileButtonPosition('right')
+                                        ->multiple()
+                                        ->openable()
+                                        ->downloadable()
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'attachments-upload']),
+                                ];
+
+                                if ($case === PersonalFile::PUBLICATIONS) {
+                                    array_unshift($tabSchema, PublicationsSchema::tabHeaderActions());
+                                }
+
                                 return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record === null
                                         ? 0
                                         : $record->{$case->relationship()}()->count() + $record->getMedia($case->mediaCollectionName())->count())
-                                    ->schema([
-                                        Repeater::make($case->relationship())
-                                            ->label($case->label())
-                                            ->default([])
-                                            ->relationship()
-                                            ->schema($schemaClass::schema())
-                                            ->collapsed()
-                                            ->collapsible()
-                                            ->reorderable()
-                                            ->columnSpanFull()
-                                            ->addActionLabel(__('filament.add_record'))
-                                            ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
-                                        SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
-                                            ->label(__('filament.personal_file.attachments'))
-                                            ->collection($case->mediaCollectionName())
-                                            ->removeUploadedFileButtonPosition('right')
-                                            ->multiple()
-                                            ->openable()
-                                            ->downloadable()
-                                            ->columnSpanFull()
-                                            ->extraAttributes(['class' => 'attachments-upload']),
-                                    ]);
+                                    ->schema($tabSchema);
                             },
                             PersonalFile::cases()
                         ),
