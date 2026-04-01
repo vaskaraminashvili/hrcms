@@ -19,13 +19,13 @@ class PublicationFactory extends Factory
                 'en' => $this->faker->sentence(6),
             ],
             'place' => [
-                'ka' => $this->faker->city() . ' - სამეცნიერო ჟურნალი',
-                'en' => $this->faker->city() . ' - Scientific Journal',
+                'ka' => $this->faker->city().' - სამეცნიერო ჟურნალი',
+                'en' => $this->faker->city().' - Scientific Journal',
             ],
-            'published_at' => $this->faker->dateTimeBetween('-10 years', 'now'),
+            'published_at' => $this->faker->numberBetween(2000, (int) date('Y')),
             'co_authors' => [
-                'ka' => $this->faker->name() . ', ' . $this->faker->name(),
-                'en' => $this->faker->name() . ', ' . $this->faker->name(),
+                'ka' => $this->faker->name().', '.$this->faker->name(),
+                'en' => $this->faker->name().', '.$this->faker->name(),
             ],
             'page_count' => $this->faker->numberBetween(4, 30),
         ];

@@ -34,7 +34,7 @@ class Publication extends Model implements HasMedia
             'title' => 'array',
             'place' => 'array',
             'co_authors' => 'array',
-            'published_at' => 'date',
+            'published_at' => 'integer',
             'page_count' => 'integer',
         ];
     }

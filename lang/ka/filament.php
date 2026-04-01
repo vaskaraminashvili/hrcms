@@ -405,6 +405,11 @@ return [
             'title' => 'სახელწოდება',
             'place' => 'გამოქვეყნების ადგილი',
             'co_authors' => 'თანაავტორები',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'პუბლიკაციების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'პუბლიკაციები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'textbooks' => [

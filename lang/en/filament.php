@@ -370,6 +370,11 @@ return [
             'title' => 'Title',
             'place' => 'Publication venue',
             'co_authors' => 'Co-authors',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import publications',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Publications imported successfully.',
         ],
 
         'textbooks' => [

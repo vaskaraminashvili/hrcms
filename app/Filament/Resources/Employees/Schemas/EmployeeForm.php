@@ -5,16 +5,25 @@ namespace App\Filament\Resources\Employees\Schemas;
 use App\Enums\Education;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Imports\PublicationsImport;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Model;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeForm
 {
@@ -94,32 +103,77 @@ class EmployeeForm
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
+                                $tabSchema = [
+                                    Repeater::make($case->relationship())
+                                        ->label($case->label())
+                                        ->default([])
+                                        ->relationship()
+                                        ->schema($schemaClass::schema())
+                                        ->collapsed()
+                                        ->collapsible()
+                                        ->reorderable()
+                                        ->columnSpanFull()
+                                        ->addActionLabel(__('filament.add_record'))
+                                        ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
+                                    SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                        ->label(__('filament.personal_file.attachments'))
+                                        ->collection($case->mediaCollectionName())
+                                        ->removeUploadedFileButtonPosition('right')
+                                        ->multiple()
+                                        ->openable()
+                                        ->downloadable()
+                                        ->columnSpanFull()
+                                        ->extraAttributes(['class' => 'attachments-upload']),
+                                ];
+
+                                if ($case === PersonalFile::PUBLICATIONS) {
+                                    array_unshift(
+                                        $tabSchema,
+                                        Actions::make([
+                                            Action::make('importPublications')
+                                                ->label(__('filament.personal_file.publications.import'))
+                                                ->icon(Heroicon::ArrowUpTray)
+                                                ->modalHeading(__('filament.personal_file.publications.import_modal_heading'))
+                                                ->modalSubmitActionLabel(__('filament.personal_file.publications.import_submit'))
+                                                ->schema([
+                                                    FileUpload::make('file')
+                                                        ->label(__('filament.personal_file.publications.import_file_label'))
+                                                        ->acceptedFileTypes([
+                                                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                                                            'application/vnd.ms-excel',
+                                                        ])
+                                                        ->required(),
+                                                ])
+                                                ->visible(fn (?Model $record): bool => $record !== null)
+                                                ->authorize('update')
+                                                ->action(function (array $data, $livewire): void {
+                                                    $record = $livewire->getRecord();
+                                                    $file = $data['file'];
+
+                                                    $path = $file instanceof TemporaryUploadedFile
+                                                        ? $file->getRealPath()
+                                                        : $file;
+
+                                                    Excel::import(new PublicationsImport($record->getKey()), $path);
+
+                                                    $record->unsetRelation('publications');
+
+                                                    Notification::make()
+                                                        ->title(__('filament.personal_file.publications.import_success'))
+                                                        ->success()
+                                                        ->send();
+
+                                                    $livewire->refreshFormData(['publications']);
+                                                }),
+                                        ])->alignEnd(),
+                                    );
+                                }
+
                                 return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record === null
                                         ? 0
                                         : $record->{$case->relationship()}()->count() + $record->getMedia($case->mediaCollectionName())->count())
-                                    ->schema([
-                                        Repeater::make($case->relationship())
-                                            ->label($case->label())
-                                            ->default([])
-                                            ->relationship()
-                                            ->schema($schemaClass::schema())
-                                            ->collapsed()
-                                            ->collapsible()
-                                            ->reorderable()
-                                            ->columnSpanFull()
-                                            ->addActionLabel(__('filament.add_record'))
-                                            ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
-                                        SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
-                                            ->label(__('filament.personal_file.attachments'))
-                                            ->collection($case->mediaCollectionName())
-                                            ->removeUploadedFileButtonPosition('right')
-                                            ->multiple()
-                                            ->openable()
-                                            ->downloadable()
-                                            ->columnSpanFull()
-                                            ->extraAttributes(['class' => 'attachments-upload']),
-                                    ]);
+                                    ->schema($tabSchema);
                             },
                             PersonalFile::cases()
                         ),
