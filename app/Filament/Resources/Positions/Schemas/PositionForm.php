@@ -46,7 +46,7 @@ class PositionForm
                 ->dehydrated()
                 ->required()
                 ->columnSpanFull()
-                ->hidden(! $withEmployee),
+                ->hidden($withEmployee),
             Section::make()
                 ->schema([
                     TextEntry::make('employee.name')

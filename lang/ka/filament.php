@@ -309,6 +309,8 @@ return [
         ],
         'position_resource' => [
             'department_vacancy_limit' => 'ამ დეპარტამენტში აქტიური თანამდებობების მაქსიმუმია :max.',
+            'duplicate_employee_department_title' => 'თანამდებობა უკვე არსებობს',
+            'duplicate_employee_department_body' => 'ამ თანამშრომელს უკვე აქვს თანამდებობა არჩეულ დეპარტამენტში. აირჩიეთ სხვა დეპარტამენტი ან რედაქტირება გაუკეთეთ არსებულ თანამდებობას.',
         ],
     ],
 
