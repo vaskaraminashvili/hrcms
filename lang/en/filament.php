@@ -266,6 +266,8 @@ return [
         ],
         'position_resource' => [
             'department_vacancy_limit' => 'This department allows at most :max active position(s).',
+            'duplicate_employee_department_title' => 'Position already exists',
+            'duplicate_employee_department_body' => 'This employee already has a position in the selected department. Choose another department or edit the existing position.',
         ],
     ],
 
