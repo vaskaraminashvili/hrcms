@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
+use App\Services\EmployeeImportService;
+use Illuminate\Http\Request;
 
 class ImportController extends Controller
 {
-    public function importEmployees()
+    public function importEmployees(Request $request, EmployeeImportService $employeeImportService)
     {
-        $importData = DB::table('import_employees')->get();
-        dd($importData);
+        $result = $employeeImportService->importAll(
+            clearTableBefore: $request->boolean('clear', true)
+        );
+
+        return response()->json($result);
     }
 }
