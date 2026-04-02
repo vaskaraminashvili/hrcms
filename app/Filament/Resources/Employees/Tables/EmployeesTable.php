@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\Employees\Tables;
 
+use App\Enums\EmployeeStatusEnum;
 use App\Models\Employee;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class EmployeesTable
@@ -19,6 +20,10 @@ class EmployeesTable
     {
         return $table
             ->columns([
+                SpatieMediaLibraryImageColumn::make('employee_image')
+                    ->circular()
+                    ->label('')
+                    ->collection('employee_image'),
                 TextColumn::make('name')
                     ->label(__('filament.name'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
@@ -31,6 +36,7 @@ class EmployeesTable
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->name_eng.' '.$record->surrname_eng;
                     })
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(['name_eng', 'surrname_eng']),
 
                 TextColumn::make('personal_number')
@@ -53,6 +59,12 @@ class EmployeesTable
                 TextColumn::make('birth_date')
                     ->label(__('filament.birth_date'))
                     ->date()
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->label(__('filament.status'))
+                    ->badge()
+                    ->color(fn (Employee $record): string => $record->status->getColor())
+                    ->icon(fn (Employee $record): string => $record->status->getIcon())
                     ->sortable(),
                 TextColumn::make('gender')
                     ->label(__('filament.gender'))
@@ -96,10 +108,12 @@ class EmployeesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                TrashedFilter::make(),
+                SelectFilter::make('status')
+                    ->label(__('filament.status'))
+                    ->options(EmployeeStatusEnum::class)
+                    ->default(EmployeeStatusEnum::ACTIVE->value),
             ])
             ->recordActions([
-                ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

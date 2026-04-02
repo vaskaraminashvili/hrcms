@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Enums\EmployeeStatusEnum;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
@@ -11,6 +12,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -32,6 +34,7 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
         return $panel
             ->default()
             ->id('admin')
@@ -47,6 +50,18 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->navigationItems([
+                NavigationItem::make(EmployeeStatusEnum::ARCHIVED->getLabel())
+                    ->url(fn (): string => route('filament.admin.resources.employees.index', [
+                        'filters' => [
+                            'status' => [
+                                'value' => EmployeeStatusEnum::ARCHIVED->value,
+                            ],
+                        ],
+                    ]))
+                    ->icon('heroicon-o-archive-box')
+                    ->sort(1),
+            ])
             ->widgets([
                 FilamentInfoWidget::class,
             ])
