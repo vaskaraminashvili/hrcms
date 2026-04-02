@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
 use Database\Factories\EmployeeFactory;
@@ -31,8 +32,9 @@ class Employee extends Model implements HasMedia
         'citizenship',
         'education',
         'degree',
-        'address',
-        'pysical_address',
+        'mobile_number',
+        'account_number',
+        'address_details',
     ];
 
     protected function casts(): array
@@ -41,6 +43,8 @@ class Employee extends Model implements HasMedia
             'birth_date' => 'date:d.m.Y',
             'education' => 'integer',
             'gender' => Gender::class,
+            'address_details' => 'array',
+            'status' => EmployeeStatusEnum::class,
         ];
     }
 

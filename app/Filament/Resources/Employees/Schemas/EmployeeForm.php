@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Schemas;
 
 use App\Enums\Education;
+use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\PublicationsSchema;
@@ -27,6 +28,18 @@ class EmployeeForm
                     ->tabs([
                         Tab::make(__('filament.tabs.basic_information'))
                             ->schema([
+                                Select::make('status')
+                                    ->options(EmployeeStatusEnum::class)
+                                    ->label(__('filament.status'))
+                                    ->columnSpanFull(),
+                                SpatieMediaLibraryFileUpload::make('employee_image')
+                                    ->label(__('filament.employee_image'))
+                                    ->collection('employee_image')
+                                    ->removeUploadedFileButtonPosition('right')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull()
+                                    ->extraAttributes(['class' => 'attachments-upload']),
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
@@ -72,14 +85,27 @@ class EmployeeForm
                                     ])
                                     ->columns(2)
                                     ->columnSpanFull(),
-                                TextInput::make('citizenship')
-                                    ->label(__('filament.citizenship')),
-                                TextInput::make('address')
-                                    ->columnSpan(2)
-                                    ->label(__('filament.address')),
-                                TextInput::make('pysical_address')
-                                    ->columnSpan(2)
-                                    ->label(__('filament.pysical_address')),
+                                TextInput::make('mobile_number')
+                                    ->label(__('filament.mobile_number')),
+                                TextInput::make('account_number')
+                                    ->label(__('filament.account_number')),
+                                Section::make()
+                                    ->schema([
+                                        TextInput::make('citizenship')
+                                            ->label(__('filament.citizenship'))
+                                            ->columnSpanFull(),
+
+                                        TextInput::make('address_details.address_physical')
+                                            ->label(__('filament.address_physical')),
+                                        TextInput::make('address_details.address_jurisdiction')
+                                            ->label(__('filament.address_jurisdiction')),
+                                        TextInput::make('address_details.en_address_physical')
+                                            ->label(__('filament.en_address_physical')),
+                                        TextInput::make('address_details.en_address_jurisdiction')
+                                            ->label(__('filament.en_address_jurisdiction')),
+                                    ])
+                                    ->columns(2)
+                                    ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
                                     ->label(__('filament.personal_file.attachments'))
                                     ->collection('basic_information_attachments')
@@ -89,6 +115,7 @@ class EmployeeForm
                                     ->downloadable()
                                     ->columnSpanFull()
                                     ->extraAttributes(['class' => 'attachments-upload']),
+
                             ])
                             ->columns(2),
                         ...array_map(
