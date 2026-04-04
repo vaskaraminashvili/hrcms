@@ -13,6 +13,7 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class EmployeesTable
 {
@@ -83,14 +84,27 @@ class EmployeesTable
                     ->label(__('filament.degree'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('address')
+                TextColumn::make('address_details')
                     ->label(__('filament.address'))
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('pysical_address')
-                    ->label(__('filament.pysical_address'))
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->formatStateUsing(function (?array $state): string {
+                        if (! is_array($state)) {
+                            return '';
+                        }
+
+                        $parts = array_filter([
+                            $state['address_physical'] ?? null,
+                            $state['address_jurisdiction'] ?? null,
+                            $state['en_address_physical'] ?? null,
+                            $state['en_address_jurisdiction'] ?? null,
+                        ]);
+
+                        return implode(' · ', $parts);
+                    })
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->where('address_details', 'like', '%'.$search.'%');
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->wrap(),
                 TextColumn::make('created_at')
                     ->label(__('filament.created_at'))
                     ->dateTime()
