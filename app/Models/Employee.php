@@ -121,10 +121,18 @@ class Employee extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('employee_image');
+        $this->addLocalMediaCollection('employee_image');
+        $this->addLocalMediaCollection('basic_information_attachments');
 
         foreach (PersonalFile::cases() as $personalFile) {
-            $this->addMediaCollection($personalFile->mediaCollectionName());
+            $this->addLocalMediaCollection($personalFile->mediaCollectionName());
         }
+    }
+
+    private function addLocalMediaCollection(string $name): void
+    {
+        $this->addMediaCollection($name)
+            ->useDisk('local')
+            ->storeConversionsOnDisk('local');
     }
 }
