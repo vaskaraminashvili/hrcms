@@ -121,6 +121,8 @@ class Employee extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
+        $this->addMediaCollection('employee_image');
+
         foreach (PersonalFile::cases() as $personalFile) {
             $this->addMediaCollection($personalFile->mediaCollectionName());
         }
