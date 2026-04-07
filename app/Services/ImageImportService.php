@@ -34,7 +34,6 @@ class ImageImportService
         DB::table('import_employees')
             ->select('id', 'photo', 'name', 'surname')
             ->whereNotNull('photo')
-            ->limit(60)
             ->orderBy('id')
             ->chunkById(self::IMPORT_CHUNK_SIZE, function ($rows) use (&$imported, &$skipped, &$notFound, &$failed): void {
                 /** @var array<int, array{id:int,photo:?string,name:?string,surname:?string}> $chunkRows */
