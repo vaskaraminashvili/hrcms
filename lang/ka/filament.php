@@ -100,6 +100,9 @@ return [
     'working_days_count_helper_public_holidays_none' => ' საჯარო დასვენების დღეები ამ პერიოდში სამუშაო დღეებში არ არის.',
     'working_days_count_helper_public_holidays_some' => ' საჯარო დასვენების :count დღე არ ითვლება შვებულების ბალანსში.',
     'changes' => 'ცვლილებები',
+    'with_image' => 'სურათით',
+    'without_image' => 'სურათის გარეშე',
+    'employee_image' => 'თანამშრომლის სურათი',
     'vacation_policy_settings' => [
         'days' => 'დღეები',
         'saturday_allowed' => 'შაბათი ითვლება',
