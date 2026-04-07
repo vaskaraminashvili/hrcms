@@ -126,6 +126,23 @@ class EmployeesTable
                     ->label(__('filament.status'))
                     ->options(EmployeeStatusEnum::class)
                     ->default(EmployeeStatusEnum::ACTIVE->value),
+                SelectFilter::make('employee_image')
+                    ->label(__('filament.employee_image'))
+                    ->options([
+                        'with' => __('filament.with_image'),
+                        'without' => __('filament.without_image'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return match ($data['value'] ?? null) {
+                            'with' => $query->whereHas('media', function (Builder $mediaQuery): void {
+                                $mediaQuery->where('collection_name', 'employee_image');
+                            }),
+                            'without' => $query->whereDoesntHave('media', function (Builder $mediaQuery): void {
+                                $mediaQuery->where('collection_name', 'employee_image');
+                            }),
+                            default => $query,
+                        };
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
