@@ -66,6 +66,7 @@ return [
     'employee_image' => 'თანამშრომლის სურათი',
     'save' => 'შენახვა',
     'save_history' => 'შენახვა ისტორიით',
+    'system' => 'სისტემა',
     'position_edit' => [
         'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
         'modal_save_history_description' => 'შენახული ცვლილებები ჩაიწერება თანამდებობის ისტორიაში აუდიტისთვის.',

@@ -51,6 +51,11 @@ class VacationPolicyResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.system');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('filament.resources.vacation_policies.navigation_label');
@@ -63,6 +68,6 @@ class VacationPolicyResource extends Resource
 
     public static function getPluralModelLabel(): string
     {
-        return __('filament.resources.vacation_policies.plural_model_label');
+        return __('filament.resources.positions.plural_model_label');
     }
 }

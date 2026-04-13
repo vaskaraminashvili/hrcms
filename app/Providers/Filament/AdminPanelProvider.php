@@ -90,7 +90,7 @@ class AdminPanelProvider extends PanelProvider
                 ActivityLogPlugin::make()
                     ->label('Log')
                     ->pluralLabel('Logs')
-                    ->navigationGroup('System'),
+                    ->navigationGroup(__('filament.system')),
                 FilamentClearCachePlugin::make(),
                 FileManagerPlugin::make([
                     FileManager::class,              // Database mode - full CRUD file manager
