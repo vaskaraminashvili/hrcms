@@ -346,6 +346,7 @@ return [
             'title' => 'თანამდებობები',
             'add_new_position' => 'ახალი თანამდებობის დამატება',
             'renewal' => 'გახანგრძლივება',
+            'open_edit_in_new_tab' => 'ახალ ფანჯარა',
         ],
         'vacations' => [
             'title' => 'შვებულებები',

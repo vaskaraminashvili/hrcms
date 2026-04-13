@@ -169,6 +169,30 @@ class PositionsRelationManager extends RelationManager
 
                         $record->refresh();
                     }),
+                Action::make('open_position_edit')
+                    ->label(__('filament.relation_managers.positions.open_edit_in_new_tab'))
+                    ->icon('heroicon-o-pencil')
+
+                    ->url(fn (Position $record): string => route('filament.admin.resources.positions.edit', [
+                        'record' => $record,
+                    ]))
+                    ->openUrlInNewTab(),
+                Action::make('position_history')
+                    ->label('')
+                    ->icon('heroicon-o-clock')
+                    ->url(function (Position $record): string {
+
+                        $attributes['filters[department_id][value]'] = $record->department_id;
+                        $attributes['filters[place_id][value]'] = $record->place_id;
+                        $attributes['filters[created_at][created_until]'] = now()->format('Y-m-d');
+
+                        if ($record->employee->name) {
+                            $attributes['search'] = $record->employee->name.' '.$record->employee->surname;
+                        }
+
+                        return route('filament.admin.resources.position-histories.index', $attributes);
+                    })
+                    ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

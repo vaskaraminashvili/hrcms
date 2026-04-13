@@ -298,6 +298,7 @@ return [
             'title' => 'Positions',
             'add_new_position' => 'Add new position',
             'renewal' => 'Renewal',
+            'open_edit_in_new_tab' => 'Edit in new tab',
         ],
         'vacations' => [
             'title' => 'Vacations',
