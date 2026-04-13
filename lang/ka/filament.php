@@ -35,6 +35,7 @@ return [
     'personal_number' => 'პირადი ნომერი',
     'email' => 'ელფოსტა',
     'birth_date' => 'დაბადების თარიღი',
+    'birth_date_placeholder' => 'დაბ. თარ.',
     'gender' => 'სქესი',
     'gender_default' => 'male',
     'education' => 'განათლება',

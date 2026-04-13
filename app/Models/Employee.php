@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Enums\PositionStatus;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +53,12 @@ class Employee extends Model implements HasMedia
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class);
+    }
+
+    public function appointmentPositions(): HasMany
+    {
+        return $this->hasMany(Position::class)
+            ->where('status', PositionStatus::Appointment);
     }
 
     public function academicPositions(): HasMany
