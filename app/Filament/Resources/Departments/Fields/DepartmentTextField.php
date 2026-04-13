@@ -9,6 +9,11 @@ use Openplain\FilamentTreeView\Fields\TextField;
 
 class DepartmentTextField extends TextField
 {
+    /**
+     * CSS hook for per-depth tree styling ({@see resources/css/filament/admin/custom.css}).
+     */
+    public const TREE_NAME_CLASS = 'fi-tree-dept-name';
+
     protected bool $applyDepartmentColor = false;
 
     /**
@@ -35,7 +40,7 @@ class DepartmentTextField extends TextField
             $formatted = ($this->formatStateUsing)($state, $record);
 
             if ($formatted instanceof HtmlString) {
-                return (string) $formatted;
+                return $this->maybeWrapTreeNameColumn((string) $formatted);
             }
         }
 
@@ -43,10 +48,22 @@ class DepartmentTextField extends TextField
         $color = $this->resolveDepartmentColor($record);
 
         if ($color !== null) {
-            return "<span class='text-sm' style='color: {$color};'>{$name}</span>";
+            return $this->maybeWrapTreeNameColumn("<span class='text-sm' style='color: {$color};'>{$name}</span>");
         }
 
-        return parent::render($record);
+        return $this->maybeWrapTreeNameColumn(parent::render($record));
+    }
+
+    /**
+     * Wrap the `name` column so depth-based colors can target it without relying on field order.
+     */
+    protected function maybeWrapTreeNameColumn(string $html): string
+    {
+        if ($this->getName() !== 'name') {
+            return $html;
+        }
+
+        return '<span class="'.self::TREE_NAME_CLASS.'">'.$html.'</span>';
     }
 
     protected function resolveDepartmentColor(Model|array $record): ?string
