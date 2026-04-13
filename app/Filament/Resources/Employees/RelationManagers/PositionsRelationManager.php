@@ -32,7 +32,7 @@ class PositionsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return PositionForm::configure($schema, false);
+        return PositionForm::configure($schema, false, $this->getOwnerRecord());
     }
 
     public function table(Table $table): Table

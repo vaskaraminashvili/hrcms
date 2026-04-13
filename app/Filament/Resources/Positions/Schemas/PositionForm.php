@@ -7,6 +7,7 @@ use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Filament\Schemas\StateCasts\ClinicalRadioStateCast;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\Position;
 use Closure;
 use Filament\Forms\Components\DatePicker;
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    public static function configure(Schema $schema, bool $withEmployee = false): Schema
+    public static function configure(Schema $schema, bool $withEmployee = false, ?Employee $employee = null): Schema
     {
 
         return $schema->components([
@@ -42,11 +43,13 @@ class PositionForm
                 ->preload()
                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
                 ->label(__('filament.employee_id'))
-                ->disabled(fn (?Position $record): bool => $record !== null)
+                ->disabled(function (?Position $record) {
+                    return $record !== null;
+                })
                 ->dehydrated()
                 ->required()
                 ->columnSpanFull()
-                ->hidden($withEmployee),
+                ->hidden($withEmployee || $employee !== null),
             Section::make()
                 ->schema([
                     TextEntry::make('employee.name')

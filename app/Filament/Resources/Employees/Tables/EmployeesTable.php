@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Enums\PositionStatus;
 use App\Models\Employee;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -52,7 +53,14 @@ class EmployeesTable
                     ->label(__('filament.positions_count'))
                     ->alignCenter()
                     ->icon('heroicon-o-briefcase')
-                    ->counts('positions')
+                    ->counts([
+                        'positions' => static function (Builder $query): void {
+                            $query->where(
+                                'status',
+                                PositionStatus::Appointment,
+                            );
+                        },
+                    ])
                     ->sortable(),
                 TextColumn::make('email')
                     ->label(__('filament.email'))
