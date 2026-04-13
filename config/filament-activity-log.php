@@ -242,8 +242,8 @@ return [
         'user_activities' => [
             'enabled' => true,
             'class' => UserActivitiesPage::class,
-            'navigation_label' => null, // null uses translation key
-            'navigation_group' => null, // null uses resource group
+            'navigation_label' => 'მომხმარებლის აქტივობები', // null uses translation key
+            'navigation_group' => 'მომხმარებლის აქტივობები', // null uses resource group
             'navigation_sort' => 2,
             'polling_interval' => null,
         ],

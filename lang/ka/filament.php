@@ -12,6 +12,9 @@ return [
     'model_label' => 'აქტივობა',
     'plural_model_label' => 'აქტივობები',
 
+    /** Filament Shield: sidebar navigation group (overrides package default). */
+    'shield_navigation_group' => 'როლები და უფლებები',
+
     /*
     |--------------------------------------------------------------------------
     | Activity log (filament-activity-log)
@@ -248,9 +251,9 @@ return [
             'plural_model_label' => 'შვებულებები',
         ],
         'vacation_policies' => [
-            'navigation_label' => 'შვებულების დროცულებები',
-            'model_label' => 'შვებულების დროცულება',
-            'plural_model_label' => 'შვებულების დროცულებები',
+            'navigation_label' => 'შვებულების პოლისი',
+            'model_label' => 'შვებულების პოლისი',
+            'plural_model_label' => 'შვებულების პოლისი',
         ],
         'position_histories' => [
             'navigation_label' => 'პოზიციის ისტორია',

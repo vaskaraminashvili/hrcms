@@ -16,6 +16,9 @@ return [
     'model_label' => 'Activity',
     'plural_model_label' => 'Activities',
 
+    /** Filament Shield: sidebar navigation group (overrides package default). */
+    'shield_navigation_group' => 'Roles & permissions',
+
     /*
     |--------------------------------------------------------------------------
     | Activity log (filament-activity-log)
