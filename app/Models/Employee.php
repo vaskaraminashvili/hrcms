@@ -35,6 +35,7 @@ class Employee extends Model implements HasMedia
         'mobile_number',
         'account_number',
         'address_details',
+        'status',
     ];
 
     protected function casts(): array
