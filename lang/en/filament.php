@@ -396,6 +396,11 @@ return [
             'issuer' => 'Issuing body',
         ],
 
+        'other' => [
+            'title' => 'Document title',
+            'documents' => 'Documents',
+        ],
+
         'tabs' => [
             'academic_position' => 'Academic position',
             'education' => 'Education',
@@ -409,6 +414,7 @@ return [
             'scholarships_awards' => 'Scholarships / awards / state prizes',
             'foreign_languages' => 'Foreign language proficiency',
             'computer_skills' => 'Computer software proficiency',
+            'other' => 'Other',
         ],
     ],
 

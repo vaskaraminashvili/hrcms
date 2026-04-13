@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Education;
+use App\Enums\EmployeeStatusEnum;
 use App\Models\Employee;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -30,8 +31,8 @@ class EmployeeFactory extends Factory
             'citizenship' => fake()->optional(0.9)->country(),
             'education' => fake()->optional(0.8)->boolean(),
             'degree' => fake()->optional(0.4)->randomElement([Education::BACHELOR->value, Education::MASTER->value, Education::PHD->value, Education::ASSOCIATE->value]),
-            'address' => fake()->optional(0.8)->address(),
-            'pysical_address' => fake()->optional(0.6)->address(),
+            'address_details' => fake()->optional(0.8)->address(),
+            'status' => fake()->randomElement(EmployeeStatusEnum::cases()),
         ];
     }
 }

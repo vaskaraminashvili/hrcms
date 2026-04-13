@@ -114,6 +114,11 @@ class Employee extends Model implements HasMedia
         return $this->hasMany(ComputerSkill::class);
     }
 
+    public function other(): HasMany
+    {
+        return $this->hasMany(OtherDocument::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
