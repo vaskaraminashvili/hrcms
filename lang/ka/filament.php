@@ -67,7 +67,7 @@ return [
         'modal_save_history_description' => 'შენახული ცვლილებები ჩაიწერება თანამდებობის ისტორიაში აუდიტისთვის.',
         'modal_save_history_submit' => 'შენახვა ისტორიით',
     ],
-    'place_id' => 'ადგილი',
+    'place_id' => 'თანამდებობა',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
@@ -222,14 +222,14 @@ return [
             'plural_model_label' => 'თანამშრომლები',
         ],
         'places' => [
-            'navigation_label' => 'ადგილები',
-            'model_label' => 'ადგილი',
-            'plural_model_label' => 'ადგილები',
-        ],
-        'positions' => [
             'navigation_label' => 'თანამდებობები',
             'model_label' => 'თანამდებობა',
             'plural_model_label' => 'თანამდებობები',
+        ],
+        'positions' => [
+            'navigation_label' => 'პოზიცია',
+            'model_label' => 'პოზიციას',
+            'plural_model_label' => 'პოზიციები',
         ],
         'departments' => [
             'navigation_label' => 'სტრუქტურა',
@@ -252,9 +252,9 @@ return [
             'plural_model_label' => 'შვებულების დროცულებები',
         ],
         'position_histories' => [
-            'navigation_label' => 'თანამდებობის ისტორია',
-            'model_label' => 'თანამდებობის ისტორია',
-            'plural_model_label' => 'თანამდებობის ისტორია',
+            'navigation_label' => 'პოზიციის ისტორია',
+            'model_label' => 'პოზიციის ისტორია',
+            'plural_model_label' => 'პოზიციის ისტორია',
         ],
     ],
 
@@ -284,10 +284,10 @@ return [
     */
     'admin' => [
         'list_places' => [
-            'title' => 'ადგილები',
+            'title' => 'თანამდებობები',
         ],
         'edit_place' => [
-            'title' => 'ადგილის რედაქტირება',
+            'title' => 'თანამდებობის რედაქტირება',
         ],
         'list_employees' => [
             'title' => 'თანამშრომლები',
@@ -299,13 +299,13 @@ return [
             'title' => 'თანამშრომლის ნახვა',
         ],
         'list_positions' => [
-            'title' => 'თანამდებობები',
+            'title' => 'პოზიციები',
         ],
         'edit_position' => [
-            'title' => 'თანამდებობის რედაქტირება',
+            'title' => 'პოზიციის რედაქტირება',
         ],
         'view_position' => [
-            'title' => 'თანამდებობის ნახვა',
+            'title' => 'პოზიციის ნახვა',
         ],
         'list_roles' => [
             'title' => 'როლები',
