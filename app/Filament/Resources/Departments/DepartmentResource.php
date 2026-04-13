@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Departments;
 
+use App\Enums\DepartmentType;
 use App\Filament\Resources\Departments\Fields\DepartmentStatusIconField;
 use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
@@ -15,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Openplain\FilamentTreeView\Fields\TextField;
 use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
@@ -56,6 +58,15 @@ class DepartmentResource extends Resource
 
                 //     })
                 //     ->alignEnd(),
+                TextField::make('type')
+                    ->formatStateUsing(function (mixed $state): string {
+                        if ($state instanceof DepartmentType) {
+                            return $state->getLabel();
+                        }
+
+                        return (string) ($state ?? '');
+                    })
+                    ->alignEnd(),
                 DepartmentStatusIconField::make('status')
                     ->boolean()
                     ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')

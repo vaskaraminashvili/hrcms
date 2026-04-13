@@ -232,9 +232,9 @@ return [
             'plural_model_label' => 'თანამდებობები',
         ],
         'departments' => [
-            'navigation_label' => 'დეპარტამენტები',
-            'model_label' => 'დეპარტამენტი',
-            'plural_model_label' => 'დეპარტამენტები',
+            'navigation_label' => 'სტრუქტურა',
+            'model_label' => 'სტრუქტურა',
+            'plural_model_label' => 'სტრუქტურა',
         ],
         'public_holidays' => [
             'navigation_label' => 'სახელმწიფო დღესასწაულები',
@@ -331,7 +331,7 @@ return [
     ],
 
     'tree_departments' => [
-        'new_department' => 'ახალი დეპარტამენტი',
+        'new_department' => 'ახალი სტრუქტურა',
         'show_archived' => 'არქივის ჩვენება',
         'hide_archived' => 'არქივის დამალვა',
     ],
