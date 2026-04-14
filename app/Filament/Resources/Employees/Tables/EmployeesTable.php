@@ -48,9 +48,12 @@ class EmployeesTable
                     })
                     ->color('success')
                     ->searchable(),
-                TextColumn::make('appointmentPositions.place.name')
+                TextColumn::make('appointmentPositions.department.name')
                     ->limitList(3)
                     ->bulleted(),
+                // TextColumn::make('appointmentPositions.position.type')
+                //     ->limitList(3)
+                //     ->bulleted(),
                 TextColumn::make('positions_count')
                     ->label(__('filament.positions_count'))
                     ->alignCenter()

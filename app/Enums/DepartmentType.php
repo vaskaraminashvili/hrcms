@@ -8,19 +8,15 @@ use Filament\Support\Contracts\HasLabel;
 enum DepartmentType: string implements HasColor, HasLabel
 {
     case DEPARTMENT = 'department';
-    case INSTITUTION = 'institution';
     case CENTER = 'center';
-    case OFFICE = 'office';
-    case OTHER = 'other';
+    case MUSEUM = 'museum';
 
     public function getLabel(): string
     {
         return match ($this) {
             self::DEPARTMENT => 'დეპარტამენტი',
-            self::INSTITUTION => 'ინსტიტუტი',
             self::CENTER => 'ცენტრი',
-            self::OFFICE => 'ოფისი',
-            self::OTHER => 'სხვა',
+            self::MUSEUM => 'მუზეიუმი',
         };
     }
 
@@ -33,10 +29,8 @@ enum DepartmentType: string implements HasColor, HasLabel
     {
         return match ($this) {
             self::DEPARTMENT => 'primary',
-            self::INSTITUTION => 'secondary',
             self::CENTER => 'success',
-            self::OFFICE => 'warning',
-            self::OTHER => 'gray',
+            self::MUSEUM => 'warning',
         };
     }
 }

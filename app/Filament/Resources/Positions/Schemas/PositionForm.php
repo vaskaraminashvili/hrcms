@@ -66,6 +66,8 @@ class PositionForm
             Section::make()
                 ->label(__('filament.vacation_days'))
                 ->schema([
+                    TextEntry::make('used_days_off_days')
+                        ->label(__('filament.used_days_off_days')),
                     TextEntry::make('transferred_days')
                         ->label(__('filament.transferred_days')),
                     TextEntry::make('total_vacation_days')
@@ -79,7 +81,7 @@ class PositionForm
                 ])
                 ->visible($withEmployee)
 
-                ->columns(4)
+                ->columns(5)
                 ->columnSpanFull(),
             Tabs::make(__('filament.tabs.container'))
                 ->tabs([

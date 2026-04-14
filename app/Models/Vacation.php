@@ -82,11 +82,12 @@ class Vacation extends Model implements HasMedia
         return $hasAdjacentHoliday;
     }
 
-    public static function validateDayOff(int $employeeId, Carbon $date, int $limitPerYear = 5): int
+    public static function validateDayOff(int $employeeId, int $positionId, Carbon $date, int $limitPerYear = 5): int
     {
         // 1. Check annual quota
         $used = static::dayOffs()
             ->where('employee_id', $employeeId)
+            ->where('position_id', $positionId)
             ->whereYear('start_date', $date->year)
             ->count();
 

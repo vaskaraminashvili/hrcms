@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
+use App\Enums\VacationType;
 use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -142,6 +143,11 @@ class Position extends Model implements HasMedia
     public function getUsedVacationDaysAttribute(): int
     {
         return (int) $this->vacations()->sum('working_days_count');
+    }
+
+    public function getUsedDaysOffDaysAttribute(): int
+    {
+        return (int) $this->vacations()->where('type', VacationType::DAY_OFF)->count();
     }
 
     /**

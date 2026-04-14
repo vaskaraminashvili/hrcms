@@ -58,7 +58,7 @@ class Employee extends Model implements HasMedia
     public function appointmentPositions(): HasMany
     {
         return $this->hasMany(Position::class)
-            ->where('status', PositionStatus::Appointment);
+            ->whereNotIn('status', [PositionStatus::Dismissal]);
     }
 
     public function academicPositions(): HasMany

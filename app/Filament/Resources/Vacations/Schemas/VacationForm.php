@@ -13,8 +13,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -32,7 +34,7 @@ class VacationForm
             ->components([
                 Select::make('type')
                     ->options(VacationType::class)
-                    ->default(VacationType::VACATION->value)
+                    ->default(VacationType::PAID_LEAVE->value)
                     ->columnSpan(2)
                     ->live()
                     ->label(__('filament.type'))
@@ -43,6 +45,7 @@ class VacationForm
                     ->searchable(['name', 'surname', 'personal_number'])
                     ->afterStateUpdated(function (Set $set, mixed $state) {
                         $set('position_id', null);
+                        self::fillVacationDaysForSelectedPosition($set, null);
                     })
                     ->columnSpanFull()
                     ->label(__('filament.employee_id'))
@@ -65,10 +68,39 @@ class VacationForm
                             });
                     })
                     ->live()
+                    ->afterStateHydrated(function (Set $set, mixed $state): void {
+                        self::fillVacationDaysForSelectedPosition($set, $state);
+                    })
+                    ->afterStateUpdated(function (Set $set, mixed $state): void {
+                        self::fillVacationDaysForSelectedPosition($set, $state);
+                    })
                     ->columnSpanFull()
                     ->label(__('filament.position'))
                     ->required($showEmployeeAndPosition)
                     ->visible($showEmployeeAndPosition),
+                Section::make()
+                    ->label(__('filament.vacation_days'))
+                    ->schema([
+                        TextEntry::make('used_days_off_days')
+                            ->label(__('filament.used_days_off_days'))
+                            ->state(fn (Get $get): int => (int) ($get('used_days_off_days') ?? 0)),
+                        TextEntry::make('transferred_days')
+                            ->label(__('filament.transferred_days'))
+                            ->state(fn (Get $get): int => (int) ($get('transferred_days') ?? 0)),
+                        TextEntry::make('total_vacation_days')
+                            ->label(__('filament.total_vacation_days'))
+                            ->state(fn (Get $get): int => (int) ($get('total_vacation_days') ?? 0)),
+                        TextEntry::make('used_vacation_days')
+                            ->label(__('filament.used_vacation_days'))
+                            ->state(fn (Get $get): int => (int) ($get('used_vacation_days') ?? 0)),
+                        TextEntry::make('available_vacation_days')
+                            ->label(__('filament.available_vacation_days'))
+                            ->state(fn (Get $get): int => (int) ($get('available_vacation_days') ?? 0))
+                            ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+                    ])
+                    ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
+                    ->columns(5)
+                    ->columnSpanFull(),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
                         fn (VacationStatus $case) => [$case->value => $case->label()]
@@ -213,5 +245,16 @@ class VacationForm
             );
         }
         $set('working_days_count', $count);
+    }
+
+    private static function fillVacationDaysForSelectedPosition(Set $set, mixed $positionId): void
+    {
+        $position = Position::query()->find($positionId);
+
+        $set('used_days_off_days', (int) ($position?->used_days_off_days ?? 0));
+        $set('transferred_days', (int) ($position?->transferred_days ?? 0));
+        $set('total_vacation_days', (int) ($position?->total_vacation_days ?? 0));
+        $set('used_vacation_days', (int) ($position?->used_vacation_days ?? 0));
+        $set('available_vacation_days', (int) ($position?->available_vacation_days ?? 0));
     }
 }

@@ -154,6 +154,7 @@ return [
     'vacation_day_off_limit_exceeded_body' => 'გამოყენებული :days_off დღეები',
     'day_off_adjacent_holiday' => 'არ შეგიძლიათ აღება',
     'day_off_adjacent_holiday_body' => 'არჩეული თარიღი ემთხვევა, წინ უსწრებს ან მოდის სადღესასწაულო დღეს.',
+    'used_days_off_days' => 'გამოყენებული დეიოფის დღეები',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',

@@ -35,7 +35,7 @@ class CreateVacation extends CreateRecord
                 $this->halt();
             }
 
-            $days_off = Vacation::validateDayOff($data['employee_id'], Carbon::parse($data['start_date']));
+            $days_off = Vacation::validateDayOff($data['employee_id'], $data['position_id'], Carbon::parse($data['start_date']));
             if ($days_off >= 5) {
                 $title = __('filament.vacation_day_off_limit_exceeded');
                 $body = __('filament.vacation_day_off_limit_exceeded_body', [

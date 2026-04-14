@@ -90,8 +90,6 @@ class DepartmentResource extends Resource
                     ),
             ])
             ->maxDepth(6)
-            ->collapsed(true)
-
             ->reorderable(false)
         // ->modifyQueryUsing(function (Builder $query): Builder {
         //     $table = $query->getModel()->getTable();
