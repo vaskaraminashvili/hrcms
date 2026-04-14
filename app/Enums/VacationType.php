@@ -2,16 +2,28 @@
 
 namespace App\Enums;
 
-enum VacationType: string
-{
-    case CurrentYear = 'current_year';
-    case PreviousYear = 'previous_year';
+use Filament\Support\Contracts\HasLabel;
 
-    public function label(): string
+enum VacationType: string implements HasLabel
+{
+    case VACATION = 'VACATION';
+    case LEAVE = 'LEAVE';
+    case DAY_OFF = 'DAY_OFF';
+    case REMOTE_WORK = 'REMOTE_WORK';
+    case SICK_LEAVE = 'SICK_LEAVE';
+    case PERSONAL_LEAVE = 'PERSONAL_LEAVE';
+    case OTHER = 'OTHER';
+
+    public function getLabel(): string
     {
         return match ($this) {
-            self::CurrentYear => 'მიმდინარე წელი',
-            self::PreviousYear => 'წინა წელი',
+            self::VACATION => 'შვებულება',
+            self::LEAVE => 'დატოვება',
+            self::DAY_OFF => 'დეიოფი',
+            self::REMOTE_WORK => 'დისტანციური მუშაობა',
+            self::SICK_LEAVE => 'საავადმყოფო ბარათი',
+            self::PERSONAL_LEAVE => 'პირადი მიზეზი',
+            self::OTHER => 'სხვა',
         };
     }
 }
