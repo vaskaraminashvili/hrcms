@@ -68,14 +68,13 @@ class Vacation extends Model implements HasMedia
 
     public function scopeVacations(Builder $q): Builder
     {
-        return $q->where('type', VacationType::VACATION);
+        return $q->where('type', VacationType::PAID_LEAVE);
     }
 
-    public static function hasAdjacentHoliday(string $date): bool
+    public static function hasAdjacentHoliday(Carbon $date): bool
     {
-        $startDate = Carbon::parse($date);
-        $dayBefore = $startDate->copy()->subDay();
-        $dayAfter = $startDate->copy()->addDay();
+        $dayBefore = $date->copy()->subDay();
+        $dayAfter = $date->copy()->addDay();
 
         $hasAdjacentHoliday = PublicHoliday::whereBetween('date', [$dayBefore, $dayAfter])->exists();
 

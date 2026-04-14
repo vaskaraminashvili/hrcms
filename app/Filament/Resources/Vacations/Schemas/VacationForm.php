@@ -38,6 +38,11 @@ class VacationForm
                     ->columnSpan(2)
                     ->live()
                     ->label(__('filament.type'))
+                    ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
+                        if ($get('type')?->value === VacationType::DAY_OFF->value && filled($get('start_date'))) {
+                            self::dayOffSettings(Carbon::parse($get('start_date')), $set);
+                        }
+                    })
                     ->required(),
                 Select::make('employee_id')
                     ->relationship('employee', 'name')
@@ -59,6 +64,7 @@ class VacationForm
                     ->options(function ($get) {
                         return Position::query()
                             ->where('employee_id', $get('employee_id'))
+                            ->activePositions()
                             ->with(['department', 'place'])
                             ->get()
                             ->mapWithKeys(function (Position $position) {
@@ -68,9 +74,6 @@ class VacationForm
                             });
                     })
                     ->live()
-                    ->afterStateHydrated(function (Set $set, mixed $state): void {
-                        self::fillVacationDaysForSelectedPosition($set, $state);
-                    })
                     ->afterStateUpdated(function (Set $set, mixed $state): void {
                         self::fillVacationDaysForSelectedPosition($set, $state);
                     })
@@ -82,23 +85,19 @@ class VacationForm
                     ->label(__('filament.vacation_days'))
                     ->schema([
                         TextEntry::make('used_days_off_days')
-                            ->label(__('filament.used_days_off_days'))
-                            ->state(fn (Get $get): int => (int) ($get('used_days_off_days') ?? 0)),
+                            ->label(__('filament.used_days_off_days')),
                         TextEntry::make('transferred_days')
-                            ->label(__('filament.transferred_days'))
-                            ->state(fn (Get $get): int => (int) ($get('transferred_days') ?? 0)),
+                            ->label(__('filament.transferred_days')),
                         TextEntry::make('total_vacation_days')
-                            ->label(__('filament.total_vacation_days'))
-                            ->state(fn (Get $get): int => (int) ($get('total_vacation_days') ?? 0)),
+                            ->label(__('filament.total_vacation_days')),
                         TextEntry::make('used_vacation_days')
-                            ->label(__('filament.used_vacation_days'))
-                            ->state(fn (Get $get): int => (int) ($get('used_vacation_days') ?? 0)),
+                            ->label(__('filament.used_vacation_days')),
                         TextEntry::make('available_vacation_days')
                             ->label(__('filament.available_vacation_days'))
-                            ->state(fn (Get $get): int => (int) ($get('available_vacation_days') ?? 0))
                             ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
                     ])
                     ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
+
                     ->columns(5)
                     ->columnSpanFull(),
                 Select::make('status')
@@ -113,10 +112,8 @@ class VacationForm
                     ->live()
                     ->label(__('filament.start_date'))
                     ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
+                        self::dayOffSettings(Carbon::parse($get('start_date')), $set);
                         self::recalculateDays($get, $set, self::resolvePosition($get, $livewire));
-                        if ($get('type')->value === VacationType::DAY_OFF->value) {
-                            self::dayOffSettings($get, $set, self::resolvePosition($get, $livewire));
-                        }
                     }),
 
                 DatePicker::make('end_date')
@@ -208,10 +205,10 @@ class VacationForm
         return Position::with('vacationPolicy')->find($get('position_id'));
     }
 
-    private static function dayOffSettings(Get $get, Set $set, ?Position $record): void
+    private static function dayOffSettings(Carbon $startDate, Set $set): void
     {
 
-        $hasAdjacentHoliday = Vacation::hasAdjacentHoliday($get('start_date'));
+        $hasAdjacentHoliday = Vacation::hasAdjacentHoliday($startDate);
         if ($hasAdjacentHoliday) {
             Notification::make()
                 ->title(__('filament.day_off_adjacent_holiday'))
@@ -249,12 +246,23 @@ class VacationForm
 
     private static function fillVacationDaysForSelectedPosition(Set $set, mixed $positionId): void
     {
-        $position = Position::query()->find($positionId);
+        $position = Position::query()
+            ->with(['vacationPolicy', 'vacations', 'vacationTransfers'])
+            ->find($positionId);
 
-        $set('used_days_off_days', (int) ($position?->used_days_off_days ?? 0));
-        $set('transferred_days', (int) ($position?->transferred_days ?? 0));
-        $set('total_vacation_days', (int) ($position?->total_vacation_days ?? 0));
-        $set('used_vacation_days', (int) ($position?->used_vacation_days ?? 0));
-        $set('available_vacation_days', (int) ($position?->available_vacation_days ?? 0));
+        if (! $position) {
+            $defaults = ['used_days_off_days', 'transferred_days', 'total_vacation_days', 'used_vacation_days', 'available_vacation_days'];
+            foreach ($defaults as $field) {
+                $set($field, 0);
+            }
+
+            return;
+        }
+
+        $set('used_days_off_days', $position->used_days_off_days);
+        $set('transferred_days', $position->transferred_days);
+        $set('total_vacation_days', $position->total_vacation_days);
+        $set('used_vacation_days', $position->used_vacation_days);
+        $set('available_vacation_days', $position->available_vacation_days);
     }
 }
