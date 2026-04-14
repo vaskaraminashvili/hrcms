@@ -149,6 +149,11 @@ return [
     'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
     'position_history_title' => 'თანამდებობის ისტორია',
     'changed_by' => 'ვინ შეცვალა',
+    'vacation_file_attachments' => 'შვებულების ფაილები',
+    'vacation_day_off_limit_exceeded' => 'დეიოფის დღეების ლიმიტი ამოწურულია',
+    'vacation_day_off_limit_exceeded_body' => 'გამოყენებული :days_off დღეები',
+    'day_off_adjacent_holiday' => 'არ შეგიძლიათ აღება',
+    'day_off_adjacent_holiday_body' => 'არჩეული თარიღი ემთხვევა, წინ უსწრებს ან მოდის სადღესასწაულო დღეს.',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',
@@ -357,8 +362,8 @@ return [
             'add_new_vacation' => 'შვებულების დამატება',
         ],
         'vacation_transfers' => [
-            'title' => 'შვებულების გადაცემები',
-            'add_new_vacation_transfer' => 'შვებულების გადაცემის დამატება',
+            'title' => 'შვებულების გადატანა',
+            'add_new_vacation_transfer' => 'შვებულების გადატანის დამატება',
         ],
     ],
 

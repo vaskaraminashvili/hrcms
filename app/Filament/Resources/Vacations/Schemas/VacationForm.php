@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Vacations\Schemas;
 
 use App\Enums\VacationStatus;
+use App\Enums\VacationType;
 use App\Models\Position;
+use App\Models\Vacation;
 use App\Services\VacationWorkingDaysCalculator;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
@@ -11,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -27,6 +30,13 @@ class VacationForm
 
         return $schema
             ->components([
+                Select::make('type')
+                    ->options(VacationType::class)
+                    ->default(VacationType::VACATION->value)
+                    ->columnSpan(2)
+                    ->live()
+                    ->label(__('filament.type'))
+                    ->required(),
                 Select::make('employee_id')
                     ->relationship('employee', 'name')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
@@ -36,6 +46,7 @@ class VacationForm
                     })
                     ->columnSpanFull()
                     ->label(__('filament.employee_id'))
+                    ->columnSpan(2)
                     ->live()
                     ->preload()
                     ->required($showEmployeeAndPosition)
@@ -58,13 +69,22 @@ class VacationForm
                     ->label(__('filament.position'))
                     ->required($showEmployeeAndPosition)
                     ->visible($showEmployeeAndPosition),
-
+                Select::make('status')
+                    ->options(collect(VacationStatus::cases())->mapWithKeys(
+                        fn (VacationStatus $case) => [$case->value => $case->label()]
+                    ))
+                    ->default(VacationStatus::Pending->value)
+                    ->required()
+                    ->label(__('filament.status')),
                 DatePicker::make('start_date')
                     ->required()
                     ->live()
                     ->label(__('filament.start_date'))
                     ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
                         self::recalculateDays($get, $set, self::resolvePosition($get, $livewire));
+                        if ($get('type')->value === VacationType::DAY_OFF->value) {
+                            self::dayOffSettings($get, $set, self::resolvePosition($get, $livewire));
+                        }
                     }),
 
                 DatePicker::make('end_date')
@@ -73,7 +93,9 @@ class VacationForm
                     ->label(__('filament.end_date'))
                     ->afterStateUpdated(function (Get $get, Set $set, mixed $livewire) {
                         self::recalculateDays($get, $set, self::resolvePosition($get, $livewire));
-                    }),
+                    })
+                    ->dehydrated()
+                    ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value),
 
                 TextInput::make('working_days_count')
                     ->disabled()
@@ -123,14 +145,6 @@ class VacationForm
                     })
                     ->label(__('filament.working_days_count')),
 
-                Select::make('status')
-                    ->options(collect(VacationStatus::cases())->mapWithKeys(
-                        fn (VacationStatus $case) => [$case->value => $case->label()]
-                    ))
-                    ->default(VacationStatus::Pending->value)
-                    ->required()
-                    ->label(__('filament.status')),
-
                 Textarea::make('reason')
                     ->columnSpanFull()
                     ->label(__('filament.reason')),
@@ -139,7 +153,7 @@ class VacationForm
                     ->columnSpanFull()
                     ->label(__('filament.notes')),
                 SpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
-                    ->label(__('filament.position_file_attachments'))
+                    ->label(__('filament.vacation_file_attachments'))
                     ->collection('position')
                     ->removeUploadedFileButtonPosition('right')
                     ->multiple()
@@ -162,20 +176,42 @@ class VacationForm
         return Position::with('vacationPolicy')->find($get('position_id'));
     }
 
+    private static function dayOffSettings(Get $get, Set $set, ?Position $record): void
+    {
+
+        $hasAdjacentHoliday = Vacation::hasAdjacentHoliday($get('start_date'));
+        if ($hasAdjacentHoliday) {
+            Notification::make()
+                ->title(__('filament.day_off_adjacent_holiday'))
+                ->body(__('filament.day_off_adjacent_holiday_body'))
+                ->seconds(5)
+                ->duration(10000)
+                ->color('warning')
+                ->warning()
+                ->send();
+
+        }
+
+    }
+
     private static function recalculateDays(Get $get, Set $set, ?Position $record): void
     {
         $startDate = $get('start_date');
         $endDate = $get('end_date');
         $position = $record ? $record->load('vacationPolicy') : Position::with('vacationPolicy')->find($get('position_id'));
-        if (! $startDate || ! $endDate || ! $position) {
+        if (! $startDate || ! $position) {
             return;
         }
-
-        $count = app(VacationWorkingDaysCalculator::class)->countWorkingDaysInRange(
-            Carbon::parse($startDate),
-            Carbon::parse($endDate),
-            $position,
-        );
+        if ($get('type')->value === VacationType::DAY_OFF->value) {
+            $count = 1;
+            $set('end_date', $startDate);
+        } else {
+            $count = app(VacationWorkingDaysCalculator::class)->countWorkingDaysInRange(
+                Carbon::parse($startDate),
+                Carbon::parse($endDate),
+                $position,
+            );
+        }
         $set('working_days_count', $count);
     }
 }
