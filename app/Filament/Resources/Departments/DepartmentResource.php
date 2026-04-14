@@ -90,6 +90,8 @@ class DepartmentResource extends Resource
                     ),
             ])
             ->maxDepth(6)
+            ->collapsed(true)
+
             ->reorderable(false)
         // ->modifyQueryUsing(function (Builder $query): Builder {
         //     $table = $query->getModel()->getTable();
@@ -105,7 +107,7 @@ class DepartmentResource extends Resource
         //         "{$table}.color",
         //     ]);
         // })
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children', 'parent', 'positions']));
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children']));
     }
 
     public static function getPages(): array
