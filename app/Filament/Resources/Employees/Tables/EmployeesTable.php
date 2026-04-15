@@ -48,17 +48,23 @@ class EmployeesTable
                     })
                     ->color('success')
                     ->searchable(),
+                TextColumn::make('appointmentPositions.department.name')
+                    ->limitList(3)
+                    ->bulleted(),
+                // TextColumn::make('appointmentPositions.position.type')
+                //     ->limitList(3)
+                //     ->bulleted(),
                 TextColumn::make('positions_count')
                     ->label(__('filament.positions_count'))
                     ->alignCenter()
                     ->icon('heroicon-o-briefcase')
-                    ->counts('positions')
+                    ->counts(['appointmentPositions as positions_count'])
                     ->sortable(),
-                TextColumn::make('email')
-                    ->label(__('filament.email'))
-                    ->searchable(),
+                // TextColumn::make('email')
+                //     ->label(__('filament.email'))
+                //     ->searchable(),
                 TextColumn::make('birth_date')
-                    ->label(__('filament.birth_date'))
+                    ->label(__('filament.birth_date_placeholder'))
                     ->date()
                     ->sortable(),
                 TextColumn::make('status')
@@ -66,6 +72,7 @@ class EmployeesTable
                     ->badge()
                     ->color(fn (Employee $record): string => $record->status->getColor())
                     ->icon(fn (Employee $record): string => $record->status->getIcon())
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('gender')
                     ->label(__('filament.gender'))

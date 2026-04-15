@@ -50,4 +50,24 @@ class VacationPolicyResource extends Resource
             'edit' => EditVacationPolicy::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.system');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.vacation_policies.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.vacation_policies.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.positions.plural_model_label');
+    }
 }

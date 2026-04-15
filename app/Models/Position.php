@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
+use App\Enums\VacationType;
 use Database\Factories\PositionFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -144,12 +146,26 @@ class Position extends Model implements HasMedia
         return (int) $this->vacations()->sum('working_days_count');
     }
 
+    public function getUsedDaysOffDaysAttribute(): int
+    {
+        return (int) $this->vacations()->where('type', VacationType::DAY_OFF)->count();
+    }
+
     /**
      * Remaining / available days = total - used.
      */
     public function getAvailableVacationDaysAttribute(): int
     {
         return max(0, $this->total_vacation_days - $this->used_vacation_days);
+    }
+
+    /**
+     * Apply the scope to a given Eloquent query builder.
+     */
+    public function scopeActivePositions(Builder $query): Builder
+    {
+        return $query->whereNotIn('status', [PositionStatus::Dismissal->value, PositionStatus::Achieved->value])
+            ->where('date_end', '>=', now());
     }
 
     public function registerMediaCollections(): void

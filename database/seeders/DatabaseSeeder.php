@@ -25,10 +25,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SuperAdminSeeder::class,
             DepartmentSeeder::class,
-            // EmployeeSeeder::class,
+            EmployeeSeeder::class,
             PlaceSeeder::class,
             VacationPolicySeeder::class,
-            // PositionSeeder::class,
+            PositionSeeder::class,
             ShieldSeeder::class,
         ]);
     }

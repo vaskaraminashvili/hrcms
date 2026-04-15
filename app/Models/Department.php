@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DepartmentStatus;
+use App\Enums\DepartmentType;
 use App\Enums\EnumsDepartmentColor;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,11 +53,13 @@ class Department extends Model
         'status',
         'parent_id',
         'order',
+        'type',
     ];
 
     protected $casts = [
         'color' => EnumsDepartmentColor::class,
         'status' => DepartmentStatus::class,
+        'type' => DepartmentType::class,
     ];
 
     public function positions(): HasMany

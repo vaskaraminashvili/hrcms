@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Enums\PositionStatus;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,7 @@ class Employee extends Model implements HasMedia
         'mobile_number',
         'account_number',
         'address_details',
+        'status',
     ];
 
     protected function casts(): array
@@ -51,6 +53,12 @@ class Employee extends Model implements HasMedia
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class);
+    }
+
+    public function appointmentPositions(): HasMany
+    {
+        return $this->hasMany(Position::class)
+            ->whereNotIn('status', [PositionStatus::Dismissal]);
     }
 
     public function academicPositions(): HasMany
@@ -111,6 +119,11 @@ class Employee extends Model implements HasMedia
     public function computerSkills(): HasMany
     {
         return $this->hasMany(ComputerSkill::class);
+    }
+
+    public function other(): HasMany
+    {
+        return $this->hasMany(OtherDocument::class);
     }
 
     public function getActivitylogOptions(): LogOptions

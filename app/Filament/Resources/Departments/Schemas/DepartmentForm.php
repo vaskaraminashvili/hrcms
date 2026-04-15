@@ -3,7 +3,7 @@
 namespace App\Filament\Resources\Departments\Schemas;
 
 use App\Enums\DepartmentStatus;
-use App\Enums\EnumsDepartmentColor;
+use App\Enums\DepartmentType;
 use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
@@ -29,6 +29,10 @@ class DepartmentForm
         return [
             Section::make()
                 ->schema([
+                    Select::make('type')
+                        ->label(__('filament.type'))
+                        ->options(DepartmentType::class)
+                        ->default(DepartmentType::DEPARTMENT),
                     Select::make('parent_id')
                         ->label(__('filament.parent_id'))
                         ->options($parentOptions)

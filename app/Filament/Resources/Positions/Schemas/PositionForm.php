@@ -7,6 +7,7 @@ use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Filament\Schemas\StateCasts\ClinicalRadioStateCast;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\Position;
 use Closure;
 use Filament\Forms\Components\DatePicker;
@@ -29,7 +30,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    public static function configure(Schema $schema, bool $withEmployee = false): Schema
+    public static function configure(Schema $schema, bool $withEmployee = false, ?Employee $employee = null): Schema
     {
 
         return $schema->components([
@@ -42,11 +43,13 @@ class PositionForm
                 ->preload()
                 ->getOptionLabelFromRecordUsing(fn ($record) => $record->name.' '.$record->surname)
                 ->label(__('filament.employee_id'))
-                ->disabled(fn (?Position $record): bool => $record !== null)
+                ->disabled(function (?Position $record) {
+                    return $record !== null;
+                })
                 ->dehydrated()
                 ->required()
                 ->columnSpanFull()
-                ->hidden($withEmployee),
+                ->hidden($withEmployee || $employee !== null),
             Section::make()
                 ->schema([
                     TextEntry::make('employee.name')
@@ -63,6 +66,8 @@ class PositionForm
             Section::make()
                 ->label(__('filament.vacation_days'))
                 ->schema([
+                    TextEntry::make('used_days_off_days')
+                        ->label(__('filament.used_days_off_days')),
                     TextEntry::make('transferred_days')
                         ->label(__('filament.transferred_days')),
                     TextEntry::make('total_vacation_days')
@@ -76,7 +81,7 @@ class PositionForm
                 ])
                 ->visible($withEmployee)
 
-                ->columns(4)
+                ->columns(5)
                 ->columnSpanFull(),
             Tabs::make(__('filament.tabs.container'))
                 ->tabs([

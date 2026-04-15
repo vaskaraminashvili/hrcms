@@ -2,3 +2,130 @@
     font-size: 1.2rem;
     /* or 1.1rem, 1.25rem, etc. */
 }
+
+/**
+ * Department tree (openplain/filament-tree-view): each node has data-depth (0 = root).
+ * Row background + name tint via .fi-tree-dept-name (DepartmentTextField for `name`).
+ * Depth palette: #c45335, #cc7a3d, #e6c994, #fbf2c4, #74a892, #008585 (5–6 share last).
+ */
+p-0 .filament-tree-container .filament-tree-node>.filament-tree-node-content>.fi-ta-cell {
+    border-radius: 0.5rem;
+    margin-block: 0.125rem;
+    padding-inline: 0.5rem;
+    padding-block: 0.375rem;
+    border-left: 3px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.filament-tree-container .filament-tree-node[data-depth='0']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #742d75 20%, white);
+}
+
+.filament-tree-container .filament-tree-node[data-depth='1']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #373463 22%, white);
+}
+
+.filament-tree-container .filament-tree-node[data-depth='2']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #1e8181 42%, white);
+}
+
+.filament-tree-container .filament-tree-node[data-depth='3']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #62975e 88%, white);
+}
+
+.filament-tree-container .filament-tree-node[data-depth='4']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #9c7a39 24%, white);
+}
+
+.filament-tree-container .filament-tree-node[data-depth='5']>.filament-tree-node-content>.fi-ta-cell,
+.filament-tree-container .filament-tree-node[data-depth='6']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #682e44 18%, white);
+}
+
+.dark .filament-tree-container .filament-tree-node>.filament-tree-node-content>.fi-ta-cell {
+    background-color: transparent;
+}
+
+/* 
+.dark .filament-tree-container .filament-tree-node[data-depth='0']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #c45335 38%, rgb(24 24 27));
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='1']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #cc7a3d 38%, rgb(24 24 27));
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='2']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #e6c994 32%, rgb(24 24 27));
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='3']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #fbf2c4 28%, rgb(24 24 27));
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='4']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #74a892 34%, rgb(24 24 27));
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='5']>.filament-tree-node-content>.fi-ta-cell,
+.dark .filament-tree-container .filament-tree-node[data-depth='6']>.filament-tree-node-content>.fi-ta-cell {
+    background-color: color-mix(in srgb, #008585 36%, rgb(24 24 27));
+} */
+
+/* .filament-tree-container .filament-tree-node[data-depth='0'] .fi-tree-dept-name {
+    color: #742d75
+}
+
+.filament-tree-container .filament-tree-node[data-depth='1'] .fi-tree-dept-name {
+    color: #373463;
+}
+
+.filament-tree-container .filament-tree-node[data-depth='2'] .fi-tree-dept-name {
+    color: #1e8181;
+}
+
+.filament-tree-container .filament-tree-node[data-depth='3'] .fi-tree-dept-name {
+    color: #62975e;
+}
+
+.filament-tree-container .filament-tree-node[data-depth='4'] .fi-tree-dept-name {
+    color: #9c7a39;
+}
+
+.filament-tree-container .filament-tree-node[data-depth='5'] .fi-tree-dept-name {
+    color: #682e44;
+
+}
+
+.filament-tree-container .filament-tree-node[data-depth='6'] .fi-tree-dept-name {
+    color: #742d75;
+} */
+
+.dark .filament-tree-container .filament-tree-node[data-depth='0'] .fi-tree-dept-name {
+    color: #fff500;
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='1'] .fi-tree-dept-name {
+    color: #00ff75;
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='2'] .fi-tree-dept-name {
+    color: #cd76ea;
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='3'] .fi-tree-dept-name {
+    color: #ffb443;
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='4'] .fi-tree-dept-name {
+    color: #ff5e5e;
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='5'] .fi-tree-dept-name {
+    color: #39dbff;
+
+}
+
+.dark .filament-tree-container .filament-tree-node[data-depth='6'] .fi-tree-dept-name {
+    color: #fff500;
+}
