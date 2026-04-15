@@ -21,13 +21,13 @@ class PositionHistoriesTable
         return $table
             ->columns([
                 TextColumn::make('creted')
+                    ->label(__('filament.time'))
                     ->getStateUsing(fn (PositionHistory $record) => $record->created_at->format('d.m.Y'))
                     ->date()
                     ->sortable(query: function (Builder $query, string $direction): Builder {
                         return $query
                             ->orderBy('created_at', $direction);
-                    })
-                    ->label(__('filament.created_at')),
+                    }),
                 TextColumn::make('employee')
                     ->getStateUsing(function (PositionHistory $record) {
                         $name = $record->position->employee->name.' '.$record->position->employee->surname;
@@ -55,8 +55,14 @@ class PositionHistoriesTable
                         return $changes;
                     })
                     ->wrap()
-                    ->lineClamp(3)
-                    ->label(__('filament.changes')),
+                    ->lineClamp(4)
+                    ->label(__('filament.changes'))
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('snapshot.date_start')
+                    ->date()
+                    ->label(__('filament.date_start_short'))
+                    ->sortable(),
+
                 TextColumn::make('position.department.name')
                     ->wrap()
                     ->searchable(true, function (Builder $query, string $search): void {
@@ -78,9 +84,11 @@ class PositionHistoriesTable
                 TextColumn::make('changedBy.name')
                     ->numeric()
                     ->sortable()
-                    ->label(__('filament.changed_by')),
+                    ->label(__('filament.changed_by'))
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('event_type')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 ...collect(PositionHistoryAffectField::cases())
                     ->filter(fn (PositionHistoryAffectField $field) => $field->showInTableColumn())
                     ->map(fn (PositionHistoryAffectField $field) => IconColumn::make($field->value)

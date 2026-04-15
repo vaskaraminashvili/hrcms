@@ -32,28 +32,35 @@ class EmployeeImportService
     public function importAll(bool $clearTableBefore = true): array
     {
         set_time_limit(0);
-
+        ini_set('max_execution_time', 0);
         if ($clearTableBefore) {
             $this->clearEmployeesTable();
         }
-
         $imported = 0;
 
         $usedPersonalNumbers = $this->loadUsedPersonalNumbers();
-
+        $employees_id_pairs = [];
         DB::table('import_employees')->orderBy('id')->chunkById(
             self::IMPORT_CHUNK_SIZE,
-            function ($rows) use (&$imported, &$usedPersonalNumbers) {
-                DB::transaction(function () use ($rows, &$imported, &$usedPersonalNumbers) {
-                    Employee::withoutEvents(function () use ($rows, &$imported, &$usedPersonalNumbers) {
+            function ($rows) use (&$imported, &$usedPersonalNumbers, &$employees_id_pairs) {
+                DB::transaction(function () use ($rows, &$imported, &$usedPersonalNumbers, &$employees_id_pairs) {
+                    Employee::withoutEvents(function () use ($rows, &$imported, &$usedPersonalNumbers, &$employees_id_pairs) {
                         foreach ($rows as $row) {
-                            $this->importRow($row, $usedPersonalNumbers);
+                            $employee = $this->importRow($row, $usedPersonalNumbers);
+                            $employees_id_pairs[] = [
+                                'id' => $row->id,
+                                'imported_id' => $employee->id,
+                            ];
                             $imported++;
                         }
                     });
                 });
             }
         );
+
+        if ($employees_id_pairs !== []) {
+            DB::table('import_employees')->upsert($employees_id_pairs, ['id'], ['imported_id']);
+        }
 
         return ['imported' => $imported, 'skipped' => 0];
     }
@@ -64,12 +71,13 @@ class EmployeeImportService
     private function clearEmployeesTable(): void
     {
         DB::table('employees')->delete();
+        DB::statement('ALTER TABLE employees AUTO_INCREMENT = 1');
     }
 
     /**
      * @param  array<string, true>  $usedPersonalNumbers
      */
-    private function importRow(stdClass $row, array &$usedPersonalNumbers): void
+    private function importRow(stdClass $row, array &$usedPersonalNumbers): Employee
     {
         $personalNumber = $this->resolvePersonalNumber($row->personal_number ?? null, $usedPersonalNumbers);
         $birthDate = $this->resolveBirthDate($row->birth_date ?? null);
@@ -99,8 +107,10 @@ class EmployeeImportService
             'citizenship' => null,
         ]);
 
-        $employee->status = $this->mapImportStatus($row->status ?? null);
+        $employee->status = $this->mapImportStatus($row->arq ?? null);
         $employee->save();
+
+        return $employee;
     }
 
     /**

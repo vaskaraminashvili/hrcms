@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('vacations', function (Blueprint $table) {
-            $table->string('type')->after('status')->default(VacationType::VACATION->value);
+            $table->string('type')->after('status')->default(VacationType::PAID_LEAVE->value);
         });
     }
 
