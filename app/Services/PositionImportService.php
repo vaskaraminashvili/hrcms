@@ -93,8 +93,8 @@ class PositionImportService
                 'import_departments.sax_geo as department_name',
                 'import_places.tanamd as place_name',
             ])
-            ->where('employee_id', 461)
-            ->orderBy('import_positions.id')
+            ->where('employee_id', 1)
+            ->orderBy('import_positions.date_start')
             ->chunkById(
                 self::IMPORT_CHUNK_SIZE,
                 function (Collection $rows) use (
@@ -122,39 +122,25 @@ class PositionImportService
                         &$placesCreated,
                         &$positionTypeFallbacks
                     ): void {
-                        Position::withoutEvents(function () use (
-                            $rows,
-                            $places,
-                            $departments,
-                            $employees,
-                            $vacationPolicyIds,
-                            &$imported,
-                            &$skipped,
-                            &$skipReasons,
-                            &$departmentsCreated,
-                            &$placesCreated,
-                            &$positionTypeFallbacks
-                        ): void {
-                            foreach ($rows as $row) {
-                                $result = $this->importRow(
-                                    $row,
-                                    $places,
-                                    $departments,
-                                    $employees,
-                                    $vacationPolicyIds,
-                                    $departmentsCreated,
-                                    $placesCreated,
-                                    $positionTypeFallbacks
-                                );
-                                if ($result === true) {
-                                    $imported++;
-                                } else {
-                                    $skipped++;
-                                    $reason = is_string($result) ? $result : 'unknown';
-                                    $skipReasons[$reason] = ($skipReasons[$reason] ?? 0) + 1;
-                                }
+                        foreach ($rows as $row) {
+                            $result = $this->importRow(
+                                $row,
+                                $places,
+                                $departments,
+                                $employees,
+                                $vacationPolicyIds,
+                                $departmentsCreated,
+                                $placesCreated,
+                                $positionTypeFallbacks
+                            );
+                            if ($result === true) {
+                                $imported++;
+                            } else {
+                                $skipped++;
+                                $reason = is_string($result) ? $result : 'unknown';
+                                $skipReasons[$reason] = ($skipReasons[$reason] ?? 0) + 1;
                             }
-                        });
+                        }
                     });
                 },
                 'import_positions.id',
@@ -384,6 +370,7 @@ class PositionImportService
     private function clearPositionsTable(): void
     {
         DB::table('positions')->delete();
+        DB::statement('ALTER TABLE positions AUTO_INCREMENT = 1');
     }
 
     /**
