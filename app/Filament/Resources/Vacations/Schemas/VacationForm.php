@@ -20,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class VacationForm
 {
@@ -61,19 +62,31 @@ class VacationForm
                     ->visible($showEmployeeAndPosition),
 
                 Select::make('position_id')
-                    ->options(function ($get) {
-                        return Position::query()
-                            ->where('employee_id', $get('employee_id'))
-                            ->activePositions()
-                            ->with(['department', 'place'])
-                            ->get()
-                            ->mapWithKeys(function (Position $position) {
-                                return [
-                                    $position->id => $position->place->name.'/'.$position->department->name,
-                                ];
-                            });
+                    ->relationship(
+                        'position',
+                        'id',
+                        function (Builder $query, Get $get): Builder {
+                            return $query
+                                ->where('positions.employee_id', $get('employee_id'))
+                                ->where(function (Builder $q) use ($get): void {
+                                    $q->where(fn (Builder $q2): Builder => $q2->activePositions());
+                                    if (filled($get('position_id'))) {
+                                        $q->orWhere(
+                                            $q->qualifyColumn($q->getModel()->getKeyName()),
+                                            $get('position_id'),
+                                        );
+                                    }
+                                })
+                                ->with(['department', 'place']);
+                        },
+                    )
+                    ->getOptionLabelFromRecordUsing(function (Position $position): string {
+                        return $position->place->name.'/'.$position->department->name;
                     })
                     ->live()
+                    ->afterStateHydrated(function (Set $set, mixed $state): void {
+                        self::fillVacationDaysForSelectedPosition($set, $state);
+                    })
                     ->afterStateUpdated(function (Set $set, mixed $state): void {
                         self::fillVacationDaysForSelectedPosition($set, $state);
                     })
