@@ -12,6 +12,9 @@ return [
     'model_label' => 'აქტივობა',
     'plural_model_label' => 'აქტივობები',
 
+    /** Filament Shield: sidebar navigation group (overrides package default). */
+    'shield_navigation_group' => 'როლები და უფლებები',
+
     /*
     |--------------------------------------------------------------------------
     | Activity log (filament-activity-log)
@@ -35,6 +38,7 @@ return [
     'personal_number' => 'პირადი ნომერი',
     'email' => 'ელფოსტა',
     'birth_date' => 'დაბადების თარიღი',
+    'birth_date_placeholder' => 'დაბ. თარ.',
     'gender' => 'სქესი',
     'gender_default' => 'male',
     'education' => 'განათლება',
@@ -62,12 +66,13 @@ return [
     'employee_image' => 'თანამშრომლის სურათი',
     'save' => 'შენახვა',
     'save_history' => 'შენახვა ისტორიით',
+    'system' => 'სისტემა',
     'position_edit' => [
         'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
         'modal_save_history_description' => 'შენახული ცვლილებები ჩაიწერება თანამდებობის ისტორიაში აუდიტისთვის.',
         'modal_save_history_submit' => 'შენახვა ისტორიით',
     ],
-    'place_id' => 'ადგილი',
+    'place_id' => 'თანამდებობა',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
@@ -144,6 +149,12 @@ return [
     'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
     'position_history_title' => 'თანამდებობის ისტორია',
     'changed_by' => 'ვინ შეცვალა',
+    'vacation_file_attachments' => 'შვებულების ფაილები',
+    'vacation_day_off_limit_exceeded' => 'დეიოფის დღეების ლიმიტი ამოწურულია',
+    'vacation_day_off_limit_exceeded_body' => 'გამოყენებული :days_off დღეები',
+    'day_off_adjacent_holiday' => 'არ შეგიძლიათ აღება',
+    'day_off_adjacent_holiday_body' => 'არჩეული თარიღი ემთხვევა, წინ უსწრებს ან მოდის სადღესასწაულო დღეს.',
+    'used_days_off_days' => 'გამოყენებული დეიოფის დღეები',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',
@@ -222,19 +233,19 @@ return [
             'plural_model_label' => 'თანამშრომლები',
         ],
         'places' => [
-            'navigation_label' => 'ადგილები',
-            'model_label' => 'ადგილი',
-            'plural_model_label' => 'ადგილები',
-        ],
-        'positions' => [
             'navigation_label' => 'თანამდებობები',
             'model_label' => 'თანამდებობა',
             'plural_model_label' => 'თანამდებობები',
         ],
+        'positions' => [
+            'navigation_label' => 'პოზიცია',
+            'model_label' => 'პოზიციას',
+            'plural_model_label' => 'პოზიციები',
+        ],
         'departments' => [
-            'navigation_label' => 'დეპარტამენტები',
-            'model_label' => 'დეპარტამენტი',
-            'plural_model_label' => 'დეპარტამენტები',
+            'navigation_label' => 'სტრუქტურა',
+            'model_label' => 'სტრუქტურა',
+            'plural_model_label' => 'სტრუქტურა',
         ],
         'public_holidays' => [
             'navigation_label' => 'სახელმწიფო დღესასწაულები',
@@ -247,14 +258,14 @@ return [
             'plural_model_label' => 'შვებულებები',
         ],
         'vacation_policies' => [
-            'navigation_label' => 'შვებულების დროცულებები',
-            'model_label' => 'შვებულების დროცულება',
-            'plural_model_label' => 'შვებულების დროცულებები',
+            'navigation_label' => 'შვებულების პოლისი',
+            'model_label' => 'შვებულების პოლისი',
+            'plural_model_label' => 'შვებულების პოლისი',
         ],
         'position_histories' => [
-            'navigation_label' => 'თანამდებობის ისტორია',
-            'model_label' => 'თანამდებობის ისტორია',
-            'plural_model_label' => 'თანამდებობის ისტორია',
+            'navigation_label' => 'პოზიციის ისტორია',
+            'model_label' => 'პოზიციის ისტორია',
+            'plural_model_label' => 'პოზიციის ისტორია',
         ],
     ],
 
@@ -284,10 +295,10 @@ return [
     */
     'admin' => [
         'list_places' => [
-            'title' => 'ადგილები',
+            'title' => 'თანამდებობები',
         ],
         'edit_place' => [
-            'title' => 'ადგილის რედაქტირება',
+            'title' => 'თანამდებობის რედაქტირება',
         ],
         'list_employees' => [
             'title' => 'თანამშრომლები',
@@ -299,13 +310,13 @@ return [
             'title' => 'თანამშრომლის ნახვა',
         ],
         'list_positions' => [
-            'title' => 'თანამდებობები',
+            'title' => 'პოზიციები',
         ],
         'edit_position' => [
-            'title' => 'თანამდებობის რედაქტირება',
+            'title' => 'პოზიციის რედაქტირება',
         ],
         'view_position' => [
-            'title' => 'თანამდებობის ნახვა',
+            'title' => 'პოზიციის ნახვა',
         ],
         'list_roles' => [
             'title' => 'როლები',
@@ -331,7 +342,7 @@ return [
     ],
 
     'tree_departments' => [
-        'new_department' => 'ახალი დეპარტამენტი',
+        'new_department' => 'ახალი სტრუქტურა',
         'show_archived' => 'არქივის ჩვენება',
         'hide_archived' => 'არქივის დამალვა',
     ],
@@ -345,14 +356,15 @@ return [
             'title' => 'თანამდებობები',
             'add_new_position' => 'ახალი თანამდებობის დამატება',
             'renewal' => 'გახანგრძლივება',
+            'open_edit_in_new_tab' => 'ახალ ფანჯარა',
         ],
         'vacations' => [
             'title' => 'შვებულებები',
             'add_new_vacation' => 'შვებულების დამატება',
         ],
         'vacation_transfers' => [
-            'title' => 'შვებულების გადაცემები',
-            'add_new_vacation_transfer' => 'შვებულების გადაცემის დამატება',
+            'title' => 'შვებულების გადატანა',
+            'add_new_vacation_transfer' => 'შვებულების გადატანის დამატება',
         ],
     ],
 
@@ -443,6 +455,11 @@ return [
             'issuer' => 'გამცემელი',
         ],
 
+        'other' => [
+            'title' => 'დოკუმენტის სახელწოდება',
+            'documents' => 'დოკუმენტები',
+        ],
+
         'tabs' => [
             'academic_position' => 'აკადემიური თანამდებობა',
             'education' => 'განათლება',
@@ -456,6 +473,7 @@ return [
             'scholarships_awards' => 'სტიპენდიები / ჯილდოები / სახელმწიფო პრემიები',
             'foreign_languages' => 'უცხოური ენების ფლობის ხარისხი',
             'computer_skills' => 'კომპიუტერული პროგრამების ფლობის ხარისხი',
+            'other' => 'სხვა',
         ],
 
     ],

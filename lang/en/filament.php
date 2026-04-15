@@ -16,6 +16,9 @@ return [
     'model_label' => 'Activity',
     'plural_model_label' => 'Activities',
 
+    /** Filament Shield: sidebar navigation group (overrides package default). */
+    'shield_navigation_group' => 'Roles & permissions',
+
     /*
     |--------------------------------------------------------------------------
     | Activity log (filament-activity-log)
@@ -298,6 +301,7 @@ return [
             'title' => 'Positions',
             'add_new_position' => 'Add new position',
             'renewal' => 'Renewal',
+            'open_edit_in_new_tab' => 'Edit in new tab',
         ],
         'vacations' => [
             'title' => 'Vacations',
@@ -396,6 +400,11 @@ return [
             'issuer' => 'Issuing body',
         ],
 
+        'other' => [
+            'title' => 'Document title',
+            'documents' => 'Documents',
+        ],
+
         'tabs' => [
             'academic_position' => 'Academic position',
             'education' => 'Education',
@@ -409,6 +418,7 @@ return [
             'scholarships_awards' => 'Scholarships / awards / state prizes',
             'foreign_languages' => 'Foreign language proficiency',
             'computer_skills' => 'Computer software proficiency',
+            'other' => 'Other',
         ],
     ],
 

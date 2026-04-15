@@ -18,6 +18,11 @@ class VacationsTable
     {
         $columns = [];
 
+        $columns[] = TextColumn::make('type')
+            ->label(__('filament.vacation_type'))
+            ->badge()
+            ->alignCenter()
+            ->searchable();
         if (! $hideEmployeeAndPositionColumns) {
             $columns[] = TextColumn::make('employee.name')
                 ->label(__('filament.employee.name'))
@@ -46,10 +51,7 @@ class VacationsTable
                 ->label(__('filament.working_days_count'))
                 ->numeric()
                 ->sortable(),
-            TextColumn::make('status')
-                ->label(__('filament.status'))
-                ->badge()
-                ->searchable(),
+
             TextColumn::make('created_at')
                 ->label(__('filament.created_at'))
                 ->dateTime()

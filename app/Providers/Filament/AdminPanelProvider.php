@@ -85,11 +85,12 @@ class AdminPanelProvider extends PanelProvider
                         ['code' => 'ka', 'name' => 'Georgian', 'flag' => 'ge'],
                     ]),
                 FilamentShieldPlugin::make()
-                    ->registerNavigation(true),
+                    ->registerNavigation(true)
+                    ->navigationGroup(fn (): string => __('filament.shield_navigation_group')),
                 ActivityLogPlugin::make()
                     ->label('Log')
                     ->pluralLabel('Logs')
-                    ->navigationGroup('System'),
+                    ->navigationGroup(__('filament.system')),
                 FilamentClearCachePlugin::make(),
                 FileManagerPlugin::make([
                     FileManager::class,              // Database mode - full CRUD file manager

@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Enums\VacationStatus;
+use App\Enums\VacationType;
+use Carbon\Carbon;
 use Database\Factories\VacationFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +30,7 @@ class Vacation extends Model implements HasMedia
         'status',
         'reason',
         'notes',
+        'type',
     ];
 
     protected function casts(): array
@@ -36,6 +40,7 @@ class Vacation extends Model implements HasMedia
             'end_date' => 'date:d.m.Y',
             'working_days_count' => 'integer',
             'status' => VacationStatus::class,
+            'type' => VacationType::class,
         ];
     }
 
@@ -54,6 +59,50 @@ class Vacation extends Model implements HasMedia
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
+    }
+
+    public function scopeDayOffs(Builder $q): Builder
+    {
+        return $q->where('type', VacationType::DAY_OFF);
+    }
+
+    public function scopeVacations(Builder $q): Builder
+    {
+        return $q->where('type', VacationType::PAID_LEAVE);
+    }
+
+    public static function hasAdjacentHoliday(Carbon $date): bool
+    {
+        $dayBefore = $date->copy()->subDay();
+        $dayAfter = $date->copy()->addDay();
+
+        $hasAdjacentHoliday = PublicHoliday::whereBetween('date', [$dayBefore, $dayAfter])->exists();
+
+        return $hasAdjacentHoliday;
+    }
+
+    public static function validateDayOff(int $employeeId, int $positionId, Carbon $date, int $limitPerYear = 5): int
+    {
+        // 1. Check annual quota
+        $used = static::dayOffs()
+            ->where('employee_id', $employeeId)
+            ->where('position_id', $positionId)
+            ->whereYear('start_date', $date->year)
+            ->count();
+
+        if ($used >= $limitPerYear) {
+            return $used;
+        }
+
+        // 2. Cannot be the day after a public holiday
+        $dayBefore = $date->copy()->subDay();
+        $isAfterHoliday = PublicHoliday::whereDate('date', $dayBefore)->exists();
+
+        if ($isAfterHoliday) {
+            return $used;
+        }
+
+        return 0;
     }
 
     /**

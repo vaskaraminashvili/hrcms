@@ -124,9 +124,9 @@ return [
         'enabled' => true,
         'navigation' => [
             'icon' => 'heroicon-o-folder',
-            'label' => 'File Manager',
+            'label' => 'ფაილების მენეჯერი',
             'sort' => 1,
-            'group' => 'FileManager',
+            'group' => 'ფაილების მენეჯერი',
         ],
     ],
 
@@ -143,9 +143,9 @@ return [
         'enabled' => true,
         'navigation' => [
             'icon' => 'heroicon-o-server-stack',
-            'label' => 'File System',
+            'label' => 'ფაილების სისტემა',
             'sort' => 2,
-            'group' => 'FileManager',
+            'group' => 'ფაილების მენეჯერი',
         ],
     ],
 

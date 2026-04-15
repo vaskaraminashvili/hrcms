@@ -67,6 +67,11 @@ class PlaceResource extends Resource
             ]);
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.system');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('filament.resources.places.navigation_label');

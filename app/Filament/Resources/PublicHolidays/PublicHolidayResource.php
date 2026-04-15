@@ -51,6 +51,11 @@ class PublicHolidayResource extends Resource
         ];
     }
 
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.system');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('filament.resources.public_holidays.navigation_label');

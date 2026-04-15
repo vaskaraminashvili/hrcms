@@ -16,6 +16,7 @@ enum PersonalFile: string
     case SCHOLARSHIPS_AWARDS = 'scholarships_awards';
     case FOREIGN_LANGUAGES = 'foreign_languages';
     case COMPUTER_SKILLS = 'computer_skills';
+    case OTHER = 'other';
 
     public function label(): string
     {
@@ -32,6 +33,7 @@ enum PersonalFile: string
             self::SCHOLARSHIPS_AWARDS => 'სტიპენდიები / ჯილდოები / სახელმწიფო პრემიები',
             self::FOREIGN_LANGUAGES => 'უცხოური ენების ფლობის ხარისხი',
             self::COMPUTER_SKILLS => 'კომპიუტერული პროგრამების ფლობის ხარისხი',
+            self::OTHER => 'სხვა',
         };
     }
 
@@ -66,6 +68,7 @@ enum PersonalFile: string
             self::SCHOLARSHIPS_AWARDS => 'scholarshipsAwards',
             self::FOREIGN_LANGUAGES => 'foreignLanguages',
             self::COMPUTER_SKILLS => 'computerSkills',
+            self::OTHER => 'other',
         };
     }
 
@@ -89,6 +92,7 @@ enum PersonalFile: string
             self::SCHOLARSHIPS_AWARDS => 'title',
             self::FOREIGN_LANGUAGES => 'language',
             self::COMPUTER_SKILLS => 'title',
+            self::OTHER => 'title',
         };
     }
 
