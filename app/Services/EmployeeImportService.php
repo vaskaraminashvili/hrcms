@@ -99,7 +99,7 @@ class EmployeeImportService
             'citizenship' => null,
         ]);
 
-        $employee->status = $this->mapImportStatus($row->status ?? null);
+        $employee->status = $this->mapImportStatus($row->arq ?? null);
         $employee->save();
     }
 
