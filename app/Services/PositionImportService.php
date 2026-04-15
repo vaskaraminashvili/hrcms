@@ -93,7 +93,7 @@ class PositionImportService
                 'import_departments.sax_geo as department_name',
                 'import_places.tanamd as place_name',
             ])
-            ->where('employee_id', 1)
+            ->orderBy('import_positions.employee_id')
             ->orderBy('import_positions.date_start')
             ->chunkById(
                 self::IMPORT_CHUNK_SIZE,
