@@ -76,6 +76,9 @@ class PositionImportService
             ->join('import_places', 'import_positions.place_id', '=', 'import_places.id')
             ->select([
                 'import_positions.id',
+                'import_employees.imported_id as employee_id',
+                'import_positions.department_id',
+                'import_positions.place_id',
                 'import_positions.position_type',
                 'import_positions.date_start',
                 'import_positions.date_end',
@@ -90,6 +93,7 @@ class PositionImportService
                 'import_departments.sax_geo as department_name',
                 'import_places.tanamd as place_name',
             ])
+            ->where('employee_id', 461)
             ->orderBy('import_positions.id')
             ->chunkById(
                 self::IMPORT_CHUNK_SIZE,
