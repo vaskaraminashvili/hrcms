@@ -147,6 +147,7 @@ return [
     'name_eng' => 'სახელი ინგლისურად',
     'surrname_eng' => 'გვარი ინგლისურად',
     'add_record' => 'ჩანაწერის დამატება',
+    'add_record_button' => 'დამატება',
     'range_selected' => 'ცვლილების პერიოდი: :from - :to',
     'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
     'position_history_title' => 'თანამდებობის ისტორია',

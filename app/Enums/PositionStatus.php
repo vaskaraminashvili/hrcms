@@ -38,7 +38,7 @@ enum PositionStatus: string implements HasColor, HasLabel
             self::Appointment => 'info',
             self::Election => 'success',
             self::Dismissal => 'danger',
-            self::Extension => 'warning',
+            self::Extension => 'info',
             self::RankGranted => 'primary',
             self::ElectedIndefinite => 'success',
             self::ElectedIndefiniteAttestation => 'warning',

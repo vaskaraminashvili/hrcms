@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Departments;
 
-use App\Enums\DepartmentType;
+use App\Filament\Resources\Departments\Fields\DepartmentDescendantTypeCountField;
 use App\Filament\Resources\Departments\Fields\DepartmentStatusIconField;
 use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
+use App\Services\DepartmentDescendantTypeCountService;
 use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
@@ -16,7 +17,6 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Openplain\FilamentTreeView\Fields\TextField;
 use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
@@ -47,26 +47,24 @@ class DepartmentResource extends Resource
     {
         return $tree
             ->fields([
-                DepartmentTextField::make('name'),
-                // DepartmentTextField::make('vacancy_count')
-                //     ->formatStateUsing(function (int $state, Department $record): string {
-                //         if ($record->children()->exists()) {
-                //             return '';
-                //         }
-
-                //         return 'Vacancies: '.$state;
-
-                //     })
-                //     ->alignEnd(),
-                TextField::make('type')
-                    ->formatStateUsing(function (mixed $state): string {
-                        if ($state instanceof DepartmentType) {
-                            return $state->getLabel();
-                        }
-
-                        return (string) ($state ?? '');
+                DepartmentTextField::make('name')
+                    ->limit(60, '...'),
+                DepartmentTextField::make('type')
+                    ->badge()
+                    ->badgeColor('info')
+                    ->hidden(function (Department $record): bool {
+                        return $record->type === null;
                     })
+                    ->formatStateUsing(
+                        fn (mixed $state): string => $state ? $state->getLabel() : 'dsa'
+                    )
                     ->alignEnd(),
+                DepartmentDescendantTypeCountField::make('id')
+                    ->alignEnd()
+                    ->payloadUsing(
+                        fn (Department $record): array => app(DepartmentDescendantTypeCountService::class)
+                            ->getCachedDescendantTypeCountsPayload($record)
+                    ),
                 DepartmentStatusIconField::make('status')
                     ->boolean()
                     ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')
@@ -105,7 +103,7 @@ class DepartmentResource extends Resource
         //         "{$table}.color",
         //     ]);
         // })
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children']));
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children', 'parent']));
     }
 
     public static function getPages(): array

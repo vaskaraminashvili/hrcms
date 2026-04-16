@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Models\Employee;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -14,12 +15,16 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class EmployeesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with([
+                'appointmentPositions.department',
+            ]))
             ->columns([
                 SpatieMediaLibraryImageColumn::make('employee_image')
                     ->circular()
@@ -48,12 +53,10 @@ class EmployeesTable
                     })
                     ->color('success')
                     ->searchable(),
-                TextColumn::make('appointmentPositions.department.name')
-                    ->limitList(3)
-                    ->bulleted(),
-                // TextColumn::make('appointmentPositions.position.type')
-                //     ->limitList(3)
-                //     ->bulleted(),
+                TextColumn::make('appointment_positions_summary')
+                    ->label(__('filament.department_id').' · '.__('filament.position_type').' · '.__('filament.status'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record)),
                 TextColumn::make('positions_count')
                     ->label(__('filament.positions_count'))
                     ->alignCenter()
@@ -163,5 +166,69 @@ class EmployeesTable
             ])
             ->defaultSort('id', 'desc')
             ->filtersFormColumns(2);
+    }
+
+    /**
+     * Renders each appointment position as a row of Filament-style badges (department, type, status).
+     */
+    private static function appointmentPositionsBadgesHtml(Employee $record): HtmlString
+    {
+        $positions = $record->appointmentPositions;
+
+        if ($positions->isEmpty()) {
+            return new HtmlString('');
+        }
+
+        $listLimit = 3;
+        $total = $positions->count();
+        $hiddenCount = max(0, $total - $listLimit);
+
+        $items = [];
+        foreach ($positions->take($listLimit) as $position) {
+            $departmentLabel = $position->department?->name ?? '—';
+            $typeLabel = $position->position_type?->getLabel() ?? '';
+            $statusLabel = $position->status?->getLabel() ?? '';
+
+            $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
+            $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
+            $items[] =
+                '<li class="fi-ta-text-item">'
+                .'<span class="flex flex-wrap items-center gap-1">'
+                .self::filamentBadgeHtml($departmentLabel, 'gray')
+                .self::filamentBadgeHtml($typeLabel, $typeColor)
+                .self::filamentBadgeHtml($statusLabel, $statusColor)
+                .'</span>'
+                .'</li>';
+        }
+
+        $html = '<ul class="list-none space-y-1">'.implode('', $items).'</ul>';
+
+        if ($hiddenCount > 0) {
+            $html .= '<p class="fi-ta-text-description mt-1 text-xs">'
+                .e(trans_choice('filament-tables::table.columns.text.more_list_items', $hiddenCount))
+                .'</p>';
+        }
+
+        return new HtmlString($html);
+    }
+
+    /**
+     * @param  string|array<string, mixed>|null  $color
+     */
+    private static function filamentBadgeColorKey(mixed $color): string
+    {
+        if (is_string($color) && array_key_exists($color, DepartmentTextField::BADGE_COLOR_CLASSES)) {
+            return $color;
+        }
+
+        return 'gray';
+    }
+
+    private static function filamentBadgeHtml(string $label, string $colorKey): string
+    {
+        $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
+            ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
+
+        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
     }
 }

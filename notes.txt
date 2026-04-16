@@ -1,10 +1,14 @@
+tanamshromlis cvlilabaze pirdadai pailshi damatebis gilaki avides zevit da peri sheecvalos.
 
-pozicia ganisazgvereba departtamenti adgili da tanemdebobis tipi. 
+damaxsovrebis gilaki gamovide shaushi da daeceros shenaxva. gauqmebis gilaki movshalot.
 
-amas unda miebas aqtovobebi mere ukve reac sheicvleba. 
+tanamshtomlebis cxrilshi departamentan ertad gamovides 
+statusi da position_type
 
-croni vadis gasvlis mere statusi gantavisupplebuli.
+პიზიციის ისტორის ცხრილში დაწებასთან დასრულების ვადა თუ არა აქვს ტირე გამოვიდეს . 
+ცხრილშივე სნაპშოტიდან გამოვდიეს სტატუს დანიშვნა და მეორე თანამდებობის ტიპი 
 
 
-departaments adgilebis raodenoba sashtato ar unda agematebodes chacerils
-arqivirebulis she,txvavashi aar aqvs mnishvneloba
+ganatlebashi 
+da samnushao gamocdilebashi 
+targiebi marto tslebi iyos
