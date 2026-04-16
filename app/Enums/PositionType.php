@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum PositionType: string implements HasLabel
+enum PositionType: string implements HasColor, HasLabel
 {
     case Emeritus = 'emeritus';
     case AdministrativePersonnel = 'administrative_personnel';
@@ -24,6 +25,19 @@ enum PositionType: string implements HasLabel
             self::InvitedTeacher => 'მოწვეული მასწავლებელი', // არასაშტატო
             self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული', // არასაშტატო
             self::AcademicRank => 'აკადემიური წოდება',
+        };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Emeritus => 'primary',
+            self::AdministrativePersonnel => 'info',
+            self::AssistantAdministrativePersonnel => 'success',
+            self::AcademicPersonnel => 'warning',
+            self::InvitedTeacher => 'danger',
+            self::ContractedEmployee => 'info',
+            self::AcademicRank => 'warning',
         };
     }
 

@@ -47,12 +47,12 @@ class DepartmentTextField extends TextField
 
     /** @var array<string, string> */
     public const BADGE_COLOR_CLASSES = [
-        'gray' => 'fi-color-gray bg-gray-50 text-gray-600 ring-gray-600/10 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20',
-        'primary' => 'fi-color-primary bg-primary-50 text-primary-600 ring-primary-600/10 dark:bg-primary-400/10 dark:text-primary-400 dark:ring-primary-400/20',
-        'success' => 'fi-color-success bg-success-50 text-success-600 ring-success-600/10 dark:bg-success-400/10 dark:text-success-400 dark:ring-success-400/20',
-        'warning' => 'fi-color-warning bg-warning-50 text-warning-600 ring-warning-600/10 dark:bg-warning-400/10 dark:text-warning-400 dark:ring-warning-400/20',
-        'danger' => 'fi-color-danger bg-danger-50 text-danger-600 ring-danger-600/10 dark:bg-danger-400/10 dark:text-danger-400 dark:ring-danger-400/20',
-        'info' => 'fi-color-info bg-info-50 text-info-600 ring-info-600/10 dark:bg-info-400/10 dark:text-info-400 dark:ring-info-400/20',
+        'gray' => 'fi-color fi-color-gray fi-text-color-700 dark:fi-text-color-300 fi-badge',
+        'primary' => 'fi-color fi-color-primary fi-text-color-700 dark:fi-text-color-300 fi-badge',
+        'success' => 'fi-color fi-color-success fi-text-color-700 dark:fi-text-color-300 fi-badge',
+        'warning' => 'fi-color fi-color-warning fi-text-color-700 dark:fi-text-color-300 fi-badge',
+        'danger' => 'fi-color fi-color-danger fi-text-color-700 dark:fi-text-color-300 fi-badge',
+        'info' => 'fi-color fi-color-info fi-text-color-700 dark:fi-text-color-300 fi-badge',
     ];
 
     /**
