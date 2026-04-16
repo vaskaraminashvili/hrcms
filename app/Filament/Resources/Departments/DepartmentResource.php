@@ -8,6 +8,7 @@ use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
+use App\Services\DepartmentDescendantTypeCountService;
 use BackedEnum;
 use Filament\Actions\CreateAction;
 use Filament\Actions\EditAction;
@@ -51,12 +52,19 @@ class DepartmentResource extends Resource
                 DepartmentTextField::make('type')
                     ->badge()
                     ->badgeColor('info')
+                    ->hidden(function (Department $record): bool {
+                        return $record->type === null;
+                    })
                     ->formatStateUsing(
-                        fn (mixed $state): string => $state->getLabel()
+                        fn (mixed $state): string => $state ? $state->getLabel() : 'dsa'
                     )
                     ->alignEnd(),
                 DepartmentDescendantTypeCountField::make('id')
-                    ->alignEnd(),
+                    ->alignEnd()
+                    ->payloadUsing(
+                        fn (Department $record): array => app(DepartmentDescendantTypeCountService::class)
+                            ->getCachedDescendantTypeCountsPayload($record)
+                    ),
                 DepartmentStatusIconField::make('status')
                     ->boolean()
                     ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')
