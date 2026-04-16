@@ -7,3 +7,8 @@ statusi da position_type
 
 პიზიციის ისტორის ცხრილში დაწებასთან დასრულების ვადა თუ არა აქვს ტირე გამოვიდეს . 
 ცხრილშივე სნაპშოტიდან გამოვდიეს სტატუს დანიშვნა და მეორე თანამდებობის ტიპი 
+
+
+ganatlebashi 
+da samnushao gamocdilebashi 
+targiebi marto tslebi iyos

@@ -65,6 +65,7 @@ return [
     'date_start' => 'Start date',
     'date_end' => 'End date',
     'act_number' => 'Act number',
+    'add_record_button' => 'Add record',
     'act_date' => 'Act date',
     'clinical' => 'Clinical',
     'clinical_text' => 'Clinical details',

@@ -7,6 +7,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\PublicationsSchema;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
@@ -132,7 +133,37 @@ class EmployeeForm
                                         ->collapsible()
                                         ->reorderable()
                                         ->columnSpanFull()
-                                        ->addActionLabel(__('filament.add_record'))
+                                        ->afterLabel([
+                                            Action::make('add_repeater_item_'.$case->value)
+                                                ->label(__('filament.add_record_button'))
+                                                ->button()
+                                                ->color('warning')
+                                                ->visible(fn (Repeater $component): bool => $component->isAddable())
+                                                ->action(function (Repeater $component): void {
+                                                    $newUuid = $component->generateUuid();
+
+                                                    $items = $component->getRawState();
+
+                                                    if ($newUuid) {
+                                                        $items[$newUuid] = [];
+                                                    } else {
+                                                        $items[] = [];
+                                                    }
+
+                                                    $component->rawState($items);
+
+                                                    $component->getChildSchema($newUuid ?? array_key_last($items))->fill();
+
+                                                    $component->collapsed(false, shouldMakeComponentCollapsible: false);
+
+                                                    $component->callAfterStateUpdated();
+
+                                                    if ($component->shouldPartiallyRenderAfterActionsCalled()) {
+                                                        $component->partiallyRender();
+                                                    }
+                                                }),
+                                        ])
+                                        ->addAction(fn (Action $action) => $action->visible(false))
                                         ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
                                     SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
                                         ->label(__('filament.personal_file.attachments'))
