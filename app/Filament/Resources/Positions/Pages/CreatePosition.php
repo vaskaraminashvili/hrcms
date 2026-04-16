@@ -38,7 +38,7 @@ class CreatePosition extends CreateRecord
         try {
             return PositionFormPersistence::createFromValidatedData($data, $this->getParentRecord());
         } catch (UniqueConstraintViolationException $exception) {
-            if (! str_contains($exception->getMessage(), 'positions_employee_id_department_id_unique')) {
+            if (! str_contains($exception->getMessage(), 'positions_employee_id_department_id_place_id_unique')) {
                 throw $exception;
             }
 

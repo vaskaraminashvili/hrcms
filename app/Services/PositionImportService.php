@@ -3,14 +3,18 @@
 namespace App\Services;
 
 use App\Enums\DepartmentStatus;
+use App\Enums\PositionHistoryAffectField;
+use App\Enums\PositionHistorySnapshotField;
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Place;
 use App\Models\Position;
+use App\Models\PositionHistory;
 use App\Models\VacationPolicy;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -20,11 +24,11 @@ use stdClass;
 /**
  * One-off import from legacy `import_*` tables into `positions`.
  * Maps local employees (personal_number); creates missing departments/places by name when needed.
+ * Multiple legacy rows for the same employee+department+place collapse to one {@see Position}: the row with
+ * the latest `date_start` wins; other rows are stored as {@see PositionHistory} (`import_legacy_period`).
  */
 class PositionImportService
 {
-    private const IMPORT_CHUNK_SIZE = 250;
-
     private const PERSONAL_NUMBER_LENGTH = 11;
 
     private const PLACEHOLDER_DEPARTMENT_NAME = '[Import] Unknown department';
@@ -32,6 +36,11 @@ class PositionImportService
     private const PLACEHOLDER_PLACE_NAME = '[Import] Unknown place';
 
     private const FALLBACK_POSITION_TYPE = PositionType::AdministrativePersonnel;
+
+    /**
+     * History rows for prior import periods when multiple legacy rows share employee+department+place.
+     */
+    private const IMPORT_LEGACY_HISTORY_EVENT = 'import_legacy_period';
 
     /**
      * @return array{
@@ -70,15 +79,15 @@ class PositionImportService
             'clear_table_before' => $clearTableBefore,
         ]);
 
-        DB::table('import_positions')
+        $rows = DB::table('import_positions')
             ->join('import_employees', 'import_positions.employee_id', '=', 'import_employees.id')
             ->join('import_departments', 'import_positions.department_id', '=', 'import_departments.id')
             ->join('import_places', 'import_positions.place_id', '=', 'import_places.id')
             ->select([
                 'import_positions.id',
-                'import_employees.imported_id as employee_id',
-                'import_positions.department_id',
-                'import_positions.place_id',
+                'import_positions.employee_id as import_employee_ref',
+                'import_positions.department_id as import_department_ref',
+                'import_positions.place_id as import_place_ref',
                 'import_positions.position_type',
                 'import_positions.date_start',
                 'import_positions.date_end',
@@ -94,58 +103,51 @@ class PositionImportService
                 'import_places.tanamd as place_name',
             ])
             ->orderBy('import_positions.employee_id')
+            ->orderBy('import_positions.department_id')
+            ->orderBy('import_positions.place_id')
             ->orderBy('import_positions.date_start')
-            ->chunkById(
-                self::IMPORT_CHUNK_SIZE,
-                function (Collection $rows) use (
+            ->orderBy('import_positions.id')
+            ->get();
+
+        $grouped = $rows->groupBy(
+            fn (stdClass $r): string => (string) (int) $r->import_employee_ref
+                .'|'.(string) (int) $r->import_department_ref
+                .'|'.(string) (int) $r->import_place_ref
+        );
+
+        foreach ($grouped as $groupRows) {
+            DB::transaction(function () use (
+                $groupRows,
+                $places,
+                $departments,
+                $employees,
+                $vacationPolicyIds,
+                &$imported,
+                &$skipped,
+                &$skipReasons,
+                &$departmentsCreated,
+                &$placesCreated,
+                &$positionTypeFallbacks
+            ): void {
+                $groupSize = $groupRows->count();
+                $result = $this->importImportPositionGroup(
+                    $groupRows,
                     $places,
                     $departments,
                     $employees,
                     $vacationPolicyIds,
-                    &$imported,
-                    &$skipped,
-                    &$skipReasons,
-                    &$departmentsCreated,
-                    &$placesCreated,
-                    &$positionTypeFallbacks
-                ): void {
-                    DB::transaction(function () use (
-                        $rows,
-                        $places,
-                        $departments,
-                        $employees,
-                        $vacationPolicyIds,
-                        &$imported,
-                        &$skipped,
-                        &$skipReasons,
-                        &$departmentsCreated,
-                        &$placesCreated,
-                        &$positionTypeFallbacks
-                    ): void {
-                        foreach ($rows as $row) {
-                            $result = $this->importRow(
-                                $row,
-                                $places,
-                                $departments,
-                                $employees,
-                                $vacationPolicyIds,
-                                $departmentsCreated,
-                                $placesCreated,
-                                $positionTypeFallbacks
-                            );
-                            if ($result === true) {
-                                $imported++;
-                            } else {
-                                $skipped++;
-                                $reason = is_string($result) ? $result : 'unknown';
-                                $skipReasons[$reason] = ($skipReasons[$reason] ?? 0) + 1;
-                            }
-                        }
-                    });
-                },
-                'import_positions.id',
-                'id'
-            );
+                    $departmentsCreated,
+                    $placesCreated,
+                    $positionTypeFallbacks
+                );
+                if ($result === true) {
+                    $imported += $groupSize;
+                } elseif (is_string($result)) {
+                    $skipped += $groupSize;
+                    $skipReasons[$result] = ($skipReasons[$result] ?? 0) + $groupSize;
+                }
+            });
+        }
 
         Log::info('Position import finished', [
             'imported' => $imported,
@@ -167,14 +169,13 @@ class PositionImportService
     }
 
     /**
-     * @param  Collection<string, int>  $places  name => id (mutated when new places are created)
-     * @param  Collection<string, int>  $departments  name => id (mutated when new departments are created)
-     * @param  Collection<string, int>  $employees  personal_number => id
-     * @param  Collection<string, int>  $vacationPolicyIds  position_type value => id
-     * @return true|string True on success, or a skip-reason key string
+     * @param  Collection<int, stdClass>  $groupRows
+     * @param  Collection<string, int>  $places
+     * @param  Collection<string, int>  $departments
+     * @param  Collection<string, int>  $employees
      */
-    private function importRow(
-        stdClass $row,
+    private function importImportPositionGroup(
+        Collection $groupRows,
         Collection $places,
         Collection $departments,
         Collection $employees,
@@ -183,6 +184,131 @@ class PositionImportService
         int &$placesCreated,
         int &$positionTypeFallbacks
     ): bool|string {
+        /** @var list<array<string, mixed>> $resolved */
+        $resolved = [];
+        foreach ($groupRows as $row) {
+            $one = $this->resolveImportPositionRow(
+                $row,
+                $places,
+                $departments,
+                $employees,
+                $vacationPolicyIds,
+                $departmentsCreated,
+                $placesCreated,
+                $positionTypeFallbacks
+            );
+            if (is_string($one)) {
+                return $one;
+            }
+            $resolved[] = $one;
+        }
+
+        $collection = collect($resolved);
+        $winner = $this->selectWinnerResolvedRow($collection);
+
+        $position = Position::query()->updateOrCreate(
+            [
+                'employee_id' => $winner['employee_id'],
+                'department_id' => $winner['department_id'],
+                'place_id' => $winner['place_id'],
+            ],
+            $winner['attributes']
+        );
+
+        if ($collection->count() < 2) {
+            return true;
+        }
+
+        $losers = $collection->filter(
+            fn (array $row): bool => $row['import_position_id'] !== $winner['import_position_id']
+        )->sortBy([
+            fn (array $r): float => $this->dateStartSortValue($r['date_start']),
+            fn (array $r): int => $r['import_position_id'],
+        ]);
+
+        foreach ($losers as $loser) {
+            $this->storeImportLegacyHistory($position, $loser);
+        }
+
+        return true;
+    }
+
+    /**
+     * Row with the latest {@see date_start} wins the canonical {@see Position}; ties break on {@see import_position_id}.
+     *
+     * @param  Collection<int, array<string, mixed>>  $resolvedRows
+     * @return array<string, mixed>
+     */
+    private function selectWinnerResolvedRow(Collection $resolvedRows): array
+    {
+        return $resolvedRows->sortBy([
+            fn (array $r): float => $this->dateStartSortValue($r['date_start']),
+            fn (array $r): int => $r['import_position_id'],
+        ])->last();
+    }
+
+    private function dateStartSortValue(?string $normalizedDateStart): float
+    {
+        if ($normalizedDateStart === null) {
+            return -INF;
+        }
+
+        return (float) strtotime($normalizedDateStart);
+    }
+
+    /**
+     * @param  array<string, mixed>  $resolved
+     */
+    private function storeImportLegacyHistory(Position $canonical, array $resolved): void
+    {
+        PositionHistory::query()->create([
+            'position_id' => $canonical->id,
+            'changed_by' => null,
+            'event_type' => self::IMPORT_LEGACY_HISTORY_EVENT,
+            'snapshot' => $this->buildHistorySnapshotForResolvedRow($canonical, $resolved),
+            'changed_fields' => null,
+            ...collect(PositionHistoryAffectField::cases())
+                ->mapWithKeys(fn (PositionHistoryAffectField $field) => [
+                    $field->value => false,
+                ])
+                ->all(),
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $resolved
+     * @return array<string, mixed>
+     */
+    private function buildHistorySnapshotForResolvedRow(Position $canonical, array $resolved): array
+    {
+        $snapshotModel = new Position;
+        $snapshotModel->forceFill(array_merge($resolved['attributes'], [
+            'employee_id' => $resolved['employee_id'],
+            'department_id' => $resolved['department_id'],
+            'place_id' => $resolved['place_id'],
+        ]));
+        $snapshotModel->id = $canonical->id;
+
+        return Arr::except($snapshotModel->toArray(), PositionHistorySnapshotField::EXCLUDED_FROM_HISTORY);
+    }
+
+    /**
+     * @param  Collection<string, int>  $places  name => id (mutated when new places are created)
+     * @param  Collection<string, int>  $departments  name => id (mutated when new departments are created)
+     * @param  Collection<string, int>  $employees  personal_number => id
+     * @param  Collection<string, int>  $vacationPolicyIds  position_type value => id
+     * @return array<string, mixed>|string
+     */
+    private function resolveImportPositionRow(
+        stdClass $row,
+        Collection $places,
+        Collection $departments,
+        Collection $employees,
+        Collection $vacationPolicyIds,
+        int &$departmentsCreated,
+        int &$placesCreated,
+        int &$positionTypeFallbacks
+    ): array|string {
         $importPositionId = (int) $row->id;
 
         $personalKey = $this->normalizePersonalNumberForLookup($row->employee_personal_number ?? null);
@@ -243,16 +369,18 @@ class PositionImportService
 
         $status = $this->resolvePositionStatus($row->status ?? null);
 
-        Position::query()->updateOrCreate(
-            [
-                'employee_id' => $employeeId,
-                'department_id' => $departmentId,
-            ],
-            [
-                'place_id' => $placeId,
+        $dateStart = $this->normalizeDate($row->date_start ?? null);
+
+        return [
+            'import_position_id' => $importPositionId,
+            'employee_id' => $employeeId,
+            'department_id' => $departmentId,
+            'place_id' => $placeId,
+            'date_start' => $dateStart,
+            'attributes' => [
                 'vacation_policy_id' => $vacationPolicyId,
                 'position_type' => $positionType,
-                'date_start' => $this->normalizeDate($row->date_start ?? null),
+                'date_start' => $dateStart,
                 'date_end' => $this->normalizeDate($row->date_end ?? null),
                 'status' => $status,
                 'act_number' => $this->stringOrNull($row->act_number ?? null),
@@ -263,10 +391,8 @@ class PositionImportService
                 'automative_renewal' => null,
                 'salary' => isset($row->salary) && $row->salary !== '' ? (int) $row->salary : null,
                 'comment' => null,
-            ]
-        );
-
-        return true;
+            ],
+        ];
     }
 
     /**
