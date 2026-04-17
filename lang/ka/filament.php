@@ -77,6 +77,7 @@ return [
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
     'date_start_short' => 'დაწყ.',
+    'date_end_short' => 'დასრულ.',
     'date_end' => 'დასრულების თარიღი',
     'act_number' => 'აქტის ნომერი',
     'act_date' => 'აქტის თარიღი',
