@@ -46,32 +46,32 @@ class EditDepartment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('saveWithArchive')
-                ->label(__('filament.department.save_and_archive'))
-                ->color('primary')
-                ->requiresConfirmation()
-                ->modalHeading(__('filament.department.modal_archive_heading'))
-                ->modalDescription(__('filament.department.modal_archive_description'))
-                ->modalSubmitActionLabel(__('filament.department.modal_submit'))
-                ->action(function (DepartmentArchiveService $service) {
-                    $formData = $this->form->getState();
-                    $originalData = $this->record->only(['name', 'parent_id']);
+            // Action::make('saveWithArchive')
+            //     ->label(__('filament.department.save_and_archive'))
+            //     ->color('primary')
+            //     ->requiresConfirmation()
+            //     ->modalHeading(__('filament.department.modal_archive_heading'))
+            //     ->modalDescription(__('filament.department.modal_archive_description'))
+            //     ->modalSubmitActionLabel(__('filament.department.modal_submit'))
+            //     ->action(function (DepartmentArchiveService $service) {
+            //         $formData = $this->form->getState();
+            //         $originalData = $this->record->only(['name', 'parent_id']);
 
-                    $nameChanged = ($originalData['name'] ?? null) !== ($formData['name'] ?? null);
-                    $parentChanged = ($originalData['parent_id'] ?? null) !== ($formData['parent_id'] ?? null);
-                    if ($nameChanged || $parentChanged) {
-                        // Archive original + duplicate with new data
-                        $newDepartment = $service->archiveAndReplicate($this->record, $formData);
+            //         $nameChanged = ($originalData['name'] ?? null) !== ($formData['name'] ?? null);
+            //         $parentChanged = ($originalData['parent_id'] ?? null) !== ($formData['parent_id'] ?? null);
+            //         if ($nameChanged || $parentChanged) {
+            //             // Archive original + duplicate with new data
+            //             $newDepartment = $service->archiveAndReplicate($this->record, $formData);
 
-                        // Full page redirect to the new record's edit page
-                        return redirect(
-                            DepartmentResource::getUrl('edit', ['record' => $newDepartment])
-                        );
-                    } else {
-                        // No relevant change — just do a normal save
-                        $this->save();
-                    }
-                }),
+            //             // Full page redirect to the new record's edit page
+            //             return redirect(
+            //                 DepartmentResource::getUrl('edit', ['record' => $newDepartment])
+            //             );
+            //         } else {
+            //             // No relevant change — just do a normal save
+            //             $this->save();
+            //         }
+            //     }),
 
             DeleteAction::make()
                 ->before(function (DeleteAction $action): void {

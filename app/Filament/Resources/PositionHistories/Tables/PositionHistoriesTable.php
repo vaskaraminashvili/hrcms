@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PositionHistories\Tables;
 
 use App\Enums\PositionHistoryAffectField;
+use App\Enums\PositionStatus;
 use App\Models\PositionHistory;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
@@ -10,6 +11,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class PositionHistoriesTable
 {
@@ -59,10 +61,52 @@ class PositionHistoriesTable
                     ->label(__('filament.changes'))
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('snapshot.date_start')
-                    ->date()
-                    ->label(__('filament.date_start_short'))
-                    ->sortable(),
+                    ->getStateUsing(function (PositionHistory $record): string {
+                        $value = $record->snapshot['date_start'] ?? null;
 
+                        if ($value === null || $value === '' || $value === '-') {
+                            return '---';
+                        }
+                        try {
+                            return Carbon::parse($value)->format('d.m.Y');
+                        } catch (\Throwable) {
+                            return '-';
+                        }
+                    })
+                    ->label(__('filament.date_start_short'))
+                    ->alignCenter()
+                    ->sortable(),
+                TextColumn::make('snapshot.date_end')
+                    ->getStateUsing(function (PositionHistory $record): string {
+                        $value = $record->snapshot['date_end'] ?? null;
+
+                        if ($value === null || $value === '' || $value === '-') {
+                            return '---';
+                        }
+
+                        try {
+                            return Carbon::parse($value)->format('d.m.Y');
+                        } catch (\Throwable) {
+                            return '-';
+                        }
+                    })
+                    ->alignCenter()
+                    ->label(__('filament.date_end_short'))
+                    ->sortable(),
+                TextColumn::make('snapshot.status')
+                    ->getStateUsing(function (PositionHistory $record): ?PositionStatus {
+                        $value = $record->snapshot['status'] ?? null;
+
+                        if ($value === null || $value === '' || $value === '-') {
+                            return null;
+                        }
+
+                        return PositionStatus::tryFrom((string) $value);
+                    })
+                    ->formatStateUsing(fn (?PositionStatus $state): string => $state?->getLabel() ?? '---')
+                    ->color(fn (?PositionStatus $state): string|array|null => $state?->getColor())
+                    ->badge()
+                    ->label(__('filament.status')),
                 TextColumn::make('position.department.name')
                     ->wrap()
                     ->searchable(true, function (Builder $query, string $search): void {
