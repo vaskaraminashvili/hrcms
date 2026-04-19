@@ -101,41 +101,41 @@ class PositionForm
                                 )
                                 ->searchable()
                                 ->preload()
-                                ->rule(static function (Field $component) {
-                                    return function (string $attribute, mixed $value, Closure $fail) use ($component): void {
-                                        if (blank($value)) {
-                                            return;
-                                        }
+                                // ->rule(static function (Field $component) {
+                                //     return function (string $attribute, mixed $value, Closure $fail) use ($component): void {
+                                //         if (blank($value)) {
+                                //             return;
+                                //         }
 
-                                        $department = Department::query()->find($value);
+                                //         $department = Department::query()->find($value);
 
-                                        if ($department === null) {
-                                            return;
-                                        }
+                                //         if ($department === null) {
+                                //             return;
+                                //         }
 
-                                        if ($department->status !== DepartmentStatus::ACTIVE) {
-                                            return;
-                                        }
+                                //         if ($department->status !== DepartmentStatus::ACTIVE) {
+                                //             return;
+                                //         }
 
-                                        $vacancyLimit = max(0, (int) $department->vacancy_count);
+                                //         $vacancyLimit = max(0, (int) $department->vacancy_count);
 
-                                        $ignorePositionId = $component->getRecord()?->getKey();
+                                //         $ignorePositionId = $component->getRecord()?->getKey();
 
-                                        $occupied = Position::query()
-                                            ->where('department_id', $value)
-                                            ->when(
-                                                $ignorePositionId,
-                                                fn (Builder $query): Builder => $query->whereKeyNot($ignorePositionId),
-                                            )
-                                            ->count();
+                                //         $occupied = Position::query()
+                                //             ->where('department_id', $value)
+                                //             ->when(
+                                //                 $ignorePositionId,
+                                //                 fn (Builder $query): Builder => $query->whereKeyNot($ignorePositionId),
+                                //             )
+                                //             ->count();
 
-                                        if ($occupied + 1 > $vacancyLimit) {
-                                            $fail(__('filament.admin.position_resource.department_vacancy_limit', [
-                                                'max' => $vacancyLimit,
-                                            ]));
-                                        }
-                                    };
-                                })
+                                //         // if ($occupied + 1 > $vacancyLimit) {
+                                //             $fail(__('filament.admin.position_resource.department_vacancy_limit', [
+                                //                 'max' => $vacancyLimit,
+                                //             ]));
+                                //         }
+                                //     };
+                                // })
                                 ->required()
                                 ->columnSpanFull(),
 
