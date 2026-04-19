@@ -146,9 +146,9 @@ class Position extends Model implements HasMedia
         return (int) $this->vacations()->sum('working_days_count');
     }
 
-    public function getUsedDaysOffDaysAttribute(): int
+    public function getLeftDaysOffDaysAttribute(): int
     {
-        return (int) $this->vacations()->where('type', VacationType::DAY_OFF)->count();
+        return (int) 5 - ($this->vacations()->where('type', VacationType::DAY_OFF)->count() ?? 0);
     }
 
     /**

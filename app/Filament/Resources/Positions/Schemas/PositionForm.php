@@ -70,14 +70,10 @@ class PositionForm
                         ->label(__('filament.used_days_off_days')),
                     TextEntry::make('transferred_days')
                         ->label(__('filament.transferred_days')),
-                    TextEntry::make('total_vacation_days')
-                        ->label(__('filament.total_vacation_days')),
-                    TextEntry::make('used_vacation_days')
-                        ->label(__('filament.used_vacation_days')),
-
                     TextEntry::make('available_vacation_days')
                         ->label(__('filament.available_vacation_days'))
                         ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+
                 ])
                 ->visible($withEmployee)
 
