@@ -62,15 +62,15 @@ class PositionsTable
 
                     ->sortable(),
                 TextColumn::make('date_start')
-                    ->label(__('filament.date_start'))
+                    ->label(__('filament.date_start_short'))
                     ->date()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('date_end')
-                    ->label(__('filament.date_end'))
+                    ->label(__('filament.date_end_short'))
                     ->date()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('status')
                     ->label(__('filament.status'))
                     ->badge()
