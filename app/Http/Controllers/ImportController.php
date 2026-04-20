@@ -6,6 +6,7 @@ use App\Services\ComputerSkillImportService;
 use App\Services\EmployeeImportService;
 use App\Services\ImageImportService;
 use App\Services\PositionImportService;
+use App\Services\ScientificProjectImportService;
 use Illuminate\Http\Request;
 
 class ImportController extends Controller
@@ -40,6 +41,15 @@ class ImportController extends Controller
     public function importComputerSkills(Request $request, ComputerSkillImportService $computerSkillImportService)
     {
         $result = $computerSkillImportService->importAll(
+            clearTableBefore: $request->boolean('clear', true)
+        );
+
+        return response()->json($result);
+    }
+
+    public function importProjects(Request $request, ScientificProjectImportService $scientificProjectImportService)
+    {
+        $result = $scientificProjectImportService->importAll(
             clearTableBefore: $request->boolean('clear', true)
         );
 
