@@ -14,7 +14,7 @@ class ForeignLanguagesSchema
             Select::make('level')
                 ->label(__('filament.personal_file.foreign_languages.level'))
                 ->options(collect(LanguageProficiency::cases())->mapWithKeys(
-                    fn (LanguageProficiency $case) => [$case->value => $case->getLabel()]
+                    fn (LanguageProficiency $case) => [$case->value => $case->getDisplayLabel()]
                 )),
             TextInput::make('language')
                 ->label(__('filament.personal_file.foreign_languages.language')),
