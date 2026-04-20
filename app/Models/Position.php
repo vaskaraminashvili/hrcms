@@ -160,6 +160,31 @@ class Position extends Model implements HasMedia
     }
 
     /**
+     * Exclude dismissal rows whose end date is still in the future (not yet effective).
+     */
+    public function scopeExcludeScheduledDismissals(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q): void {
+            $q->whereNot('status', PositionStatus::Dismissal->value)
+                ->where(function () use ($q) {
+                    $q->whereNull('date_end')
+                        ->OrWhereDate('date_end', '>', now());
+                });
+        });
+    }
+
+    /**
+     * Positions whose end date is not in the past. A null end date means no fixed end.
+     */
+    public function scopeWhereDateEndNotExpired(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q): void {
+            $q->whereNull('date_end')
+                ->orWhereDate('date_end', '>=', now());
+        });
+    }
+
+    /**
      * Apply the scope to a given Eloquent query builder.
      */
     public function scopeActivePositions(Builder $query): Builder

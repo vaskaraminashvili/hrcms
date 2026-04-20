@@ -21,7 +21,6 @@ class PositionsTable
         $filters = Filters::getFilters();
 
         return $table
-
             ->columns([
                 TextColumn::make('employee.name')
                     ->label(__('filament.employee.name'))

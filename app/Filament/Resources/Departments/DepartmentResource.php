@@ -52,6 +52,7 @@ class DepartmentResource extends Resource
                     ->url(
                         fn (Department $record): string => route('filament.admin.resources.positions.index', [
                             'filters[department_id][value]' => $record->getKey(),
+                            'filters[hide_scheduled_dismissals][isActive]' => true,
                         ])
                     )
                     ->openUrlInNewTab(),
