@@ -20,7 +20,6 @@ enum DepartmentType: string implements HasColor, HasLabel
             self::DEPARTMENT => 'დეპარტამენტი',
             self::CENTER => 'ცენტრი',
             self::MUSEUM => 'მუზეუმი',
-            self::SERVICE => 'სამსახური',
             self::SECTION => 'განყოფილება',
             self::UNIT => 'სამსახური',
         };
