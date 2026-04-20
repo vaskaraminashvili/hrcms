@@ -13,6 +13,7 @@ Route::controller(ImportController::class)->group(function () {
         Route::get('/awards', 'importAwards')->name('import.awards');
         Route::get('/academic-positions', 'importAcademicPositions')->name('import.academic-positions');
         Route::get('/languages', 'importLanguages')->name('import.languages');
+        Route::get('/work-experiences', 'importWorkExperiences')->name('import.work-experiences');
         // Route::get('/memberships', 'importMemberships')->name('import.memberships');
         // Route::get('/patents', 'importPatents')->name('import.patents');
     });

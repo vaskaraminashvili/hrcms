@@ -10,6 +10,7 @@ use App\Services\ImageImportService;
 use App\Services\PositionImportService;
 use App\Services\ScholarshipAwardImportService;
 use App\Services\ScientificProjectImportService;
+use App\Services\WorkExperienceImportService;
 use Illuminate\Http\Request;
 
 class ImportController extends Controller
@@ -80,6 +81,15 @@ class ImportController extends Controller
     public function importLanguages(Request $request, ForeignLanguageImportService $foreignLanguageImportService)
     {
         $result = $foreignLanguageImportService->importAll(
+            clearTableBefore: $request->boolean('clear', true)
+        );
+
+        return response()->json($result);
+    }
+
+    public function importWorkExperiences(Request $request, WorkExperienceImportService $workExperienceImportService)
+    {
+        $result = $workExperienceImportService->importAll(
             clearTableBefore: $request->boolean('clear', true)
         );
 
