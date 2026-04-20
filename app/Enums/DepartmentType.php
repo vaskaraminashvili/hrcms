@@ -12,6 +12,7 @@ enum DepartmentType: string implements HasColor, HasLabel
     case MUSEUM = 'museum';
     case SERVICE = 'service';
     case SECTION = 'section';
+    case EDITORIAL = 'editorial';
 
     public function getLabel(): string
     {
@@ -21,6 +22,7 @@ enum DepartmentType: string implements HasColor, HasLabel
             self::MUSEUM => 'მუზეუმი',
             self::SERVICE => 'სამსახური',
             self::SECTION => 'განყოფილება',
+            self::EDITORIAL => 'რედაქცია',
         };
     }
 
@@ -37,6 +39,7 @@ enum DepartmentType: string implements HasColor, HasLabel
             self::MUSEUM => 'warning',
             self::SERVICE => 'info',
             self::SECTION => 'danger',
+            self::EDITORIAL => 'primary',
         };
     }
 }
