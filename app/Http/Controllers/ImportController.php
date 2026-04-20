@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ComputerSkillImportService;
 use App\Services\EmployeeImportService;
 use App\Services\ImageImportService;
 use App\Services\PositionImportService;
@@ -30,6 +31,15 @@ class ImportController extends Controller
     public function importImages(Request $request, ImageImportService $imageImportService)
     {
         $result = $imageImportService->importAll(
+            clearTableBefore: $request->boolean('clear', true)
+        );
+
+        return response()->json($result);
+    }
+
+    public function importComputerSkills(Request $request, ComputerSkillImportService $computerSkillImportService)
+    {
+        $result = $computerSkillImportService->importAll(
             clearTableBefore: $request->boolean('clear', true)
         );
 
