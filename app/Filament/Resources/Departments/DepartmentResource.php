@@ -48,7 +48,13 @@ class DepartmentResource extends Resource
         return $tree
             ->fields([
                 DepartmentTextField::make('name')
-                    ->limit(60, '...'),
+                    ->limit(60, '...')
+                    ->url(
+                        fn (Department $record): string => route('filament.admin.resources.positions.index', [
+                            'filters[department_id][value]' => $record->getKey(),
+                        ])
+                    )
+                    ->openUrlInNewTab(),
                 DepartmentTextField::make('type')
                     ->badge()
                     ->badgeColor('info')

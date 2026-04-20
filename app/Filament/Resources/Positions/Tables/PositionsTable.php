@@ -2,16 +2,15 @@
 
 namespace App\Filament\Resources\Positions\Tables;
 
-use App\Enums\DepartmentStatus;
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
-use App\Models\Department;
 use App\Models\Position;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -19,6 +18,8 @@ class PositionsTable
 {
     public static function configure(Table $table): Table
     {
+        $filters = Filters::getFilters();
+
         return $table
 
             ->columns([
@@ -46,6 +47,12 @@ class PositionsTable
                     ->wrap()
 
                     ->sortable(),
+                TextColumn::make('place.name')
+                    ->limit(30, '...')
+                    ->label(__('filament.place_id'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('position_type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state?->label(__('filament.position_type')))
@@ -62,15 +69,15 @@ class PositionsTable
 
                     ->sortable(),
                 TextColumn::make('date_start')
-                    ->label(__('filament.date_start'))
-                    ->date()
+                    ->label(__('filament.position_date_range'))
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('date_end')
-                    ->label(__('filament.date_end'))
-                    ->date()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->getStateUsing(function (Position $record): string {
+                        $start_date = $record->date_start ? Carbon::parse($record->date_start)->format('d.m.Y') : '';
+                        $end_date = $record->date_end ? Carbon::parse($record->date_end)->format('d.m.Y') : 'N/A';
+
+                        return $start_date.' - '.($end_date ?? 'N/A');
+                    })
+                    ->toggleable(isToggledHiddenByDefault: false),
                 TextColumn::make('status')
                     ->label(__('filament.status'))
                     ->badge()
@@ -115,18 +122,8 @@ class PositionsTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                SelectFilter::make('department_id')
-                    ->label(__('filament.department_id'))
-                    ->options(
-                        Department::query()
-                            ->whereIn('status', [DepartmentStatus::ACTIVE->value, DepartmentStatus::ARCHIVED->value])
-                            ->orderBy('name')
-                            ->pluck('name', 'id'))
-                    ->searchable()
-                    ->preload()
-                    ->attribute('department_id'),
-            ])
+            ->filters($filters, layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(4)
             ->recordActions([
                 EditAction::make()
                     ->label('')

@@ -1,14 +1,6 @@
-tanamshromlis cvlilabaze pirdadai pailshi damatebis gilaki avides zevit da peri sheecvalos.
+დეპარტამენტებზე დაჭერით გადავიდეს პზიციების გვერდზე გაფილტრურლი.
 
-damaxsovrebis gilaki gamovide shaushi da daeceros shenaxva. gauqmebis gilaki movshalot.
+პოზიციებზე ჩაემატოს ფილტრები ცალკე არაქტიური დეპარტამენტები. 
+პოზიციების სტატუსები
 
-tanamshtomlebis cxrilshi departamentan ertad gamovides 
-statusi da position_type
-
-პიზიციის ისტორის ცხრილში დაწებასთან დასრულების ვადა თუ არა აქვს ტირე გამოვიდეს . 
-ცხრილშივე სნაპშოტიდან გამოვდიეს სტატუს დანიშვნა და მეორე თანამდებობის ტიპი 
-
-
-ganatlebashi 
-da samnushao gamocdilebashi 
-targiebi marto tslebi iyos
+და ველებში დაწყება დასრულება

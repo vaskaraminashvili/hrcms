@@ -56,6 +56,7 @@ return [
     'permissions_count' => 'უფლებების რაოდენობა',
     'employee_id' => 'თანამშრომელი',
     'department_id' => 'დეპარტამენტი',
+    'archived_department_id' => 'არქივში დეპარტამენტი',
     'cancel' => 'გაუქმება',
     'mobile_number' => 'ტელეფონის ნომერი',
     'account_number' => 'ანგარიშის ნომერი',
@@ -78,6 +79,7 @@ return [
     'date_start' => 'დაწყების თარიღი',
     'date_start_short' => 'დაწყ.',
     'date_end_short' => 'დასრულ.',
+    'position_date_range' => 'დაწყ. - დასრულ.',
     'date_end' => 'დასრულების თარიღი',
     'act_number' => 'აქტის ნომერი',
     'act_date' => 'აქტის თარიღი',
@@ -334,8 +336,8 @@ return [
 
     'department' => [
         'name' => 'დეპარტამენტი',
-        'save_and_archive' => 'შენახვა და არქივში გადატანა',
-        'modal_archive_heading' => 'დეპარტამენტის არქივირება და დუბლირება?',
+        'save_and_archive' => 'შენახვა და ისტორიის შექმნა',
+        'modal_archive_heading' => 'დეპარტამენტის შენახვა და დუბლირება?',
         'modal_archive_description' => 'სახელის ან მშობლის შეცვლისას ეს დეპარტამენტი და მისი თანამდებობები არქივში გადავა, შემდეგ კი შეიქმნება ახალი ასლი თქვენი ცვლილებებით.',
         'modal_submit' => 'დიახ, გაგრძელება',
         'cancel' => 'გაუქმება',
