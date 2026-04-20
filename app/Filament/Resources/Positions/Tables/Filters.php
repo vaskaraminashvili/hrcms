@@ -65,11 +65,32 @@ class Filters
                 ->attribute('position_type'),
             SelectFilter::make('status')
                 ->label(__('filament.status'))
-                ->options(PositionStatus::class)
+                ->options([
+                    'all' => __('filament.all'),
+                    ...collect(PositionStatus::cases())->mapWithKeys(
+                        fn (PositionStatus $case) => [$case->value => $case->getLabel()]
+                    ),
+                ])
                 ->searchable()
                 ->columnSpan(1)
                 ->preload()
-                ->attribute('status'),
+                ->query(function (Builder $query, array $data): Builder {
+                    if (blank($data['value'])) {
+                        return $query;
+                    }
+
+                    if ($data['value'] === 'all') {
+                        return $query->whereNotNull('status');
+                    }
+
+                    return $query->where('status', $data['value']);
+                }),
+            Filter::make('hide_scheduled_dismissals')
+                ->label(__('filament.hide_scheduled_dismissals'))
+                ->default(true)
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query->excludeScheduledDismissals();
+                }),
             Filter::make('date_range')
                 ->label(__('filament.date_range'))
                 ->schema([
