@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\AcademicPositionImportService;
 use App\Services\ComputerSkillImportService;
 use App\Services\EmployeeImportService;
+use App\Services\ForeignLanguageImportService;
 use App\Services\ImageImportService;
 use App\Services\PositionImportService;
 use App\Services\ScholarshipAwardImportService;
@@ -70,6 +71,15 @@ class ImportController extends Controller
     public function importAcademicPositions(Request $request, AcademicPositionImportService $academicPositionImportService)
     {
         $result = $academicPositionImportService->importAll(
+            clearTableBefore: $request->boolean('clear', true)
+        );
+
+        return response()->json($result);
+    }
+
+    public function importLanguages(Request $request, ForeignLanguageImportService $foreignLanguageImportService)
+    {
+        $result = $foreignLanguageImportService->importAll(
             clearTableBefore: $request->boolean('clear', true)
         );
 
