@@ -97,6 +97,8 @@ return [
     'position_history_section_full_snapshot' => 'Full snapshot',
     'position_history_full_snapshot_description' => 'Complete state of the position at the time of this change',
     'position_history_kv_value' => 'Value',
+    'position_history_edit_title' => 'Position fields at this change',
+    'position_history_field_changed_helper' => 'Changed: :change',
 
     'save' => 'Save',
     'save_history' => 'Save with history',
