@@ -183,7 +183,10 @@ class EmployeeForm
                                 return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record === null
                                         ? 0
-                                        : $record->{$case->relationship()}()->count() + $record->getMedia($case->mediaCollectionName())->count())
+                                        : (int) ($record->getAttribute($case->tabBadgeRelationCountAttribute())
+                                            ?? $record->{$case->relationship()}()->count())
+                                            + (int) ($record->getAttribute($case->tabBadgeMediaCountAttribute())
+                                                ?? $record->getMedia($case->mediaCollectionName())->count()))
                                     ->schema($tabSchema);
                             },
                             PersonalFile::cases()
