@@ -5,9 +5,11 @@ namespace App\Filament\Resources\PositionHistories\Tables;
 use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
 use App\Models\PositionHistory;
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -159,10 +161,13 @@ class PositionHistoriesTable
                     ->label(__('filament.employee_id')),
             ])
             ->defaultSort('id', 'desc')
-            ->filters($filters)
+            ->filters($filters, layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(4)
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label(__('filament.empty')),
+                EditAction::make()
+                    ->label(__('filament.empty')),
             ]);
     }
 }

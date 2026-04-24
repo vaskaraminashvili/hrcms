@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\Positions\Schemas;
 
 use App\Enums\DepartmentStatus;
+use App\Enums\PositionHistorySnapshotField;
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Filament\Schemas\StateCasts\ClinicalRadioStateCast;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Position;
+use App\Models\PositionHistory;
 use Closure;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Field;
@@ -20,6 +22,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -30,10 +33,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PositionForm
 {
-    public static function configure(Schema $schema, bool $withEmployee = false, ?Employee $employee = null): Schema
+    public static function configure(Schema $schema, bool $withEmployee = false, ?Employee $employee = null, ?PositionHistory $historySnapshot = null): Schema
     {
-
-        return $schema->components([
+        $schema->components([
 
             Select::make('employee_id')
                 ->relationship('employee', 'name')
@@ -265,6 +267,55 @@ class PositionForm
                 ])
                 ->columnSpanFull(),
         ]);
+
+        if ($historySnapshot instanceof PositionHistory) {
+            self::annotateSchemaWithHistoryChangedFields($schema, $historySnapshot);
+        }
+
+        return $schema;
+    }
+
+    private static function annotateSchemaWithHistoryChangedFields(Schema $schema, PositionHistory $history): void
+    {
+        foreach ($schema->getComponents(withActions: false, withHidden: true) as $component) {
+            if ($component instanceof Component) {
+                self::annotateComponentTreeWithHistoryChangedFields($component, $history);
+            }
+        }
+    }
+
+    private static function annotateComponentTreeWithHistoryChangedFields(Component $component, PositionHistory $history): void
+    {
+        if ($component instanceof Field) {
+            self::maybeAnnotateFieldWithHistoryDiff($component, $history);
+
+            return;
+        }
+
+        foreach ($component->getChildSchemas(withHidden: true) as $childSchema) {
+            foreach ($childSchema->getComponents(withActions: false, withHidden: true) as $child) {
+                if ($child instanceof Component) {
+                    self::annotateComponentTreeWithHistoryChangedFields($child, $history);
+                }
+            }
+        }
+    }
+
+    private static function maybeAnnotateFieldWithHistoryDiff(Field $field, PositionHistory $history): void
+    {
+        $changed = $history->changed_fields;
+        if (! is_array($changed) || $changed === []) {
+            return;
+        }
+
+        $name = $field->getName();
+        if (! is_string($name) || $name === '' || ! array_key_exists($name, $changed)) {
+            return;
+        }
+
+        $field->helperText(__('filament.position_history_field_changed_helper', [
+            'change' => PositionHistorySnapshotField::formatDiffSegment($changed[$name], $name),
+        ]));
     }
 
     private static function applyNonStaffTypeForPositionType(Set $set, mixed $positionTypeState): void
