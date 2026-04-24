@@ -14,6 +14,13 @@ class CreateEmployee extends CreateRecord
 
     public static string|Alignment $formActionsAlignment = Alignment::Center;
 
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['birth_date'] = '1900-01-01'; // set the oldest date for the birth date
+
+        return $data;
+    }
+
     /**
      * @return array<Action | ActionGroup>
      */

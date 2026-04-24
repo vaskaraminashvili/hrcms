@@ -60,8 +60,7 @@ class EmployeeForm
                                     ->label(__('filament.email'))
                                     ->email(),
                                 DatePicker::make('birth_date')
-                                    ->label(__('filament.birth_date'))
-                                    ->required(),
+                                    ->label(__('filament.birth_date')),
                                 Select::make('gender')
                                     ->options(Gender::class)
                                     ->default(__('filament.gender_default'))
@@ -76,8 +75,7 @@ class EmployeeForm
                                                 2 => __('filament.education_level.higher'),
                                             ])
                                             ->inline()
-                                            ->live()
-                                            ->required(),
+                                            ->live(),
                                         Select::make('degree')
                                             ->label(__('filament.degree'))
                                             ->options(Education::class)
