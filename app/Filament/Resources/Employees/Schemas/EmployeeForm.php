@@ -6,7 +6,6 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
-use App\Filament\Resources\Employees\Schemas\PersonalFile\PublicationsSchema;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
@@ -174,8 +173,8 @@ class EmployeeForm
                                         ->extraAttributes(['class' => 'attachments-upload']),
                                 ];
 
-                                if ($case === PersonalFile::PUBLICATIONS) {
-                                    array_unshift($tabSchema, PublicationsSchema::tabHeaderActions());
+                                if (method_exists($schemaClass, 'tabHeaderActions')) {
+                                    array_unshift($tabSchema, $schemaClass::tabHeaderActions());
                                 }
 
                                 return Tab::make(__('filament.personal_file.tabs.'.$case->value))
