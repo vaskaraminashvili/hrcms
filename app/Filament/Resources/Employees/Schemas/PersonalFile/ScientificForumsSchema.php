@@ -81,8 +81,8 @@ class ScientificForumsSchema
         return [
             static::translatableField('title', __('filament.personal_file.scientific_forums.title')),
             static::translatableField('participation_form', __('filament.personal_file.scientific_forums.participation_form')),
-            DatePicker::make('start_date')->label(__('filament.personal_file.dates.start_date')),
-            DatePicker::make('end_date')->label(__('filament.personal_file.dates.end_date')),
+            DatePicker::make('start_date')->label(__('filament.personal_file.dates.started_at')),
+            DatePicker::make('end_date')->label(__('filament.personal_file.dates.ended_at')),
         ];
     }
 }

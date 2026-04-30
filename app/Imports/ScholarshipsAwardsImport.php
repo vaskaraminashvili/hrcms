@@ -18,7 +18,7 @@ class ScholarshipsAwardsImport implements ToModel, WithHeadingRow
     public function model(array $row): ?ScholarshipAward
     {
         $title = $this->string($row['title'] ?? null);
-
+        $grantDetails = $this->string($row['grant_details'] ?? null);
         if ($title === '') {
             return null;
         }
@@ -26,6 +26,7 @@ class ScholarshipsAwardsImport implements ToModel, WithHeadingRow
         return new ScholarshipAward([
             'employee_id' => $this->employeeId,
             'title' => $this->translatable($title),
+            'grant_details' => $this->translatable($grantDetails),
             'issuer' => $this->optionalTranslatable($row['issuer'] ?? null),
             'issued_at' => $this->optionalDate($row['issued_at'] ?? null),
         ]);
