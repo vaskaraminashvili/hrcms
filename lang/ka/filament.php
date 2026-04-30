@@ -431,11 +431,23 @@ return [
         'work_experience' => [
             'institution' => 'დაწესებულება',
             'position' => 'თანამდებობა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სამუშაო გამოცდილების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სამუშაო გამოცდილება წარმატებით იქნა იმპორტირებული.',
         ],
 
         'trainings_seminars' => [
             'institution' => 'დაწესებულება',
             'topic' => 'თემა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'ტრენინგების და სემინარების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'ტრენინგები და სემინარები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'publications' => [
@@ -459,11 +471,23 @@ return [
         'scientific_forums' => [
             'title' => 'სახელწოდება',
             'participation_form' => 'მონაწილეობის ფორმა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სამეცნიერო ფორუმების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სამეცნიერო ფორუმებში მონაწილეობა წარმატებით იქნა იმპორტირებული.',
         ],
 
         'scholarships_awards' => [
             'title' => 'სახელწოდება',
             'issuer' => 'გამცემელი',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სტიპენდიებისა და ჯილდოების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სტიპენდიები და ჯილდოები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'other' => [

@@ -370,11 +370,23 @@ return [
         'work_experience' => [
             'institution' => 'Institution',
             'position' => 'Position',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import work experience',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Work experience imported successfully.',
         ],
 
         'trainings_seminars' => [
             'institution' => 'Institution',
             'topic' => 'Topic',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import trainings & seminars',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Trainings and seminars imported successfully.',
         ],
 
         'publications' => [
@@ -398,11 +410,23 @@ return [
         'scientific_forums' => [
             'title' => 'Title',
             'participation_form' => 'Form of participation',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scientific forums participation',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scientific forums participation imported successfully.',
         ],
 
         'scholarships_awards' => [
             'title' => 'Title',
             'issuer' => 'Issuing body',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scholarships & awards',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scholarships and awards imported successfully.',
         ],
 
         'other' => [
