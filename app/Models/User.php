@@ -4,13 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
@@ -47,6 +50,35 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($panel->getId()) {
+            'admin' => $this->canAccessAdminPanel(),
+            'employee' => $this->hasRole('employee'),
+            default => false,
+        };
+    }
+
+    protected function canAccessAdminPanel(): bool
+    {
+        $shield = config('filament-shield');
+
+        if ($this->hasRole($shield['super_admin']['name'])) {
+            return true;
+        }
+
+        if (($shield['panel_user']['enabled'] ?? false) && $this->hasRole($shield['panel_user']['name'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
