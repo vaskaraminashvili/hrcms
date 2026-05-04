@@ -470,7 +470,7 @@ return [
 
         'scientific_forums' => [
             'title' => 'სახელწოდება',
-            'participation_form' => 'მონაწილეობის ფორმა',
+            'participation_form' => 'მოხსენების დასახელება',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სამეცნიერო ფორუმების იმპორტი',
@@ -481,7 +481,8 @@ return [
 
         'scholarships_awards' => [
             'title' => 'სახელწოდება',
-            'issuer' => 'გამცემელი',
+            'issuer' => 'გამცემი ორგანიზაცია',
+            'grant_details' => 'გრანტი',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სტიპენდიებისა და ჯილდოების იმპორტი',

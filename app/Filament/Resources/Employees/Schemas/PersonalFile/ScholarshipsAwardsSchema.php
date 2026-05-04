@@ -81,6 +81,7 @@ class ScholarshipsAwardsSchema
         return [
             static::translatableField('title', __('filament.personal_file.scholarships_awards.title')),
             static::translatableField('issuer', __('filament.personal_file.scholarships_awards.issuer')),
+            static::translatableField('grant_details', __('filament.personal_file.scholarships_awards.grant_details')),
             DatePicker::make('issued_at')->label(__('filament.personal_file.dates.issued_at')),
         ];
     }
