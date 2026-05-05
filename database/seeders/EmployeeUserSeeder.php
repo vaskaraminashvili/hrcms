@@ -28,6 +28,7 @@ class EmployeeUserSeeder extends Seeder
         }
 
         Employee::query()
+            ->limit(10)
             ->whereNull('user_id')
             ->orderBy('id')
             ->chunkById(100, function ($employees) use ($hashedPassword, $emailDomain, &$usedEmails): void {
@@ -45,6 +46,7 @@ class EmployeeUserSeeder extends Seeder
                                 'name' => $name !== '' ? $name : ('Employee '.$employee->id),
                                 'email' => $email,
                                 'password' => $hashedPassword,
+                                'force_renew_password' => true,
                             ]);
                             break;
                         } catch (QueryException $e) {
@@ -71,27 +73,18 @@ class EmployeeUserSeeder extends Seeder
 
     private function normalizedEmployeeEmailCandidate(Employee $employee, string $emailDomain): string
     {
-        $provided = trim((string) $employee->email);
-
-        if ($provided !== '' && filter_var($provided, FILTER_VALIDATE_EMAIL)) {
-            return Str::lower($provided);
+        $domain = trim($emailDomain);
+        if ($domain === '') {
+            $domain = 'invalid.local';
         }
 
-        $nameAscii = Str::lower(Str::ascii(trim((string) $employee->name)));
-        $surnameAscii = Str::lower(Str::ascii(trim((string) $employee->surname)));
-        $firstLetter = Str::substr($nameAscii, 0, 1);
-        $surnameLocal = Str::slug($surnameAscii, '');
-
-        $local = Str::lower((string) preg_replace('/[^a-z0-9]/', '', $firstLetter.$surnameLocal));
+        $local = preg_replace('/\s+/', '', trim((string) $employee->personal_number)) ?? '';
 
         if ($local === '') {
-            $local = Str::slug('employee-'.$employee->personal_number, '-');
-            if ($local === '') {
-                $local = 'employee-'.$employee->getKey();
-            }
+            $local = 'employee-'.$employee->getKey();
         }
 
-        return Str::lower($local.'@'.$emailDomain);
+        return Str::lower($local.'@'.$domain);
     }
 
     /**
