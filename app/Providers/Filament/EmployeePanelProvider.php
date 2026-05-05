@@ -19,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Yebor974\Filament\RenewPassword\RenewPasswordPlugin;
 
 class EmployeePanelProvider extends PanelProvider
 {
@@ -27,7 +28,7 @@ class EmployeePanelProvider extends PanelProvider
         return $panel
             ->id('employee')
             ->path('employee')
-            ->homeUrl(fn (): string => EmployeeProfileResource::getUrl('edit'))
+            // ->homeUrl(fn (): string => EmployeeProfileResource::getUrl('edit'))
             ->login()
             ->colors([
                 'primary' => Color::Indigo,
@@ -57,6 +58,10 @@ class EmployeePanelProvider extends PanelProvider
                 PanelsRenderHook::STYLES_AFTER,
                 fn (): string => Vite::withEntryPoints(['resources/css/filament/admin/custom.css'])->toHtml()
             )
+            ->plugins([
+                RenewPasswordPlugin::make()
+                    ->forceRenewPassword(true),
+            ])
             ->globalSearch(false);
     }
 }

@@ -34,7 +34,6 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 ## Conventions
 
-- **Database migrations:** Never run `php artisan migrate`, `migrate:fresh`, `migrate:rollback`, `migrate:refresh`, or similar migration commands unless the user explicitly tells you to run them. Creating or editing migration files is fine; applying them is the user’s choice.
 - You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, and naming.
 - Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
 - Check for existing components to reuse before writing a new one.
@@ -116,6 +115,13 @@ This project has domain-specific skills available. You MUST activate the relevan
 
 - The application is served by Laravel Herd at `https?://[kebab-case-project-dir].test`. Use the `get-absolute-url` tool to generate valid URLs. Never run commands to serve the site. It is always available.
 - Use the `herd` CLI to manage services, PHP versions, and sites (e.g. `herd sites`, `herd services:start <service>`, `herd php:list`). Run `herd list` to discover all available commands.
+
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
 
 === laravel/core rules ===
 
