@@ -451,4 +451,8 @@ return [
         ],
     ],
 
+    'employee_panel' => [
+        'login_heading' => 'Employee authorization',
+    ],
+
 ];

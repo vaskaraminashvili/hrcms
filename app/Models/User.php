@@ -29,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, RenewPasswordContrac
         'name',
         'email',
         'password',
+        'force_renew_password',
     ];
 
     /**
