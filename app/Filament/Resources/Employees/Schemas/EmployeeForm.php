@@ -31,6 +31,8 @@ class EmployeeForm
                                 Select::make('status')
                                     ->options(EmployeeStatusEnum::class)
                                     ->label(__('filament.status'))
+                                    ->required()
+                                    ->default(EmployeeStatusEnum::ACTIVE)
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('employee_image')
                                     ->label(__('filament.employee_image'))

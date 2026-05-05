@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Employee\Auth\EmployeeLogin;
 use App\Filament\Employee\Pages\Dashboard;
 use App\Filament\Employee\Resources\EmployeeProfileResource;
 use Filament\Http\Middleware\Authenticate;
@@ -29,7 +30,7 @@ class EmployeePanelProvider extends PanelProvider
             ->id('employee')
             ->path('employee')
             // ->homeUrl(fn (): string => EmployeeProfileResource::getUrl('edit'))
-            ->login()
+            ->login(EmployeeLogin::class)
             ->colors([
                 'primary' => Color::Indigo,
                 'gray' => Color::Slate,
