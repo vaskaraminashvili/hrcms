@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\VacationStatus;
 use App\Enums\VacationType;
+use App\Models\Concerns\RegistersConstrainedMediaCollections;
 use Carbon\Carbon;
 use Database\Factories\VacationFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,7 +20,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Vacation extends Model implements HasMedia
 {
     /** @use HasFactory<VacationFactory> */
-    use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
+    use HasFactory, InteractsWithMedia, LogsActivity, RegistersConstrainedMediaCollections, SoftDeletes;
 
     protected $fillable = [
         'employee_id',
@@ -127,6 +128,6 @@ class Vacation extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('vacation');
+        $this->registerConstrainedMediaCollection('vacation');
     }
 }

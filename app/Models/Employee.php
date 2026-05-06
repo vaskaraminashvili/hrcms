@@ -6,6 +6,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
 use App\Enums\PositionStatus;
+use App\Models\Concerns\RegistersConstrainedMediaCollections;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Employee extends Model implements HasMedia
 {
     /** @use HasFactory<EmployeeFactory> */
-    use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
+    use HasFactory, InteractsWithMedia, LogsActivity, RegistersConstrainedMediaCollections, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -151,7 +152,7 @@ class Employee extends Model implements HasMedia
 
     private function addLocalMediaCollection(string $name): void
     {
-        $this->addMediaCollection($name)
+        $this->registerConstrainedMediaCollection($name)
             ->useDisk('local')
             ->storeConversionsOnDisk('local');
     }

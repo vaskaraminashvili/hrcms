@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
 use App\Enums\VacationType;
+use App\Models\Concerns\RegistersConstrainedMediaCollections;
 use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,7 +20,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Position extends Model implements HasMedia
 {
     /** @use HasFactory<PositionFactory> */
-    use HasFactory, InteractsWithMedia, LogsActivity;
+    use HasFactory, InteractsWithMedia, LogsActivity, RegistersConstrainedMediaCollections;
 
     protected $fillable = [
         'employee_id',
@@ -195,6 +196,6 @@ class Position extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('position');
+        $this->registerConstrainedMediaCollection('position');
     }
 }

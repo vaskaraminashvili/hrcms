@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonalFile;
+use App\Models\Concerns\RegistersConstrainedMediaCollections;
 use Database\Factories\OtherDocumentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,7 @@ use Spatie\Translatable\HasTranslations;
 class OtherDocument extends Model implements HasMedia
 {
     /** @use HasFactory<OtherDocumentFactory> */
-    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasTranslations, InteractsWithMedia, RegistersConstrainedMediaCollections, SoftDeletes;
 
     protected $table = 'other_documents';
 
@@ -40,6 +41,6 @@ class OtherDocument extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection(PersonalFile::OTHER->mediaCollectionName());
+        $this->registerConstrainedMediaCollection(PersonalFile::OTHER->mediaCollectionName());
     }
 }

@@ -65,7 +65,7 @@ class ImportEmployeeImageChunkJob implements ShouldQueue
 
             try {
                 $employee->clearMediaCollection('employee_image');
-                $employee->addMediaFromUrl($photoUrl)
+                $employee->addMediaFromUrl($photoUrl, config('media-library.allowed_mime_types'))
                     ->usingName(pathinfo($filename, PATHINFO_FILENAME))
                     ->usingFileName($filename)
                     ->toMediaCollection('employee_image');

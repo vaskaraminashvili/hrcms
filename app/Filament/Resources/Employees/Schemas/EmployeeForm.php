@@ -6,12 +6,12 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Filament\Forms\Components\ConstrainedSpatieMediaLibraryFileUpload;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -34,7 +34,7 @@ class EmployeeForm
                                     ->required()
                                     ->default(EmployeeStatusEnum::ACTIVE)
                                     ->columnSpanFull(),
-                                SpatieMediaLibraryFileUpload::make('employee_image')
+                                ConstrainedSpatieMediaLibraryFileUpload::make('employee_image')
                                     ->label(__('filament.employee_image'))
                                     ->collection('employee_image')
                                     ->removeUploadedFileButtonPosition('right')
@@ -106,7 +106,7 @@ class EmployeeForm
                                     ])
                                     ->columns(2)
                                     ->columnSpanFull(),
-                                SpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
+                                ConstrainedSpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
                                     ->label(__('filament.personal_file.attachments'))
                                     ->collection('basic_information_attachments')
                                     ->removeUploadedFileButtonPosition('right')
@@ -164,7 +164,7 @@ class EmployeeForm
                                         ])
                                         ->addAction(fn (Action $action) => $action->visible(false))
                                         ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
-                                    SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                    ConstrainedSpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
                                         ->label(__('filament.personal_file.attachments'))
                                         ->collection($case->mediaCollectionName())
                                         ->removeUploadedFileButtonPosition('right')

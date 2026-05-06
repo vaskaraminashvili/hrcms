@@ -4,13 +4,13 @@ namespace App\Filament\Resources\Vacations\Schemas;
 
 use App\Enums\VacationStatus;
 use App\Enums\VacationType;
+use App\Filament\Forms\Components\ConstrainedSpatieMediaLibraryFileUpload;
 use App\Models\Position;
 use App\Models\Vacation;
 use App\Services\VacationWorkingDaysCalculator;
 use Carbon\Carbon;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -194,7 +194,7 @@ class VacationForm
                 Textarea::make('notes')
                     ->columnSpanFull()
                     ->label(__('filament.notes')),
-                SpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
+                ConstrainedSpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
                     ->label(__('filament.vacation_file_attachments'))
                     ->collection('position')
                     ->removeUploadedFileButtonPosition('right')

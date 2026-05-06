@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonalFile;
+use App\Models\Concerns\RegistersConstrainedMediaCollections;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,7 +14,7 @@ use Spatie\Translatable\HasTranslations;
 
 class ForeignLanguage extends Model implements HasMedia
 {
-    use HasFactory, HasTranslations, InteractsWithMedia, SoftDeletes;
+    use HasFactory, HasTranslations, InteractsWithMedia, RegistersConstrainedMediaCollections, SoftDeletes;
 
     protected $table = 'foreign_languages';
 
@@ -30,6 +31,6 @@ class ForeignLanguage extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection(PersonalFile::FOREIGN_LANGUAGES->mediaCollectionName());
+        $this->registerConstrainedMediaCollection(PersonalFile::FOREIGN_LANGUAGES->mediaCollectionName());
     }
 }
