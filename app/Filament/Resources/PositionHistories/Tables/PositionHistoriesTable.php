@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PositionHistories\Tables;
 use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
 use App\Models\PositionHistory;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
@@ -167,6 +168,8 @@ class PositionHistoriesTable
                 ViewAction::make()
                     ->label(__('filament.empty')),
                 EditAction::make()
+                    ->label(__('filament.empty')),
+                DeleteAction::make()
                     ->label(__('filament.empty')),
             ]);
     }

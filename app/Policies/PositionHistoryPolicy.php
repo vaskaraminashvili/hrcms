@@ -43,7 +43,11 @@ class PositionHistoryPolicy
 
     public function delete(AuthUser $authUser, PositionHistory $positionHistory): bool
     {
-        return false;
+        if ($authUser->can('Delete:PositionHistory')) {
+            return true;
+        }
+
+        return $this->update($authUser, $positionHistory);
     }
 
     public function restore(AuthUser $authUser, PositionHistory $positionHistory): bool
