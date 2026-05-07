@@ -80,6 +80,7 @@ return [
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
+    'date_start_helper_text' => 'თარიღის არჩევა არაა საჭირო',
     'date_start_short' => 'დაწყ.',
     'date_end_short' => 'დასრულ.',
     'position_date_range' => 'დაწყ. - დასრულ.',
