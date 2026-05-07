@@ -76,6 +76,7 @@ return [
         'modal_save_history_submit' => 'შენახვა ისტორიით',
     ],
     'place_id' => 'თანამდებობა',
+    'profile' => 'პროფილი',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
@@ -512,6 +513,10 @@ return [
             'other' => 'სხვა',
         ],
 
+    ],
+
+    'employee_panel' => [
+        'login_heading' => 'თანამშრომლის ავტორიზაცია',
     ],
 
 ];

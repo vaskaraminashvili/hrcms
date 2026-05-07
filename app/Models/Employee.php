@@ -9,6 +9,7 @@ use App\Enums\PositionStatus;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
@@ -22,6 +23,7 @@ class Employee extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'name',
         'surname',
         'name_eng',
@@ -48,6 +50,11 @@ class Employee extends Model implements HasMedia
             'address_details' => 'array',
             'status' => EmployeeStatusEnum::class,
         ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function positions(): HasMany
