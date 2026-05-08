@@ -168,17 +168,18 @@ class PositionForm
                                 ->required(),
 
                             DatePicker::make('date_start')
-                                ->label(__('filament.date_start')),
+                                ->label(__('filament.date_start'))
+                                ->disabled(fn ($get): bool => self::statusIsDismissal($get('status')))
+                                ->helperText(function ($get) {
+                                    if (self::statusIsDismissal($get('status'))) {
+                                        return __('filament.date_start_helper_text');
+                                    }
+
+                                    return null;
+                                }),
                             DatePicker::make('date_end')
                                 ->label(__('filament.date_end'))
-                                ->required(function ($get): bool {
-                                    if (! $get('status')) {
-                                        return false;
-                                    }
-                                    $required = $get('status')->value == PositionStatus::Dismissal->value;
-
-                                    return $required;
-                                }),
+                                ->required(fn ($get): bool => self::statusIsDismissal($get('status'))),
 
                             TextInput::make('act_number')
                                 ->label(__('filament.act_number')),
@@ -188,6 +189,14 @@ class PositionForm
                             Select::make('status')
                                 ->label(__('filament.status'))
                                 ->options(PositionStatus::class)
+                                ->live()
+                                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                    if (! self::statusIsDismissal($state)) {
+                                        return;
+                                    }
+
+                                    $set('date_end', now()->toDateString());
+                                })
                                 ->required(),
 
                             Section::make()
@@ -316,6 +325,15 @@ class PositionForm
         $field->helperText(__('filament.position_history_field_changed_helper', [
             'change' => PositionHistorySnapshotField::formatDiffSegment($changed[$name], $name),
         ]));
+    }
+
+    private static function statusIsDismissal(mixed $status): bool
+    {
+        $enum = $status instanceof PositionStatus
+            ? $status
+            : PositionStatus::tryFrom((string) $status);
+
+        return $enum === PositionStatus::Dismissal;
     }
 
     private static function applyNonStaffTypeForPositionType(Set $set, mixed $positionTypeState): void

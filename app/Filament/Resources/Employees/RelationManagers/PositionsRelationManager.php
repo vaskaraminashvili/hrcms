@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Employees\RelationManagers;
 
 use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
+use App\Filament\Resources\Positions\Tables\Filters as PositionTableFilters;
 use App\Models\Position;
 use App\Services\PositionFormPersistence;
 use Filament\Actions\Action;
@@ -38,6 +39,12 @@ class PositionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->filters(
+                [
+                    PositionTableFilters::hideScheduledDismissals(),
+                ],
+            )
+            ->filtersFormColumns(1)
             ->recordTitleAttribute('date_start')
             ->columns([
                 TextColumn::make('department.name')

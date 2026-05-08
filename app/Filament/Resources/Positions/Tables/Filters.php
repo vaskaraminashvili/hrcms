@@ -15,6 +15,16 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Filters
 {
+    public static function hideScheduledDismissals(): Filter
+    {
+        return Filter::make('hide_scheduled_dismissals')
+            ->label(__('filament.hide_scheduled_dismissals'))
+            ->default(true)
+            ->query(function (Builder $query, array $data): Builder {
+                return $query->excludeScheduledDismissals();
+            });
+    }
+
     public static function getFilters(): array
     {
         $filters = [];
@@ -85,12 +95,7 @@ class Filters
 
                     return $query->where('status', $data['value']);
                 }),
-            Filter::make('hide_scheduled_dismissals')
-                ->label(__('filament.hide_scheduled_dismissals'))
-                ->default(true)
-                ->query(function (Builder $query, array $data): Builder {
-                    return $query->excludeScheduledDismissals();
-                }),
+            self::hideScheduledDismissals(),
             Filter::make('date_range')
                 ->label(__('filament.date_range'))
                 ->schema([

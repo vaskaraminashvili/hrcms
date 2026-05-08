@@ -1,9 +1,8 @@
-დეპარტამენტებზე დაჭერით გადავიდეს პზიციების გვერდზე გაფილტრურლი.
+tanamshromelbshi cxrilshi da mere shignit ro shedis poziciebi im logikit unda gmovides ra tviton poziciebshia 
 
-პოზიციებზე ჩაემატოს ფილტრები ცალკე არაქტიური დეპარტამენტები. 
-პოზიციების სტატუსები
+anu vada gasuli  da gantavisuplebuli ar unda changes. mere editshi relatiojnshiopze tu gamova daematos filtrivit ro isev gamoutansos.
 
-და ველებში დაწყება დასრულება
+tanamshromelze tu mounishnes statusi gantavisuplebuli 
+mashin datsyebis targi davmalot 
 
-
-ვადა დასრულებული
+poziciebis istoriashi daematos tsashla ogont isee ropermishin chirdebodes 

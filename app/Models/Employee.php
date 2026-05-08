@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
-use App\Enums\PositionStatus;
 use Database\Factories\EmployeeFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +64,7 @@ class Employee extends Model implements HasMedia
     public function appointmentPositions(): HasMany
     {
         return $this->hasMany(Position::class)
-            ->whereNotIn('status', [PositionStatus::Dismissal]);
+            ->excludeScheduledDismissals();
     }
 
     public function academicPositions(): HasMany
