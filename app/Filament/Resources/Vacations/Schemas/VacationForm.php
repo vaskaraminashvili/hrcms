@@ -134,7 +134,7 @@ class VacationForm
                     ])
                     ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
 
-                    ->columns(7)
+                    ->columns(4)
                     ->columnSpanFull(),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
