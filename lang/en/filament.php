@@ -143,6 +143,18 @@ return [
 
     'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
 
+    'vacation_days' => 'Vacation balance',
+    'vacation_policy_days_per_year' => 'Annual days (policy)',
+    'vacation_days_left_last_year' => 'Paid leave left (last year)',
+    'vacation_days_left_this_year' => 'Paid leave left (this year)',
+    'vacation_days_left_this_year_plus_last_year' => 'Paid leave left (last + this year)',
+    'used_days_off_days' => 'Day-offs used (this year)',
+    'used_vacation_days_last_year' => 'Paid leave used (last year)',
+    'used_vacation_days' => 'Paid leave used (this year)',
+    'available_vacation_days' => 'Available paid leave',
+    'total_vacation_days' => 'Total entitlement (this year)',
+    'transferred_days' => 'Transferred into this year',
+
     'working_days_count_helper_text' => 'Saturday: :saturday, Sunday: :sunday.:public_holidays_line',
     'working_days_count_helper_public_holidays_none' => ' No public holidays on working days in this period.',
     'working_days_count_helper_public_holidays_some' => ' :count public holiday day(s) excluded (not counted toward vacation balance).',

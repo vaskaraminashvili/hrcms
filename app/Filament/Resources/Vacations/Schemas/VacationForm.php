@@ -97,21 +97,29 @@ class VacationForm
                 Section::make()
                     ->label(__('filament.vacation_days'))
                     ->schema([
-                        TextEntry::make('used_days_off_days')
-                            ->label(__('filament.used_days_off_days')),
+                        TextEntry::make('policy_days')
+                            ->label(__('filament.vacation_policy_days_per_year')),
+
+                        TextEntry::make('left_calendar_year_days')
+                            ->label(__('filament.left_calendar_year_days')),
+
                         TextEntry::make('transferred_days')
                             ->label(__('filament.transferred_days')),
-                        TextEntry::make('total_vacation_days')
-                            ->label(__('filament.total_vacation_days')),
-                        TextEntry::make('used_vacation_days')
-                            ->label(__('filament.used_vacation_days')),
+
+                        TextEntry::make('vacation_days_left_last_year')
+                            ->label(__('filament.left_last_year_days')),
                         TextEntry::make('available_vacation_days')
                             ->label(__('filament.available_vacation_days'))
                             ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+                        TextEntry::make('total_days_off')
+                            ->label(__('filament.total_days_off')),
+                        TextEntry::make('left_days_off')
+                            ->label(__('filament.left_days_off')),
+
                     ])
                     ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
 
-                    ->columns(5)
+                    ->columns(7)
                     ->columnSpanFull(),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
@@ -264,7 +272,15 @@ class VacationForm
             ->find($positionId);
 
         if (! $position) {
-            $defaults = ['used_days_off_days', 'transferred_days', 'total_vacation_days', 'used_vacation_days', 'available_vacation_days'];
+            $defaults = [
+                'policy_days',
+                'transferred_days',
+                'total_days_off',
+                'vacation_days_left_last_year',
+                'left_calendar_year_days',
+                'left_days_off',
+                'available_vacation_days',
+            ];
             foreach ($defaults as $field) {
                 $set($field, 0);
             }
@@ -272,10 +288,15 @@ class VacationForm
             return;
         }
 
-        $set('used_days_off_days', $position->used_days_off_days);
+        $set('policy_days', $position->policy_days);
+        $set('left_calendar_year_days', $position->left_calendar_year_days);
+
         $set('transferred_days', $position->transferred_days);
-        $set('total_vacation_days', $position->total_vacation_days);
-        $set('used_vacation_days', $position->used_vacation_days);
+        $set('vacation_days_left_last_year', $position->vacation_days_left_last_year);
+
+        $set('total_days_off', $position->total_days_off);
+        $set('left_days_off', $position->left_days_off);
+
         $set('available_vacation_days', $position->available_vacation_days);
     }
 }
