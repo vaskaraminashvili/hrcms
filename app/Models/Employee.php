@@ -6,6 +6,7 @@ use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
 use Database\Factories\EmployeeFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +40,16 @@ class Employee extends Model implements HasMedia
         'address_details',
         'status',
     ];
+
+    /**
+     * Localized given name plus family name for display (breadcrumbs, record titles).
+     */
+    protected function fullName(): Attribute
+    {
+        return Attribute::get(function (): string {
+            return trim(sprintf('%s %s', $this->name ?? '', $this->surname ?? ''));
+        });
+    }
 
     protected function casts(): array
     {
