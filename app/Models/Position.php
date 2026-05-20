@@ -151,7 +151,14 @@ class Position extends Model implements HasMedia
 
     public function getVacationDaysLeftLastYearAttribute(): int // vacation_days_left_last_year
     {
-        return $this->transferred_days - $this->getUsedVacationDaysAttribute(calendarYear: false);
+
+        $days_from_last_year = (int) $this->vacations()
+            ->where('status', VacationStatus::Approved)
+            ->where('type', VacationType::PAID_LEAVE->value)
+            ->whereYear('start_date', now()->year)
+            ->sum('days_from_last_year');
+
+        return $this->transferred_days - $days_from_last_year;
     }
 
     public function getAvailableVacationDaysAttribute(): int

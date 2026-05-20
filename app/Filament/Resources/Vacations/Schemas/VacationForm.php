@@ -140,7 +140,7 @@ class VacationForm
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
                         fn (VacationStatus $case) => [$case->value => $case->label()]
                     ))
-                    ->default(VacationStatus::Pending->value)
+                    ->default(VacationStatus::Approved->value)
                     ->required()
                     ->hidden()
                     ->label(__('filament.status')),
@@ -172,8 +172,8 @@ class VacationForm
                         'max:'.(int) ($get('vacation_days_left_last_year') ?? 0),
                     ])
                     ->live()
-                    ->dehydrated(false)
-                    ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value),
+                    ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value)
+                    ->dehydrated(),
                 TextInput::make('working_days_count')
                     ->disabled()
                     ->dehydrated()
