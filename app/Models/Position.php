@@ -203,7 +203,10 @@ class Position extends Model implements HasMedia
     public function scopeActivePositions(Builder $query): Builder
     {
         return $query->whereNotIn('status', [PositionStatus::Dismissal->value, PositionStatus::Achieved->value])
-            ->where('date_end', '>=', now());
+            ->where(function (Builder $q): void {
+                $q->whereNull('date_end')
+                    ->orWhereDate('date_end', '>=', now());
+            });
     }
 
     public function registerMediaCollections(): void

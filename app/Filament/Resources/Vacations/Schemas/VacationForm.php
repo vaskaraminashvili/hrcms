@@ -13,7 +13,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
@@ -97,24 +96,40 @@ class VacationForm
                 Section::make()
                     ->label(__('filament.vacation_days'))
                     ->schema([
-                        TextEntry::make('policy_days')
-                            ->label(__('filament.vacation_policy_days_per_year')),
+                        TextInput::make('policy_days')
+                            ->label(__('filament.vacation_policy_days_per_year'))
+                            ->disabled()
+                            ->dehydrated(false),
 
-                        TextEntry::make('left_calendar_year_days')
-                            ->label(__('filament.left_calendar_year_days')),
+                        TextInput::make('left_calendar_year_days')
+                            ->label(__('filament.left_calendar_year_days'))
+                            ->disabled()
+                            ->dehydrated(false),
 
-                        TextEntry::make('transferred_days')
-                            ->label(__('filament.transferred_days')),
+                        TextInput::make('transferred_days')
+                            ->label(__('filament.transferred_days'))
+                            ->disabled()
+                            ->dehydrated(false),
 
-                        TextEntry::make('vacation_days_left_last_year')
-                            ->label(__('filament.left_last_year_days')),
-                        TextEntry::make('available_vacation_days')
+                        TextInput::make('vacation_days_left_last_year')
+                            ->label(__('filament.left_last_year_days'))
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('available_vacation_days')
                             ->label(__('filament.available_vacation_days'))
-                            ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
-                        TextEntry::make('total_days_off')
-                            ->label(__('filament.total_days_off')),
-                        TextEntry::make('left_days_off')
-                            ->label(__('filament.left_days_off')),
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->extraInputAttributes(fn (Get $get): array => (int) ($get('available_vacation_days') ?? 0) <= 2
+                                ? ['class' => 'text-danger-600 dark:text-danger-400']
+                                : ['class' => 'text-success-600 dark:text-success-400']),
+                        TextInput::make('total_days_off')
+                            ->label(__('filament.total_days_off'))
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('left_days_off')
+                            ->label(__('filament.left_days_off'))
+                            ->disabled()
+                            ->dehydrated(false),
 
                     ])
                     ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
@@ -127,6 +142,7 @@ class VacationForm
                     ))
                     ->default(VacationStatus::Pending->value)
                     ->required()
+                    ->hidden()
                     ->label(__('filament.status')),
                 DatePicker::make('start_date')
                     ->required()
@@ -147,6 +163,17 @@ class VacationForm
                     ->dehydrated()
                     ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value),
 
+                TextInput::make('days_from_last_year')
+                    ->label(__('filament.days_from_last_year'))
+                    ->integer()
+                    ->default(0)
+                    ->rules(fn (Get $get): array => [
+                        'min:0',
+                        'max:'.(int) ($get('vacation_days_left_last_year') ?? 0),
+                    ])
+                    ->live()
+                    ->dehydrated(false)
+                    ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value),
                 TextInput::make('working_days_count')
                     ->disabled()
                     ->dehydrated()

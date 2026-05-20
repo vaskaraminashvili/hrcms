@@ -132,6 +132,7 @@ return [
     'from_year' => 'წლიდან',
     'to_year' => 'წლამდე',
     'days_count' => 'დღეების რაოდენობა',
+    'days_from_last_year' => 'დღეები გასული წელიწადიდან',
     'position' => 'თანამდებობა',
     'working_days_count' => 'სამუშაო დღეების რაოდენობა',
     'type' => 'ტიპი',
