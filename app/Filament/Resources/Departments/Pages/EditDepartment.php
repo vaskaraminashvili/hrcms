@@ -139,6 +139,19 @@ class EditDepartment extends EditRecord
         return static::getResource()::getUrl('index');
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['order'] = isset($data['order']) && $data['order'] !== null && $data['order'] !== ''
+            ? (int) $data['order']
+            : 0;
+
+        return $data;
+    }
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $newParentId = $data['parent_id'] ?? null;

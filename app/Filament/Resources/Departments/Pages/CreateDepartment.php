@@ -49,6 +49,18 @@ class CreateDepartment extends CreateRecord
             $data['parent_id'] = $this->parentRecord->getKey();
         }
 
+        $orderIsUnset = ! array_key_exists('order', $data)
+            || $data['order'] === null
+            || $data['order'] === '';
+
+        if ($orderIsUnset) {
+            $parentId = $data['parent_id'] ?? null;
+            $maxOrder = Department::query()
+                ->where('parent_id', $parentId)
+                ->max('order');
+            $data['order'] = $maxOrder === null ? 0 : ((int) $maxOrder + 1);
+        }
+
         return $data;
     }
 

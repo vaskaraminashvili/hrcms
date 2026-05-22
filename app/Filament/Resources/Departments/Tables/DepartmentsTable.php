@@ -12,7 +12,9 @@ use Filament\Actions\EditAction;
 use Filament\Support\Enums\Alignment;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class DepartmentsTable
@@ -20,7 +22,26 @@ class DepartmentsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('parent'))
+            ->defaultSort(function (Builder $query, string $direction, mixed $livewire): Builder {
+                if (! $livewire instanceof HasTable || filled($livewire->getTableSortColumn())) {
+                    return $query;
+                }
+
+                $model = $query->getModel();
+
+                return $query
+                    ->orderBy($model->qualifyColumn('parent_id'))
+                    ->orderBy($model->qualifyColumn('order'))
+                    ->orderBy($model->qualifyColumn('name'));
+            })
             ->columns([
+                TextColumn::make('id')
+                    ->label('#')
+                    ->sortable(),
+                TextColumn::make('order')
+                    ->label(__('filament.resources.departments.order'))
+                    ->sortable(),
                 TextColumn::make('name')
                     ->label(__('filament.name'))
                     ->limit(60)
@@ -33,6 +54,17 @@ class DepartmentsTable
                     ->openUrlInNewTab()
                     ->searchable()
                     ->sortable(),
+                // show parent name if parent is not null
+                TextColumn::make('parent.name')
+                    ->label('ზემდგომი დეპარტამენტი')
+                    ->formatStateUsing(function (string $state, Department $record): string {
+                        return $record->parent?->name ?? 'Unknown';
+                    }),
+                TextColumn::make('level')
+                    ->label('დეპარტამენტის დონე')
+                    ->formatStateUsing(function (string $state, Department $record): string {
+                        return $record->ancestors()->count() + 1;
+                    }),
                 TextColumn::make('type')
                     ->label(__('filament.type'))
                     ->badge()

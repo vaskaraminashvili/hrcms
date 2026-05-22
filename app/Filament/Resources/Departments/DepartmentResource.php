@@ -56,6 +56,8 @@ class DepartmentResource extends Resource
                         ])
                     )
                     ->openUrlInNewTab(),
+                DepartmentTextField::make('order')
+                    ->alignEnd(),
                 DepartmentTextField::make('type')
                     ->badge()
                     ->badgeColor('info')
@@ -110,7 +112,12 @@ class DepartmentResource extends Resource
         //         "{$table}.color",
         //     ]);
         // })
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children', 'parent']));
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                return $query
+                    ->orderBy($query->qualifyColumn('parent_id'))
+                    ->orderBy($query->qualifyColumn('order'))
+                    ->with(['children', 'parent']);
+            });
     }
 
     public static function getPages(): array
