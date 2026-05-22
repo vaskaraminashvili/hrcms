@@ -123,8 +123,8 @@ class DepartmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDepartment::route('/'),
-            'tree' => Pages\TreeDepartments::route('/tree'),
+            'index' => Pages\TreeDepartments::route('/'),
+            'list' => Pages\ListDepartment::route('/list'),
             'create' => Pages\CreateDepartment::route('/create'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];

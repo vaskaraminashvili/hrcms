@@ -4,9 +4,11 @@ namespace App\Filament\Resources\Departments\Pages;
 
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
+use App\Services\DepartmentSiblingOrderService;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class CreateDepartment extends CreateRecord
 {
@@ -71,10 +73,18 @@ class CreateDepartment extends CreateRecord
      */
     protected function handleRecordCreation(array $data): Model
     {
-        $record = new ($this->getModel())($data);
-        $record->save();
+        $orderService = app(DepartmentSiblingOrderService::class);
+        $desiredOrder = (int) ($data['order'] ?? 0);
+        $parentKey = DepartmentSiblingOrderService::normalizeSiblingParentKey($data['parent_id'] ?? null);
 
-        return $record;
+        return DB::transaction(function () use ($data, $orderService, $parentKey, $desiredOrder): Model {
+            $orderService->shiftSiblingsOpeningSlot($parentKey, $desiredOrder, null);
+
+            $record = new ($this->getModel())($data);
+            $record->save();
+
+            return $record;
+        });
     }
 
     /**

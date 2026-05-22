@@ -5,12 +5,14 @@ namespace App\Filament\Resources\Departments\Pages;
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
 use App\Services\DepartmentArchiveService;
+use App\Services\DepartmentSiblingOrderService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class EditDepartment extends EditRecord
 {
@@ -154,6 +156,16 @@ class EditDepartment extends EditRecord
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! ($record instanceof Department)) {
+            $record->update($data);
+
+            return $record;
+        }
+
+        $newParentRaw = array_key_exists('parent_id', $data) ? $data['parent_id'] : $record->parent_id;
+        $desiredOrder = isset($data['order']) ? (int) $data['order'] : (int) $record->order;
+        $newParentKey = DepartmentSiblingOrderService::normalizeSiblingParentKey($newParentRaw);
+
         $newParentId = $data['parent_id'] ?? null;
 
         if (filled($newParentId) && $newParentId != $record->parent_id) {
@@ -179,7 +191,29 @@ class EditDepartment extends EditRecord
             }
         }
 
-        $record->update($data);
+        $orderService = app(DepartmentSiblingOrderService::class);
+        $shouldShift = $orderService->shouldApplyShiftForSave(
+            $record->parent_id,
+            (int) $record->order,
+            $newParentRaw,
+            $desiredOrder,
+            false,
+        );
+
+        DB::transaction(function () use (
+            $record,
+            $data,
+            $orderService,
+            $shouldShift,
+            $newParentKey,
+            $desiredOrder,
+        ): void {
+            if ($shouldShift) {
+                $orderService->shiftSiblingsOpeningSlot($newParentKey, $desiredOrder, $record->getKey());
+            }
+
+            $record->update($data);
+        });
 
         return $record;
     }
