@@ -213,6 +213,8 @@ return [
             'navigation_label' => 'Departments',
             'model_label' => 'Department',
             'plural_model_label' => 'Departments',
+            'order' => 'Sort order',
+            'order_helper' => 'Lower numbers appear first among departments with the same parent. Leave empty when creating to place at the end of the list.',
         ],
         'public_holidays' => [
             'navigation_label' => 'Public holidays',

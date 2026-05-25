@@ -259,6 +259,8 @@ return [
             'navigation_label' => 'სტრუქტურა',
             'model_label' => 'სტრუქტურა',
             'plural_model_label' => 'სტრუქტურა',
+            'order' => 'რიგი',
+            'order_helper' => 'დაბალი რიცხვები ჩანს პირველად იმავე მშობლის ქვეშ. შექმნისას ცარიელი დატოვება ბოლოში განათავსებს.',
         ],
         'public_holidays' => [
             'navigation_label' => 'სახელმწიფო დღესასწაულები',
@@ -324,6 +326,9 @@ return [
         ],
         'list_positions' => [
             'title' => 'პოზიციები',
+        ],
+        'list_departments' => [
+            'title' => 'დეპარტამენტები',
         ],
         'edit_position' => [
             'title' => 'პოზიციის რედაქტირება',
