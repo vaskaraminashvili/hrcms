@@ -60,6 +60,8 @@ class EmployeesTable
                     ->sortable(),
                 TextColumn::make('appointment_positions_department_summary')
                     ->label(__('filament.department_id'))
+                    ->wrap()
+
                     ->html()
                     ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department')),
                 TextColumn::make('appointment_positions_type_summary')
@@ -209,7 +211,7 @@ class EmployeesTable
             $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
             $badgeHtml = match ($column) {
-                'department' => self::filamentBadgeHtml($departmentLabel, 'gray'),
+                'department' => self::filamentBadgeHtml($departmentLabel, 'gray', wrapText: true),
                 'type' => self::filamentBadgeHtml($typeLabel, $typeColor),
                 'status' => self::filamentBadgeHtml($statusLabel, $statusColor),
                 'place' => self::filamentBadgeHtml($placeLabel, 'gray'),
@@ -256,11 +258,12 @@ class EmployeesTable
         return 'gray';
     }
 
-    private static function filamentBadgeHtml(string $label, string $colorKey): string
+    private static function filamentBadgeHtml(string $label, string $colorKey, bool $wrapText = false): string
     {
         $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
             ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
+        $textWrapClasses = $wrapText ? ' whitespace-normal break-words' : '';
 
-        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
+        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.$textWrapClasses.'">'.e($label).'</span>';
     }
 }
