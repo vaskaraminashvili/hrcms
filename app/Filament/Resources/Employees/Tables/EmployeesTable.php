@@ -24,6 +24,7 @@ class EmployeesTable
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with([
                 'appointmentPositions.department',
+                'appointmentPositions.place',
             ]))
             ->columns([
                 SpatieMediaLibraryImageColumn::make('employee_image')
@@ -53,10 +54,30 @@ class EmployeesTable
                     })
                     ->color('success')
                     ->searchable(),
-                TextColumn::make('appointment_positions_summary')
-                    ->label(__('filament.department_id').' · '.__('filament.position_type').' · '.__('filament.status'))
+                TextColumn::make('birth_date')
+                    ->label(__('filament.birth_date_placeholder'))
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('appointment_positions_department_summary')
+                    ->label(__('filament.department_id'))
+                    ->wrap()
+
                     ->html()
-                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record)),
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department')),
+                TextColumn::make('appointment_positions_type_summary')
+                    ->label(__('filament.position_type'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'type')),
+                TextColumn::make('appointment_positions_place_summary')
+                    ->label(__('filament.place_id'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'place'))
+                    ->description(fn (Employee $record): string => self::appointmentPositionsDateEndDescription($record)),
+                TextColumn::make('appointment_positions_status_summary')
+                    ->label(__('filament.status'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'status')),
+
                 TextColumn::make('positions_count')
                     ->label(__('filament.positions_count'))
                     ->alignCenter()
@@ -66,10 +87,7 @@ class EmployeesTable
                 // TextColumn::make('email')
                 //     ->label(__('filament.email'))
                 //     ->searchable(),
-                TextColumn::make('birth_date')
-                    ->label(__('filament.birth_date_placeholder'))
-                    ->date()
-                    ->sortable(),
+
                 TextColumn::make('status')
                     ->label(__('filament.status'))
                     ->badge()
@@ -171,7 +189,7 @@ class EmployeesTable
     /**
      * Renders each appointment position as a row of Filament-style badges (department, type, status).
      */
-    private static function appointmentPositionsBadgesHtml(Employee $record): HtmlString
+    private static function appointmentPositionsBadgesHtml(Employee $record, string $column): HtmlString
     {
         $positions = $record->appointmentPositions;
 
@@ -186,19 +204,21 @@ class EmployeesTable
         $items = [];
         foreach ($positions->take($listLimit) as $position) {
             $departmentLabel = $position->department?->name ?? '—';
+            $placeLabel = $position->place?->name ?? '—';
             $typeLabel = $position->position_type?->getLabel() ?? '';
             $statusLabel = $position->status?->getLabel() ?? '';
 
             $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
-            $items[] =
-                '<li class="fi-ta-text-item">'
-                .'<span class="flex flex-wrap items-center gap-1">'
-                .self::filamentBadgeHtml($departmentLabel, 'gray')
-                .self::filamentBadgeHtml($typeLabel, $typeColor)
-                .self::filamentBadgeHtml($statusLabel, $statusColor)
-                .'</span>'
-                .'</li>';
+            $badgeHtml = match ($column) {
+                'department' => self::filamentBadgeHtml($departmentLabel, 'gray', wrapText: true),
+                'type' => self::filamentBadgeHtml($typeLabel, $typeColor),
+                'status' => self::filamentBadgeHtml($statusLabel, $statusColor),
+                'place' => self::filamentBadgeHtml($placeLabel, 'gray'),
+                default => '',
+            };
+
+            $items[] = '<li class="fi-ta-text-item">'.$badgeHtml.'</li>';
         }
 
         $html = '<ul class="list-none space-y-1">'.implode('', $items).'</ul>';
@@ -210,6 +230,20 @@ class EmployeesTable
         }
 
         return new HtmlString($html);
+    }
+
+    private static function appointmentPositionsDateEndDescription(Employee $record): string
+    {
+        $positions = $record->appointmentPositions;
+
+        if ($positions->isEmpty()) {
+            return '';
+        }
+
+        return $positions
+            ->take(3)
+            ->map(fn ($position): string => $position->date_end?->format('d.m.Y') ?? 'N/A')
+            ->implode(' · ');
     }
 
     /**
@@ -224,11 +258,12 @@ class EmployeesTable
         return 'gray';
     }
 
-    private static function filamentBadgeHtml(string $label, string $colorKey): string
+    private static function filamentBadgeHtml(string $label, string $colorKey, bool $wrapText = false): string
     {
         $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
             ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
+        $textWrapClasses = $wrapText ? ' whitespace-normal break-words' : '';
 
-        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
+        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.$textWrapClasses.'">'.e($label).'</span>';
     }
 }
