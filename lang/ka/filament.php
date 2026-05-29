@@ -50,6 +50,7 @@ return [
     'vacancy_count' => 'ვაკანსიების რაოდენობა',
     'status' => 'სტატუსი',
     'all' => 'ყველა',
+    'deleted' => 'არქივი',
     'status_default' => 'active',
     'is_active' => 'აქტიური',
     'positions_count' => 'თანამდებობები',
@@ -170,6 +171,7 @@ return [
     'day_off_adjacent_holiday' => 'არ შეგიძლიათ აღება',
     'day_off_adjacent_holiday_body' => 'არჩეული თარიღი ემთხვევა, წინ უსწრებს ან მოდის სადღესასწაულო დღეს.',
     'used_days_off_days' => 'გამოყენებული დეიოფის დღეები',
+    'copied' => 'დაკოპირდა',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',
