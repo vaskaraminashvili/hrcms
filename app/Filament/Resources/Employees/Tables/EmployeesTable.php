@@ -9,6 +9,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -53,6 +54,9 @@ class EmployeesTable
                         return $record->personal_number;
                     })
                     ->color('success')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
                     ->searchable(),
                 TextColumn::make('birth_date')
                     ->label(__('filament.birth_date_placeholder'))
@@ -174,6 +178,9 @@ class EmployeesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                // when on tab deleted show restore action only
+                RestoreAction::make()
+                    ->visible(fn (Employee $record): bool => $record->trashed()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
