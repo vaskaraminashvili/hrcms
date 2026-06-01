@@ -5,6 +5,7 @@ namespace App\Filament\Resources\PositionHistories\Tables;
 use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
 use App\Models\PositionHistory;
+use App\Models\Place;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -118,7 +119,12 @@ class PositionHistoriesTable
                         });
                     })
                     ->label(__('filament.department_id')),
-                TextColumn::make('position.place.name')
+                TextColumn::make('snapshot.place_id')
+                    ->formatStateUsing(function($state, $record){
+                        $place_id = $record->snapshot['place_id'];
+                        $place = Place::find($place_id);
+                        return $place->name;
+                    })
                     ->wrap()
                     ->copyable()
                     ->searchable(true, function (Builder $query, string $search): void {
