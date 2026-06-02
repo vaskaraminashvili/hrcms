@@ -190,7 +190,7 @@ class PositionsRelationManager extends RelationManager
                     ->url(function (Position $record): string {
 
                         $attributes['filters[department_id][value]'] = $record->department_id;
-                        $attributes['filters[place_id][value]'] = $record->place_id;
+                        // $attributes['filters[place_id][value]'] = $record->place_id;
                         $attributes['filters[created_at][created_until]'] = now()->format('Y-m-d');
 
                         if ($record->employee->name) {
