@@ -11,7 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -28,10 +28,10 @@ class EmployeesTable
                 'appointmentPositions.place',
             ]))
             ->columns([
-                SpatieMediaLibraryImageColumn::make('employee_image')
+                ImageColumn::make('employee_image')
+                    ->getStateUsing(fn (Employee $record) => $record->employeeImageUrl())
                     ->circular()
-                    ->label('')
-                    ->collection('employee_image'),
+                    ->label(''),
                 TextColumn::make('name')
                     ->label(__('filament.name'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
@@ -273,4 +273,5 @@ class EmployeesTable
 
         return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.$textWrapClasses.'">'.e($label).'</span>';
     }
+
 }
