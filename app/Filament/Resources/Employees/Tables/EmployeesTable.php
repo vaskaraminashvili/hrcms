@@ -13,6 +13,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,7 +50,7 @@ class EmployeesTable
 
                 TextColumn::make('personal_number')
                     ->badge()
-                    ->label(__('filament.personal_number'))
+                    ->label(__('filament.personal_number_short'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->personal_number;
                     })
@@ -64,10 +65,10 @@ class EmployeesTable
                     ->sortable(),
                 TextColumn::make('appointment_positions_department_summary')
                     ->label(__('filament.department_id'))
+                    ->width('400px')
                     ->wrap()
-
                     ->html()
-                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department')),
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department', asBadge: false, col_width: 330)),
                 TextColumn::make('appointment_positions_type_summary')
                     ->label(__('filament.position_type'))
                     ->html()
@@ -87,6 +88,7 @@ class EmployeesTable
                     ->alignCenter()
                     ->icon('heroicon-o-briefcase')
                     ->counts(['appointmentPositions as positions_count'])
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 // TextColumn::make('email')
                 //     ->label(__('filament.email'))
@@ -177,11 +179,12 @@ class EmployeesTable
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->label(''),
                 // when on tab deleted show restore action only
                 RestoreAction::make()
                     ->visible(fn (Employee $record): bool => $record->trashed()),
-            ])
+            ], RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -194,9 +197,9 @@ class EmployeesTable
     }
 
     /**
-     * Renders each appointment position as a row of Filament-style badges (department, type, status).
+     * Renders each appointment position as a list item (badge or plain text per column).
      */
-    private static function appointmentPositionsBadgesHtml(Employee $record, string $column): HtmlString
+    private static function appointmentPositionsBadgesHtml(Employee $record, string $column, bool $asBadge = true, int $col_width = 0): HtmlString
     {
         $positions = $record->appointmentPositions;
 
@@ -204,7 +207,7 @@ class EmployeesTable
             return new HtmlString('');
         }
 
-        $listLimit = 3;
+        $listLimit = 1;
         $total = $positions->count();
         $hiddenCount = max(0, $total - $listLimit);
 
@@ -217,18 +220,26 @@ class EmployeesTable
 
             $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
-            $badgeHtml = match ($column) {
-                'department' => self::filamentBadgeHtml($departmentLabel, 'gray', wrapText: true),
-                'type' => self::filamentBadgeHtml($typeLabel, $typeColor),
-                'status' => self::filamentBadgeHtml($statusLabel, $statusColor),
-                'place' => self::filamentBadgeHtml($placeLabel, 'gray'),
+            $contentHtml = match ($column) {
+                'department' => $asBadge
+                    ? self::filamentBadgeHtml($departmentLabel, 'gray')
+                    : self::filamentTextHtml($departmentLabel),
+                'type' => $asBadge
+                    ? self::filamentBadgeHtml($typeLabel, $typeColor)
+                    : self::filamentTextHtml($typeLabel),
+                'status' => $asBadge
+                    ? self::filamentBadgeHtml($statusLabel, $statusColor)
+                    : self::filamentTextHtml($statusLabel),
+                'place' => $asBadge
+                    ? self::filamentBadgeHtml($placeLabel, 'gray')
+                    : self::filamentTextHtml($placeLabel),
                 default => '',
             };
 
-            $items[] = '<li class="fi-ta-text-item">'.$badgeHtml.'</li>';
+            $items[] = '<li class="fi-ta-text-item">'.$contentHtml.'</li>';
         }
-
-        $html = '<ul class="list-none space-y-1">'.implode('', $items).'</ul>';
+        $width = $col_width > 0 ? ' style="width: '.$col_width.'px !important;"' : '';
+        $html = '<ul class="list-none space-y-1"'.$width.'>'.implode('', $items).'</ul>';
 
         if ($hiddenCount > 0) {
             $html .= '<p class="fi-ta-text-description mt-1 text-xs">'
@@ -265,13 +276,16 @@ class EmployeesTable
         return 'gray';
     }
 
-    private static function filamentBadgeHtml(string $label, string $colorKey, bool $wrapText = false): string
+    private static function filamentBadgeHtml(string $label, string $colorKey): string
     {
         $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
             ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
-        $textWrapClasses = $wrapText ? ' whitespace-normal break-words' : '';
 
-        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.$textWrapClasses.'">'.e($label).'</span>';
+        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
     }
 
+    private static function filamentTextHtml(string $label): string
+    {
+        return '<span class="text-xs whitespace-normal break-words">'.e($label).'</span>';
+    }
 }
