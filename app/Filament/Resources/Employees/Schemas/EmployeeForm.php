@@ -6,8 +6,10 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Models\Employee;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -17,6 +19,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class EmployeeForm
 {
@@ -42,6 +45,20 @@ class EmployeeForm
                                     ->downloadable()
                                     ->columnSpanFull()
                                     ->extraAttributes(['class' => 'attachments-upload']),
+                                Placeholder::make('employee_image_preview')
+                                    ->label(__('filament.employee_image'))
+                                    ->content(function (?Employee $record): HtmlString {
+                                        $imageUrl = $record?->employeeImageUrl();
+
+                                        if ($imageUrl === null) {
+                                            return new HtmlString('');
+                                        }
+
+                                        return new HtmlString(
+                                            '<img src="'.e($imageUrl).'" alt="Employee image" class="h-24 w-24 rounded-full object-cover ring-1 ring-gray-300 dark:ring-white/10">'
+                                        );
+                                    })
+                                    ->columnSpanFull(),
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
