@@ -22,6 +22,15 @@ class EmployeePolicy
         return $authUser->can('View:Employee');
     }
 
+    public function viewCv(AuthUser $authUser, Employee $employee): bool
+    {
+        if ($authUser->can('View:Employee')) {
+            return true;
+        }
+
+        return (int) $employee->user_id === (int) $authUser->getAuthIdentifier();
+    }
+
     public function create(AuthUser $authUser): bool
     {
         return $authUser->can('Create:Employee');
