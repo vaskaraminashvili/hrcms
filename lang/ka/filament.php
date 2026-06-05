@@ -36,6 +36,7 @@ return [
     'name_eng' => 'სახელი (ინგლისურად)',
     'surrname_eng' => 'გვარი (ინგლისურად)',
     'personal_number' => 'პირადი ნომერი',
+    'personal_number_short' => 'პ.ნ.',
     'email' => 'ელფოსტა',
     'birth_date' => 'დაბადების თარიღი',
     'birth_date_placeholder' => 'დაბ. თარ.',

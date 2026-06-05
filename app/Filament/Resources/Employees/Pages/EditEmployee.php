@@ -49,6 +49,25 @@ class EditEmployee extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ActionGroup::make([
+                Action::make('cvGeorgian')
+                    ->label(__('cv.actions.georgian'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'ka',
+                    ]))
+                    ->openUrlInNewTab(),
+                Action::make('cvEnglish')
+                    ->label(__('cv.actions.english'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'en',
+                    ]))
+                    ->openUrlInNewTab(),
+            ])
+                ->label(__('cv.actions.generate'))
+                ->color('primary')
+                ->icon('heroicon-m-document-text'),
         ];
     }
 

@@ -37,14 +37,7 @@ class EmployeeForm
                                     ->required()
                                     ->default(EmployeeStatusEnum::ACTIVE)
                                     ->columnSpanFull(),
-                                SpatieMediaLibraryFileUpload::make('employee_image')
-                                    ->label(__('filament.employee_image'))
-                                    ->collection('employee_image')
-                                    ->removeUploadedFileButtonPosition('right')
-                                    ->openable()
-                                    ->downloadable()
-                                    ->columnSpanFull()
-                                    ->extraAttributes(['class' => 'attachments-upload']),
+
                                 Placeholder::make('employee_image_preview')
                                     ->label(__('filament.employee_image'))
                                     ->content(function (?Employee $record): HtmlString {
@@ -55,10 +48,18 @@ class EmployeeForm
                                         }
 
                                         return new HtmlString(
-                                            '<img src="'.e($imageUrl).'" alt="Employee image" class="h-24 w-24 rounded-full object-cover ring-1 ring-gray-300 dark:ring-white/10">'
+                                            '<img src="'.e($imageUrl).'" alt="Employee image" class="h-56 w-56 mx-auto object-cover ring-1 ring-gray-300 dark:ring-white/10">'
                                         );
                                     })
                                     ->columnSpanFull(),
+                                SpatieMediaLibraryFileUpload::make('employee_image')
+                                    ->label(__('filament.employee_image'))
+                                    ->collection('employee_image')
+                                    ->removeUploadedFileButtonPosition('right')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull()
+                                    ->extraAttributes(['class' => 'attachments-upload']),
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
