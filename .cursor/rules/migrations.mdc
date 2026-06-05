@@ -1,0 +1,17 @@
+---
+description: Migration safety guidelines to prevent accidental deletion or data loss.
+globs: ["**/migrations/**/*", "prisma/migrations/**/*", "db/migrate/**/*"]
+alwaysApply: true
+
+---
+
+# Migration Guidelines
+
+## ⚠️ STRICT RULES - DO NOT VIOLATE ⚠️
+
+1. **NEVER delete existing migration files:** You are strictly prohibited from deleting, altering, or squashing applied or committed migration files in the `migrations/` directory.
+2. **NEVER rerun migrations from scratch:** Do not run destructive commands (like `prisma migrate reset`, `rails db:drop db:create db:migrate`, or manual SQL drop scripts) that wipe the database and rerun all migrations from scratch.
+3. **Additive changes only:** All database changes must be done via NEW, incremental migration files. 
+4. **Production safety:** Always assume the migrations will run in a production environment. Write safe, non-destructive, and reversible migration steps (e.g., handling data transformations safely before dropping columns).
+
+If a migration has a mistake in it, you must generate a new migration to fix or revert the previous one.

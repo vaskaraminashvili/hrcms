@@ -1,14 +1,21 @@
-tanamshromlis cvlilabaze pirdadai pailshi damatebis gilaki avides zevit da peri sheecvalos.
 
-damaxsovrebis gilaki gamovide shaushi da daeceros shenaxva. gauqmebis gilaki movshalot.
+ ვის ხელშეკრულებასაც გასდის ვადა ცალკე რომ გამოჩნდეს 1 თვით ადრე. -> ესენი გამოვიდეს კატეგორიების მიხედვით ანუ 
+ხელშეკრულების ვადის გასვლა, გამოსაცდელი პერიოდის ვადის გასვლა და აკადემიური პერსონალისთვის ვადის გასვლა
+რაღაცა ესე 
 
-tanamshtomlebis cxrilshi departamentan ertad gamovides 
-statusi da position_type
-
-პიზიციის ისტორის ცხრილში დაწებასთან დასრულების ვადა თუ არა აქვს ტირე გამოვიდეს . 
-ცხრილშივე სნაპშოტიდან გამოვდიეს სტატუს დანიშვნა და მეორე თანამდებობის ტიპი 
+ კვირის მანძილზე ვისი დაბადების დღეების რო გამოვიდეს მთავარ გვერდზე.
 
 
-ganatlebashi 
-da samnushao gamocdilebashi 
-targiebi marto tslebi iyos
+დეპარტამენტებს დაემატოს ორი ახალი ველი 
+1. ტექსტური რომ რაღაცა რიცხვები ჩაწერონ
+2. ჩექბოქსი რო ჩაურთავენ გამოვიდეს მშობელი დეპარტამენტი სიებში და სადაც დეპარტამენტი იწერება ზოგადად
+
+
+CV englisurad da qartulad 
+html dagenererieba.
+
+https://hrgeo.ge/positions/2489/edit
+
+თანამდებობის ისტორიის მიჭერისას მიყვება პოზიცია ეგ ზედმეტია მარტო სტრუქტურა გაქყვეს
+
+

@@ -52,6 +52,7 @@ return [
     'parent_id' => 'Parent department',
     'vacancy_count' => 'Vacancy count',
     'status' => 'Status',
+    'all' => 'All',
     'status_default' => 'active',
     'is_active' => 'Active',
     'positions_count' => 'Positions',
@@ -64,6 +65,7 @@ return [
     'staff_type' => 'Staff type',
     'date_start' => 'Start date',
     'date_end' => 'End date',
+    'hide_scheduled_dismissals' => 'Hide dismissals with a future end date',
     'act_number' => 'Act number',
     'add_record_button' => 'Add record',
     'act_date' => 'Act date',
@@ -95,6 +97,8 @@ return [
     'position_history_section_full_snapshot' => 'Full snapshot',
     'position_history_full_snapshot_description' => 'Complete state of the position at the time of this change',
     'position_history_kv_value' => 'Value',
+    'position_history_edit_title' => 'Position fields at this change',
+    'position_history_field_changed_helper' => 'Changed: :change',
 
     'save' => 'Save',
     'save_history' => 'Save with history',
@@ -138,6 +142,18 @@ return [
     ],
 
     'vacation_insufficient_balance' => 'Not enough vacation days for this type and year. Annual allocation: :allocation, remaining: :remaining.',
+
+    'vacation_days' => 'Vacation balance',
+    'vacation_policy_days_per_year' => 'Annual days (policy)',
+    'vacation_days_left_last_year' => 'Paid leave left (last year)',
+    'vacation_days_left_this_year' => 'Paid leave left (this year)',
+    'vacation_days_left_this_year_plus_last_year' => 'Paid leave left (last + this year)',
+    'used_days_off_days' => 'Day-offs used (this year)',
+    'used_vacation_days_last_year' => 'Paid leave used (last year)',
+    'used_vacation_days' => 'Paid leave used (this year)',
+    'available_vacation_days' => 'Available paid leave',
+    'total_vacation_days' => 'Total entitlement (this year)',
+    'transferred_days' => 'Transferred into this year',
 
     'working_days_count_helper_text' => 'Saturday: :saturday, Sunday: :sunday.:public_holidays_line',
     'working_days_count_helper_public_holidays_none' => ' No public holidays on working days in this period.',
@@ -209,6 +225,8 @@ return [
             'navigation_label' => 'Departments',
             'model_label' => 'Department',
             'plural_model_label' => 'Departments',
+            'order' => 'Sort order',
+            'order_helper' => 'Lower numbers appear first among departments with the same parent. Leave empty when creating to place at the end of the list.',
         ],
         'public_holidays' => [
             'navigation_label' => 'Public holidays',
@@ -366,11 +384,23 @@ return [
         'work_experience' => [
             'institution' => 'Institution',
             'position' => 'Position',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import work experience',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Work experience imported successfully.',
         ],
 
         'trainings_seminars' => [
             'institution' => 'Institution',
             'topic' => 'Topic',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import trainings & seminars',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Trainings and seminars imported successfully.',
         ],
 
         'publications' => [
@@ -394,11 +424,23 @@ return [
         'scientific_forums' => [
             'title' => 'Title',
             'participation_form' => 'Form of participation',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scientific forums participation',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scientific forums participation imported successfully.',
         ],
 
         'scholarships_awards' => [
             'title' => 'Title',
             'issuer' => 'Issuing body',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scholarships & awards',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scholarships and awards imported successfully.',
         ],
 
         'other' => [
@@ -421,6 +463,10 @@ return [
             'computer_skills' => 'Computer software proficiency',
             'other' => 'Other',
         ],
+    ],
+
+    'employee_panel' => [
+        'login_heading' => 'Employee authorization',
     ],
 
 ];

@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Illuminate\Support\Str;
+
 enum PersonalFile: string
 {
     case ACADEMIC_POSITION = 'academic_position';
@@ -51,6 +53,22 @@ enum PersonalFile: string
     public function mediaCollectionName(): string
     {
         return $this->value;
+    }
+
+    /**
+     * Eloquent attribute name after {@see \Illuminate\Database\Eloquent\Model::loadCount()} for this section's has-many (e.g. scientific_projects_count).
+     */
+    public function tabBadgeRelationCountAttribute(): string
+    {
+        return Str::snake($this->relationship()).'_count';
+    }
+
+    /**
+     * Eloquent attribute name after loading constrained media counts (e.g. scientific_projects_media_count).
+     */
+    public function tabBadgeMediaCountAttribute(): string
+    {
+        return $this->value.'_media_count';
     }
 
     public function relationship(): string

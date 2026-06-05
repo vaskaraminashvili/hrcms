@@ -6,9 +6,10 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
-use App\Filament\Resources\Employees\Schemas\PersonalFile\PublicationsSchema;
+use App\Models\Employee;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -18,6 +19,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class EmployeeForm
 {
@@ -32,6 +34,23 @@ class EmployeeForm
                                 Select::make('status')
                                     ->options(EmployeeStatusEnum::class)
                                     ->label(__('filament.status'))
+                                    ->required()
+                                    ->default(EmployeeStatusEnum::ACTIVE)
+                                    ->columnSpanFull(),
+
+                                Placeholder::make('employee_image_preview')
+                                    ->label(__('filament.employee_image'))
+                                    ->content(function (?Employee $record): HtmlString {
+                                        $imageUrl = $record?->employeeImageUrl();
+
+                                        if ($imageUrl === null) {
+                                            return new HtmlString('');
+                                        }
+
+                                        return new HtmlString(
+                                            '<img src="'.e($imageUrl).'" alt="Employee image" class="h-56 w-56 mx-auto object-cover ring-1 ring-gray-300 dark:ring-white/10">'
+                                        );
+                                    })
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('employee_image')
                                     ->label(__('filament.employee_image'))
@@ -60,8 +79,7 @@ class EmployeeForm
                                     ->label(__('filament.email'))
                                     ->email(),
                                 DatePicker::make('birth_date')
-                                    ->label(__('filament.birth_date'))
-                                    ->required(),
+                                    ->label(__('filament.birth_date')),
                                 Select::make('gender')
                                     ->options(Gender::class)
                                     ->default(__('filament.gender_default'))
@@ -76,8 +94,7 @@ class EmployeeForm
                                                 2 => __('filament.education_level.higher'),
                                             ])
                                             ->inline()
-                                            ->live()
-                                            ->required(),
+                                            ->live(),
                                         Select::make('degree')
                                             ->label(__('filament.degree'))
                                             ->options(Education::class)
@@ -176,14 +193,17 @@ class EmployeeForm
                                         ->extraAttributes(['class' => 'attachments-upload']),
                                 ];
 
-                                if ($case === PersonalFile::PUBLICATIONS) {
-                                    array_unshift($tabSchema, PublicationsSchema::tabHeaderActions());
+                                if (method_exists($schemaClass, 'tabHeaderActions')) {
+                                    array_unshift($tabSchema, $schemaClass::tabHeaderActions());
                                 }
 
                                 return Tab::make(__('filament.personal_file.tabs.'.$case->value))
                                     ->badge(fn ($record) => $record === null
                                         ? 0
-                                        : $record->{$case->relationship()}()->count() + $record->getMedia($case->mediaCollectionName())->count())
+                                        : (int) ($record->getAttribute($case->tabBadgeRelationCountAttribute())
+                                            ?? $record->{$case->relationship()}()->count())
+                                            + (int) ($record->getAttribute($case->tabBadgeMediaCountAttribute())
+                                                ?? $record->getMedia($case->mediaCollectionName())->count()))
                                     ->schema($tabSchema);
                             },
                             PersonalFile::cases()

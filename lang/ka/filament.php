@@ -36,6 +36,7 @@ return [
     'name_eng' => 'სახელი (ინგლისურად)',
     'surrname_eng' => 'გვარი (ინგლისურად)',
     'personal_number' => 'პირადი ნომერი',
+    'personal_number_short' => 'პ.ნ.',
     'email' => 'ელფოსტა',
     'birth_date' => 'დაბადების თარიღი',
     'birth_date_placeholder' => 'დაბ. თარ.',
@@ -49,13 +50,17 @@ return [
     'parent_id' => 'მშობელი დეპარტამენტი',
     'vacancy_count' => 'ვაკანსიების რაოდენობა',
     'status' => 'სტატუსი',
+    'all' => 'ყველა',
+    'deleted' => 'არქივი',
     'status_default' => 'active',
     'is_active' => 'აქტიური',
     'positions_count' => 'თანამდებობები',
     'guard_name' => 'გარდის სახელი',
     'permissions_count' => 'უფლებების რაოდენობა',
     'employee_id' => 'თანამშრომელი',
+    'empty' => '',
     'department_id' => 'დეპარტამენტი',
+    'archived_department_id' => 'არქივში დეპარტამენტი',
     'cancel' => 'გაუქმება',
     'mobile_number' => 'ტელეფონის ნომერი',
     'account_number' => 'ანგარიშის ნომერი',
@@ -73,12 +78,16 @@ return [
         'modal_save_history_submit' => 'შენახვა ისტორიით',
     ],
     'place_id' => 'თანამდებობა',
+    'profile' => 'პროფილი',
     'position_type' => 'თანამდებობის ტიპი',
     'staff_type' => 'შტატი',
     'date_start' => 'დაწყების თარიღი',
+    'date_start_helper_text' => 'თარიღის არჩევა არაა საჭირო',
     'date_start_short' => 'დაწყ.',
     'date_end_short' => 'დასრულ.',
+    'position_date_range' => 'დაწყ. - დასრულ.',
     'date_end' => 'დასრულების თარიღი',
+    'hide_scheduled_dismissals' => 'ვადა დასრულებულის და გათავისუფლებულის დამალვა',
     'act_number' => 'აქტის ნომერი',
     'act_date' => 'აქტის თარიღი',
     'clinical' => 'კლინიკური',
@@ -97,12 +106,13 @@ return [
     'vacation_end_date' => 'შვებულების დასრულების თარიღი',
     'vacation_working_days_count' => 'შვებულების მუშაობის დღეები',
     'vacation_days' => 'შვებულების დღეები',
-    'used_vacation_days' => 'გამოყენებული  დღეები',
-    'available_vacation_days' => 'ხელმისაწვდომი  დღეები',
-    'total_vacation_days' => 'საერთო  დღეები',
+    'vacation_policy_days_per_year' => 'წლიური დღეები',
+    'left_last_year_days' => 'დარჩენილი  (გასული წელი)',
+    'left_calendar_year_days' => 'დარჩენილი  (მიმდინარე წელი)',
+    'total_days_off' => 'დეიოფის დღეები',
+    'left_days_off' => 'დარჩენილი დეიოფის დღეები',
     'transferred_days' => 'გადმოტანილი  დღეები',
-    'vacation_insufficient_balance' => 'შვებულების დღეები საკმარისი არ არის',
-    'vacation_insufficient_balance_body' => 'დარჩენილი: :available , მოთხოვნილი: :requested .',
+    'available_vacation_days' => 'ჯამური ხელმისაწვდომი შვებულების დღეები',
     'working_days_count_helper_text' => 'შაბათი: :saturday, კვირა: :sunday.:public_holidays_line',
     'working_days_count_helper_public_holidays_none' => ' საჯარო დასვენების დღეები ამ პერიოდში სამუშაო დღეებში არ არის.',
     'working_days_count_helper_public_holidays_some' => ' საჯარო დასვენების :count დღე არ ითვლება შვებულების ბალანსში.',
@@ -124,6 +134,7 @@ return [
     'from_year' => 'წლიდან',
     'to_year' => 'წლამდე',
     'days_count' => 'დღეების რაოდენობა',
+    'days_from_last_year' => 'დღეები გასული წელიწადიდან',
     'position' => 'თანამდებობა',
     'working_days_count' => 'სამუშაო დღეების რაოდენობა',
     'type' => 'ტიპი',
@@ -152,6 +163,8 @@ return [
     'range_selected' => 'ცვლილების პერიოდი: :from - :to',
     'range_not_selected' => 'ცვლილების პერიოდი არ აირჩიოს',
     'position_history_title' => 'თანამდებობის ისტორია',
+    'position_history_edit_title' => 'ველები ცვლილების მომენტში',
+    'position_history_field_changed_helper' => 'ცვლილება: :change',
     'changed_by' => 'ვინ შეცვალა',
     'vacation_file_attachments' => 'შვებულების ფაილები',
     'vacation_day_off_limit_exceeded' => 'დეიოფის დღეების ლიმიტი ამოწურულია',
@@ -159,6 +172,7 @@ return [
     'day_off_adjacent_holiday' => 'არ შეგიძლიათ აღება',
     'day_off_adjacent_holiday_body' => 'არჩეული თარიღი ემთხვევა, წინ უსწრებს ან მოდის სადღესასწაულო დღეს.',
     'used_days_off_days' => 'გამოყენებული დეიოფის დღეები',
+    'copied' => 'დაკოპირდა',
     'changed_fields' => [
         'salary' => 'ხელფასი',
         'position_type' => 'თანამდებობის ტიპი',
@@ -250,6 +264,8 @@ return [
             'navigation_label' => 'სტრუქტურა',
             'model_label' => 'სტრუქტურა',
             'plural_model_label' => 'სტრუქტურა',
+            'order' => 'რიგი',
+            'order_helper' => 'დაბალი რიცხვები ჩანს პირველად იმავე მშობლის ქვეშ. შექმნისას ცარიელი დატოვება ბოლოში განათავსებს.',
         ],
         'public_holidays' => [
             'navigation_label' => 'სახელმწიფო დღესასწაულები',
@@ -316,6 +332,9 @@ return [
         'list_positions' => [
             'title' => 'პოზიციები',
         ],
+        'list_departments' => [
+            'title' => 'დეპარტამენტები',
+        ],
         'edit_position' => [
             'title' => 'პოზიციის რედაქტირება',
         ],
@@ -334,8 +353,8 @@ return [
 
     'department' => [
         'name' => 'დეპარტამენტი',
-        'save_and_archive' => 'შენახვა და არქივში გადატანა',
-        'modal_archive_heading' => 'დეპარტამენტის არქივირება და დუბლირება?',
+        'save_and_archive' => 'შენახვა და ისტორიის შექმნა',
+        'modal_archive_heading' => 'დეპარტამენტის შენახვა და დუბლირება?',
         'modal_archive_description' => 'სახელის ან მშობლის შეცვლისას ეს დეპარტამენტი და მისი თანამდებობები არქივში გადავა, შემდეგ კი შეიქმნება ახალი ასლი თქვენი ცვლილებებით.',
         'modal_submit' => 'დიახ, გაგრძელება',
         'cancel' => 'გაუქმება',
@@ -424,11 +443,23 @@ return [
         'work_experience' => [
             'institution' => 'დაწესებულება',
             'position' => 'თანამდებობა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სამუშაო გამოცდილების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სამუშაო გამოცდილება წარმატებით იქნა იმპორტირებული.',
         ],
 
         'trainings_seminars' => [
             'institution' => 'დაწესებულება',
             'topic' => 'თემა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'ტრენინგების და სემინარების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'ტრენინგები და სემინარები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'publications' => [
@@ -451,12 +482,25 @@ return [
 
         'scientific_forums' => [
             'title' => 'სახელწოდება',
-            'participation_form' => 'მონაწილეობის ფორმა',
+            'participation_form' => 'მოხსენების დასახელება',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სამეცნიერო ფორუმების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სამეცნიერო ფორუმებში მონაწილეობა წარმატებით იქნა იმპორტირებული.',
         ],
 
         'scholarships_awards' => [
             'title' => 'სახელწოდება',
-            'issuer' => 'გამცემელი',
+            'issuer' => 'გამცემი ორგანიზაცია',
+            'grant_details' => 'გრანტი',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სტიპენდიებისა და ჯილდოების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სტიპენდიები და ჯილდოები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'other' => [
@@ -480,6 +524,10 @@ return [
             'other' => 'სხვა',
         ],
 
+    ],
+
+    'employee_panel' => [
+        'login_heading' => 'თანამშრომლის ავტორიზაცია',
     ],
 
 ];

@@ -48,7 +48,16 @@ class DepartmentResource extends Resource
         return $tree
             ->fields([
                 DepartmentTextField::make('name')
-                    ->limit(60, '...'),
+                    ->limit(60, '...')
+                    ->url(
+                        fn (Department $record): string => route('filament.admin.resources.positions.index', [
+                            'filters[department_id][value]' => $record->getKey(),
+                            'filters[hide_scheduled_dismissals][isActive]' => true,
+                        ])
+                    )
+                    ->openUrlInNewTab(),
+                DepartmentTextField::make('order')
+                    ->alignEnd(),
                 DepartmentTextField::make('type')
                     ->badge()
                     ->badgeColor('info')
@@ -103,13 +112,19 @@ class DepartmentResource extends Resource
         //         "{$table}.color",
         //     ]);
         // })
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['children', 'parent']));
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                return $query
+                    ->orderBy($query->qualifyColumn('parent_id'))
+                    ->orderBy($query->qualifyColumn('order'))
+                    ->with(['children', 'parent']);
+            });
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\TreeDepartments::route('/'),
+            'list' => Pages\ListDepartment::route('/list'),
             'create' => Pages\CreateDepartment::route('/create'),
             'edit' => Pages\EditDepartment::route('/{record}/edit'),
         ];

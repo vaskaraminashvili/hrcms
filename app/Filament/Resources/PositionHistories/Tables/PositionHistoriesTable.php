@@ -5,9 +5,13 @@ namespace App\Filament\Resources\PositionHistories\Tables;
 use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
 use App\Models\PositionHistory;
+use App\Models\Place;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -115,7 +119,12 @@ class PositionHistoriesTable
                         });
                     })
                     ->label(__('filament.department_id')),
-                TextColumn::make('position.place.name')
+                TextColumn::make('snapshot.place_id')
+                    ->formatStateUsing(function($state, $record){
+                        $place_id = $record->snapshot['place_id'];
+                        $place = Place::find($place_id);
+                        return $place->name;
+                    })
                     ->wrap()
                     ->copyable()
                     ->searchable(true, function (Builder $query, string $search): void {
@@ -159,10 +168,15 @@ class PositionHistoriesTable
                     ->label(__('filament.employee_id')),
             ])
             ->defaultSort('id', 'desc')
-            ->filters($filters)
+            ->filters($filters, layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(4)
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label(__('filament.empty')),
+                EditAction::make()
+                    ->label(__('filament.empty')),
+                DeleteAction::make()
+                    ->label(__('filament.empty')),
             ]);
     }
 }

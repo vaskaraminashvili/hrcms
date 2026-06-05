@@ -45,6 +45,10 @@ class DepartmentTextField extends TextField
      */
     protected string|Closure|null $characterLimitEnd = null;
 
+    protected string|Closure|null $clickUrl = null;
+
+    protected bool|Closure $shouldOpenUrlInNewTab = false;
+
     /** @var array<string, string> */
     public const BADGE_COLOR_CLASSES = [
         'gray' => 'fi-color fi-color-gray fi-text-color-700 dark:fi-text-color-300 fi-badge',
@@ -87,6 +91,25 @@ class DepartmentTextField extends TextField
     }
 
     /**
+     * Turn the cell into a link (same idea as {@see TextColumn::url()}).
+     *
+     * @param  Closure(Model|array): string|string|null  $url
+     */
+    public function url(string|Closure|null $url): static
+    {
+        $this->clickUrl = $url;
+
+        return $this;
+    }
+
+    public function openUrlInNewTab(bool|Closure $condition = true): static
+    {
+        $this->shouldOpenUrlInNewTab = $condition;
+
+        return $this;
+    }
+
+    /**
      * Limit the displayed string length, matching Filament table columns
      * ({@see CanFormatState::limit}).
      *
@@ -124,7 +147,10 @@ class DepartmentTextField extends TextField
 
             if ($formatted instanceof HtmlString) {
                 return $this->wrapCellTooltip(
-                    $this->maybeWrapTreeNameColumn((string) $formatted),
+                    $this->wrapClickableUrl(
+                        $this->maybeWrapTreeNameColumn((string) $formatted),
+                        $record,
+                    ),
                     $state,
                     $record,
                 );
@@ -139,7 +165,10 @@ class DepartmentTextField extends TextField
 
         if ($isBadge) {
             return $this->wrapCellTooltip(
-                $this->maybeWrapTreeNameColumn($this->renderBadge($displayState, $state, $record)),
+                $this->wrapClickableUrl(
+                    $this->maybeWrapTreeNameColumn($this->renderBadge($displayState, $state, $record)),
+                    $record,
+                ),
                 $state,
                 $record,
             );
@@ -152,7 +181,10 @@ class DepartmentTextField extends TextField
             $limited = e($this->applyCharacterLimit($plain, $state, $record));
 
             return $this->wrapCellTooltip(
-                $this->maybeWrapTreeNameColumn("<span class='text-sm' style='color: {$color};'>{$limited}</span>"),
+                $this->wrapClickableUrl(
+                    $this->maybeWrapTreeNameColumn("<span class='text-sm' style='color: {$color};'>{$limited}</span>"),
+                    $record,
+                ),
                 $state,
                 $record,
             );
@@ -179,7 +211,10 @@ class DepartmentTextField extends TextField
         $this->characterLimit = $savedCharacterLimit;
 
         return $this->wrapCellTooltip(
-            $this->maybeWrapTreeNameColumn($html),
+            $this->wrapClickableUrl(
+                $this->maybeWrapTreeNameColumn($html),
+                $record,
+            ),
             $state,
             $record,
         );
@@ -213,6 +248,31 @@ class DepartmentTextField extends TextField
         }
 
         return '<span class="'.self::TREE_NAME_CLASS.'">'.$html.'</span>';
+    }
+
+    protected function wrapClickableUrl(string $html, Model|array $record): string
+    {
+        if ($this->clickUrl === null) {
+            return $html;
+        }
+
+        $url = $this->clickUrl instanceof Closure
+            ? $this->evaluate($this->clickUrl, ['record' => $record])
+            : $this->clickUrl;
+
+        if (! filled($url)) {
+            return $html;
+        }
+
+        $openInNewTab = $this->shouldOpenUrlInNewTab instanceof Closure
+            ? (bool) $this->evaluate($this->shouldOpenUrlInNewTab, ['record' => $record])
+            : $this->shouldOpenUrlInNewTab;
+
+        $href = e((string) $url);
+
+        $extraAttributes = $openInNewTab ? ' target="_blank" rel="noopener noreferrer"' : '';
+
+        return '<a href="'.$href.'" class="text-primary-600 hover:underline dark:text-primary-400"'.$extraAttributes.'>'.$html.'</a>';
     }
 
     /**

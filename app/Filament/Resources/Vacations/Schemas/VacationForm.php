@@ -13,7 +13,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
@@ -97,28 +96,53 @@ class VacationForm
                 Section::make()
                     ->label(__('filament.vacation_days'))
                     ->schema([
-                        TextEntry::make('used_days_off_days')
-                            ->label(__('filament.used_days_off_days')),
-                        TextEntry::make('transferred_days')
-                            ->label(__('filament.transferred_days')),
-                        TextEntry::make('total_vacation_days')
-                            ->label(__('filament.total_vacation_days')),
-                        TextEntry::make('used_vacation_days')
-                            ->label(__('filament.used_vacation_days')),
-                        TextEntry::make('available_vacation_days')
+                        TextInput::make('policy_days')
+                            ->label(__('filament.vacation_policy_days_per_year'))
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        TextInput::make('left_calendar_year_days')
+                            ->label(__('filament.left_calendar_year_days'))
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        TextInput::make('transferred_days')
+                            ->label(__('filament.transferred_days'))
+                            ->disabled()
+                            ->dehydrated(false),
+
+                        TextInput::make('vacation_days_left_last_year')
+                            ->label(__('filament.left_last_year_days'))
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('available_vacation_days')
                             ->label(__('filament.available_vacation_days'))
-                            ->color(fn ($state) => $state <= 2 ? 'danger' : 'success'),
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->extraInputAttributes(fn (Get $get): array => (int) ($get('available_vacation_days') ?? 0) <= 2
+                                ? ['class' => 'text-danger-600 dark:text-danger-400']
+                                : ['class' => 'text-success-600 dark:text-success-400']),
+                        TextInput::make('total_days_off')
+                            ->label(__('filament.total_days_off'))
+                            ->disabled()
+                            ->dehydrated(false),
+                        TextInput::make('left_days_off')
+                            ->label(__('filament.left_days_off'))
+                            ->disabled()
+                            ->dehydrated(false),
+
                     ])
                     ->visible(fn (Get $get): bool => $showEmployeeAndPosition && filled($get('employee_id')) && filled($get('position_id')))
 
-                    ->columns(5)
+                    ->columns(4)
                     ->columnSpanFull(),
                 Select::make('status')
                     ->options(collect(VacationStatus::cases())->mapWithKeys(
                         fn (VacationStatus $case) => [$case->value => $case->label()]
                     ))
-                    ->default(VacationStatus::Pending->value)
+                    ->default(VacationStatus::Approved->value)
                     ->required()
+                    ->hidden()
                     ->label(__('filament.status')),
                 DatePicker::make('start_date')
                     ->required()
@@ -139,6 +163,17 @@ class VacationForm
                     ->dehydrated()
                     ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value),
 
+                TextInput::make('days_from_last_year')
+                    ->label(__('filament.days_from_last_year'))
+                    ->integer()
+                    ->default(0)
+                    ->rules(fn (Get $get): array => [
+                        'min:0',
+                        'max:'.(int) ($get('vacation_days_left_last_year') ?? 0),
+                    ])
+                    ->live()
+                    ->disabled(fn (Get $get) => $get('type')?->value === VacationType::DAY_OFF->value)
+                    ->dehydrated(),
                 TextInput::make('working_days_count')
                     ->disabled()
                     ->dehydrated()
@@ -264,7 +299,15 @@ class VacationForm
             ->find($positionId);
 
         if (! $position) {
-            $defaults = ['used_days_off_days', 'transferred_days', 'total_vacation_days', 'used_vacation_days', 'available_vacation_days'];
+            $defaults = [
+                'policy_days',
+                'transferred_days',
+                'total_days_off',
+                'vacation_days_left_last_year',
+                'left_calendar_year_days',
+                'left_days_off',
+                'available_vacation_days',
+            ];
             foreach ($defaults as $field) {
                 $set($field, 0);
             }
@@ -272,10 +315,15 @@ class VacationForm
             return;
         }
 
-        $set('used_days_off_days', $position->used_days_off_days);
+        $set('policy_days', $position->policy_days);
+        $set('left_calendar_year_days', $position->left_calendar_year_days);
+
         $set('transferred_days', $position->transferred_days);
-        $set('total_vacation_days', $position->total_vacation_days);
-        $set('used_vacation_days', $position->used_vacation_days);
+        $set('vacation_days_left_last_year', $position->vacation_days_left_last_year);
+
+        $set('total_days_off', $position->total_days_off);
+        $set('left_days_off', $position->left_days_off);
+
         $set('available_vacation_days', $position->available_vacation_days);
     }
 }

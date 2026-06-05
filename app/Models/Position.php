@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PositionStatus;
 use App\Enums\PositionType;
+use App\Enums\VacationStatus;
 use App\Enums\VacationType;
 use Database\Factories\PositionFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -120,43 +121,87 @@ class Position extends Model implements HasMedia
         return (int) $days;
     }
 
-    /**
-     * Days transferred from the previous year (current year only).
-     */
+    // get total of transferred days
     public function getTransferredDaysAttribute(): int
     {
-        return (int) $this->vacationTransfers()
+        return $this->vacationTransfers()
             ->where('to_year', now()->year)
             ->sum('days_count');
     }
 
-    /**
-     * Total days available this year = policy days + transferred days.
-     */
-    public function getTotalVacationDaysAttribute(): int
+    public function getTotalDaysOffAttribute(): int
     {
-        return $this->policy_days + $this->transferred_days;
+        $settings = $this->vacationPolicy?->settings ?? [];
+
+        $days = collect($settings)
+            ->firstWhere('key', 'days_off')['value'] ?? 5;
+
+        return (int) $days;
     }
 
-    /**
-     * Days already used (sum of approved vacations).
-     */
-    public function getUsedVacationDaysAttribute(): int
+    public function getLeftDaysOffAttribute(): int
     {
-        return (int) $this->vacations()->sum('working_days_count');
+        return $this->total_days_off - $this->getUsedVacationDaysAttribute(calendarYear: true, type: VacationType::DAY_OFF->value);
     }
 
-    public function getLeftDaysOffDaysAttribute(): int
+    public function getLeftCalendarYearDaysAttribute(): int
     {
-        return (int) 5 - ($this->vacations()->where('type', VacationType::DAY_OFF)->count() ?? 0);
+        return $this->policy_days - $this->getUsedVacationDaysAttribute(calendarYear: true);
     }
 
-    /**
-     * Remaining / available days = total - used.
-     */
+    public function getVacationDaysLeftLastYearAttribute(): int // vacation_days_left_last_year
+    {
+
+        $days_from_last_year = (int) $this->vacations()
+            ->where('status', VacationStatus::Approved)
+            ->where('type', VacationType::PAID_LEAVE->value)
+            ->whereYear('start_date', now()->year)
+            ->sum('days_from_last_year');
+
+        return $this->transferred_days - $days_from_last_year;
+    }
+
     public function getAvailableVacationDaysAttribute(): int
     {
-        return max(0, $this->total_vacation_days - $this->used_vacation_days);
+        return $this->getLeftCalendarYearDaysAttribute() + $this->getVacationDaysLeftLastYearAttribute();
+    }
+
+    // get used vacation days
+    public function getUsedVacationDaysAttribute(bool $calendarYear = true, string $type = VacationType::PAID_LEAVE->value): int
+    {
+        return $this->vacations()
+            ->where('status', VacationStatus::Approved)
+            ->where('type', $type)
+            ->when($calendarYear,
+                fn ($q) => $q->whereYear('start_date', now()->year),
+                fn ($q) => $q->whereYear('start_date', '<', now()->year)
+            )
+            ->sum('working_days_count');
+    }
+
+    /**
+     * Exclude dismissal rows whose end date is still in the future (not yet effective).
+     */
+    public function scopeExcludeScheduledDismissals(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q): void {
+            $q->whereNot('status', PositionStatus::Dismissal->value)
+                ->where(function () use ($q) {
+                    $q->whereNull('date_end')
+                        ->OrWhereDate('date_end', '>', now());
+                });
+        });
+    }
+
+    /**
+     * Positions whose end date is not in the past. A null end date means no fixed end.
+     */
+    public function scopeWhereDateEndNotExpired(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q): void {
+            $q->whereNull('date_end')
+                ->orWhereDate('date_end', '>=', now());
+        });
     }
 
     /**
@@ -165,7 +210,10 @@ class Position extends Model implements HasMedia
     public function scopeActivePositions(Builder $query): Builder
     {
         return $query->whereNotIn('status', [PositionStatus::Dismissal->value, PositionStatus::Achieved->value])
-            ->where('date_end', '>=', now());
+            ->where(function (Builder $q): void {
+                $q->whereNull('date_end')
+                    ->orWhereDate('date_end', '>=', now());
+            });
     }
 
     public function registerMediaCollections(): void

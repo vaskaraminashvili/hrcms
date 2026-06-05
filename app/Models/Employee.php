@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
-use App\Enums\PositionStatus;
 use Database\Factories\EmployeeFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Collection;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
@@ -22,6 +24,7 @@ class Employee extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, LogsActivity, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'name',
         'surname',
         'name_eng',
@@ -37,7 +40,18 @@ class Employee extends Model implements HasMedia
         'account_number',
         'address_details',
         'status',
+        'photo',
     ];
+
+    /**
+     * Localized given name plus family name for display (breadcrumbs, record titles).
+     */
+    protected function fullName(): Attribute
+    {
+        return Attribute::get(function (): string {
+            return trim(sprintf('%s %s', $this->name ?? '', $this->surname ?? ''));
+        });
+    }
 
     protected function casts(): array
     {
@@ -50,6 +64,11 @@ class Employee extends Model implements HasMedia
         ];
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function positions(): HasMany
     {
         return $this->hasMany(Position::class);
@@ -58,7 +77,7 @@ class Employee extends Model implements HasMedia
     public function appointmentPositions(): HasMany
     {
         return $this->hasMany(Position::class)
-            ->whereNotIn('status', [PositionStatus::Dismissal]);
+            ->excludeScheduledDismissals();
     }
 
     public function academicPositions(): HasMany
@@ -147,5 +166,49 @@ class Employee extends Model implements HasMedia
         $this->addMediaCollection($name)
             ->useDisk('local')
             ->storeConversionsOnDisk('local');
+    }
+
+    public function employeeImageUrl(): ?string
+    {
+        $mediaImageUrl = $this->getFirstMediaUrl('employee_image');
+        if ($mediaImageUrl !== '') {
+            return $mediaImageUrl;
+        }
+
+        $photo = trim((string) $this->photo);
+        if ($photo === '') {
+            return null;
+        }
+
+        if (str_starts_with($photo, 'http://') || str_starts_with($photo, 'https://')) {
+            return $this->encodeUrlPath($photo);
+        }
+
+        return $this->encodeUrlPath('https://sms.tsmu.edu/hr/img/'.$photo);
+    }
+
+    private function encodeUrlPath(string $url): string
+    {
+        $parts = parse_url($url);
+
+        if (! is_array($parts)) {
+            return $url;
+        }
+
+        $path = $parts['path'] ?? '';
+        $encodedPath = Collection::make(explode('/', $path))
+            ->map(fn (string $segment): string => rawurlencode(rawurldecode($segment)))
+            ->implode('/');
+
+        $scheme = isset($parts['scheme']) ? $parts['scheme'].'://' : '';
+        $host = $parts['host'] ?? '';
+        $port = isset($parts['port']) ? ':'.$parts['port'] : '';
+        $user = $parts['user'] ?? '';
+        $pass = $parts['pass'] ?? '';
+        $auth = $user !== '' ? $user.($pass !== '' ? ':'.$pass : '').'@' : '';
+        $query = isset($parts['query']) ? '?'.$parts['query'] : '';
+        $fragment = isset($parts['fragment']) ? '#'.$parts['fragment'] : '';
+
+        return $scheme.$auth.$host.$port.$encodedPath.$query.$fragment;
     }
 }

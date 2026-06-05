@@ -18,6 +18,8 @@ enum DepartmentType: string implements HasColor, HasLabel
     case CLINIC = 'clinic';
     case FACULTY = 'faculty';
     case INSTITUTE = 'institute';
+    case PROGRAM = 'program';
+    case LABORATORY = 'laboratory';
 
     public function getLabel(): string
     {
@@ -33,6 +35,9 @@ enum DepartmentType: string implements HasColor, HasLabel
             self::CLINIC => 'კლინიკა',
             self::FACULTY => 'ფაკულტეტი',
             self::INSTITUTE => 'ინსტიტუტი',
+            self::PROGRAM => 'პროგრამა',
+            self::LABORATORY => 'ლაბორატორია',
+
         };
     }
 
@@ -55,6 +60,8 @@ enum DepartmentType: string implements HasColor, HasLabel
             self::CLINIC => 'danger',
             self::FACULTY => 'primary',
             self::INSTITUTE => 'success',
+            self::PROGRAM => 'info',
+            self::LABORATORY => 'danger',
         };
     }
 }

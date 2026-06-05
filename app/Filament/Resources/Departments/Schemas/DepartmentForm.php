@@ -52,6 +52,12 @@ class DepartmentForm
                         ->required()
                         ->maxLength(255),
 
+                    TextInput::make('order')
+                        ->label(__('filament.resources.departments.order'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->helperText(__('filament.resources.departments.order_helper')),
+
                     TextInput::make('vacancy_count')
                         ->label(__('filament.vacancy_count'))
                         ->numeric()

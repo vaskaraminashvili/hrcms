@@ -9,9 +9,11 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,12 +26,13 @@ class EmployeesTable
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with([
                 'appointmentPositions.department',
+                'appointmentPositions.place',
             ]))
             ->columns([
-                SpatieMediaLibraryImageColumn::make('employee_image')
+                ImageColumn::make('employee_image')
+                    ->getStateUsing(fn (Employee $record) => $record->employeeImageUrl())
                     ->circular()
-                    ->label('')
-                    ->collection('employee_image'),
+                    ->label(''),
                 TextColumn::make('name')
                     ->label(__('filament.name'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
@@ -47,29 +50,50 @@ class EmployeesTable
 
                 TextColumn::make('personal_number')
                     ->badge()
-                    ->label(__('filament.personal_number'))
+                    ->label(__('filament.personal_number_short'))
                     ->formatStateUsing(function (string $state, Employee $record): string {
                         return $record->personal_number;
                     })
                     ->color('success')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
                     ->searchable(),
-                TextColumn::make('appointment_positions_summary')
-                    ->label(__('filament.department_id').' · '.__('filament.position_type').' · '.__('filament.status'))
+                TextColumn::make('birth_date')
+                    ->label(__('filament.birth_date_placeholder'))
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('appointment_positions_department_summary')
+                    ->label(__('filament.department_id'))
+                    ->width('400px')
+                    ->wrap()
                     ->html()
-                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record)),
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department', asBadge: false, col_width: 330)),
+                TextColumn::make('appointment_positions_type_summary')
+                    ->label(__('filament.position_type'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'type')),
+                TextColumn::make('appointment_positions_place_summary')
+                    ->label(__('filament.place_id'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'place'))
+                    ->description(fn (Employee $record): string => self::appointmentPositionsDateEndDescription($record)),
+                TextColumn::make('appointment_positions_status_summary')
+                    ->label(__('filament.status'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'status')),
+
                 TextColumn::make('positions_count')
                     ->label(__('filament.positions_count'))
                     ->alignCenter()
                     ->icon('heroicon-o-briefcase')
                     ->counts(['appointmentPositions as positions_count'])
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 // TextColumn::make('email')
                 //     ->label(__('filament.email'))
                 //     ->searchable(),
-                TextColumn::make('birth_date')
-                    ->label(__('filament.birth_date_placeholder'))
-                    ->date()
-                    ->sortable(),
+
                 TextColumn::make('status')
                     ->label(__('filament.status'))
                     ->badge()
@@ -155,8 +179,12 @@ class EmployeesTable
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
-            ])
+                EditAction::make()
+                    ->label(''),
+                // when on tab deleted show restore action only
+                RestoreAction::make()
+                    ->visible(fn (Employee $record): bool => $record->trashed()),
+            ], RecordActionsPosition::BeforeColumns)
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
@@ -169,9 +197,9 @@ class EmployeesTable
     }
 
     /**
-     * Renders each appointment position as a row of Filament-style badges (department, type, status).
+     * Renders each appointment position as a list item (badge or plain text per column).
      */
-    private static function appointmentPositionsBadgesHtml(Employee $record): HtmlString
+    private static function appointmentPositionsBadgesHtml(Employee $record, string $column, bool $asBadge = true, int $col_width = 0): HtmlString
     {
         $positions = $record->appointmentPositions;
 
@@ -179,29 +207,39 @@ class EmployeesTable
             return new HtmlString('');
         }
 
-        $listLimit = 3;
+        $listLimit = 1;
         $total = $positions->count();
         $hiddenCount = max(0, $total - $listLimit);
 
         $items = [];
         foreach ($positions->take($listLimit) as $position) {
             $departmentLabel = $position->department?->name ?? '—';
+            $placeLabel = $position->place?->name ?? '—';
             $typeLabel = $position->position_type?->getLabel() ?? '';
             $statusLabel = $position->status?->getLabel() ?? '';
 
             $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
-            $items[] =
-                '<li class="fi-ta-text-item">'
-                .'<span class="flex flex-wrap items-center gap-1">'
-                .self::filamentBadgeHtml($departmentLabel, 'gray')
-                .self::filamentBadgeHtml($typeLabel, $typeColor)
-                .self::filamentBadgeHtml($statusLabel, $statusColor)
-                .'</span>'
-                .'</li>';
-        }
+            $contentHtml = match ($column) {
+                'department' => $asBadge
+                    ? self::filamentBadgeHtml($departmentLabel, 'gray')
+                    : self::filamentTextHtml($departmentLabel),
+                'type' => $asBadge
+                    ? self::filamentBadgeHtml($typeLabel, $typeColor)
+                    : self::filamentTextHtml($typeLabel),
+                'status' => $asBadge
+                    ? self::filamentBadgeHtml($statusLabel, $statusColor)
+                    : self::filamentTextHtml($statusLabel),
+                'place' => $asBadge
+                    ? self::filamentBadgeHtml($placeLabel, 'gray')
+                    : self::filamentTextHtml($placeLabel),
+                default => '',
+            };
 
-        $html = '<ul class="list-none space-y-1">'.implode('', $items).'</ul>';
+            $items[] = '<li class="fi-ta-text-item">'.$contentHtml.'</li>';
+        }
+        $width = $col_width > 0 ? ' style="width: '.$col_width.'px !important;"' : '';
+        $html = '<ul class="list-none space-y-1"'.$width.'>'.implode('', $items).'</ul>';
 
         if ($hiddenCount > 0) {
             $html .= '<p class="fi-ta-text-description mt-1 text-xs">'
@@ -210,6 +248,20 @@ class EmployeesTable
         }
 
         return new HtmlString($html);
+    }
+
+    private static function appointmentPositionsDateEndDescription(Employee $record): string
+    {
+        $positions = $record->appointmentPositions;
+
+        if ($positions->isEmpty()) {
+            return '';
+        }
+
+        return $positions
+            ->take(3)
+            ->map(fn ($position): string => $position->date_end?->format('d.m.Y') ?? 'N/A')
+            ->implode(' · ');
     }
 
     /**
@@ -230,5 +282,10 @@ class EmployeesTable
             ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
 
         return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
+    }
+
+    private static function filamentTextHtml(string $label): string
+    {
+        return '<span class="text-xs whitespace-normal break-words">'.e($label).'</span>';
     }
 }

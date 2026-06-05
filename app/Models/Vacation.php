@@ -27,6 +27,7 @@ class Vacation extends Model implements HasMedia
         'start_date',
         'end_date',
         'working_days_count',
+        'days_from_last_year',
         'status',
         'reason',
         'notes',
@@ -39,6 +40,7 @@ class Vacation extends Model implements HasMedia
             'start_date' => 'date:d.m.Y',
             'end_date' => 'date:d.m.Y',
             'working_days_count' => 'integer',
+            'days_from_last_year' => 'integer',
             'status' => VacationStatus::class,
             'type' => VacationType::class,
         ];

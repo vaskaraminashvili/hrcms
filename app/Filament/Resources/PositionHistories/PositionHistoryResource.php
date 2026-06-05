@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PositionHistories;
 
+use App\Filament\Resources\PositionHistories\Pages\EditPositionHistory;
 use App\Filament\Resources\PositionHistories\Pages\ListPositionHistories;
 use App\Filament\Resources\PositionHistories\Pages\ViewPositionHistory;
 use App\Filament\Resources\PositionHistories\Schemas\PositionHistoryInfolist;
@@ -12,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PositionHistoryResource extends Resource
 {
@@ -39,6 +41,20 @@ class PositionHistoryResource extends Resource
         return PositionHistoriesTable::configure($table);
     }
 
+    /**
+     * @return Builder<PositionHistory>
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with([
+                'position.employee',
+                'position.vacationPolicy',
+                'position.department',
+                'position.place',
+            ]);
+    }
+
     public static function infolist(Schema $schema): Schema
     {
         return PositionHistoryInfolist::configure($schema);
@@ -55,6 +71,7 @@ class PositionHistoryResource extends Resource
     {
         return [
             'index' => ListPositionHistories::route('/'),
+            'edit' => EditPositionHistory::route('/{record}/edit'),
             'view' => ViewPositionHistory::route('/{record}'),
         ];
     }
