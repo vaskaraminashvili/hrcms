@@ -16,7 +16,7 @@ class EmployeeCvController extends Controller
 
         abort_unless($cvLocale !== null, 404);
 
-        Gate::authorize('view', $employee);
+        Gate::authorize('viewCv', $employee);
 
         return view('cv.show', $employeeCvService->buildViewData($employee, $cvLocale));
     }
