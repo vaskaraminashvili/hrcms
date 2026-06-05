@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\AcademicPositionImportService;
 use App\Services\ComputerSkillImportService;
+use App\Services\EducationImportService;
 use App\Services\EmployeeImageImportService;
 use App\Services\EmployeeImportService;
 use App\Services\ForeignLanguageImportService;
@@ -100,6 +101,13 @@ class ImportController extends Controller
     public function importEmployeesPhotos(EmployeeImageImportService $employeeImageImportService)
     {
         $result = $employeeImageImportService->importAll();
+
+        return response()->json($result);
+    }
+
+    public function importEducation(Request $request, EducationImportService $educationImportService)
+    {
+        $result = $educationImportService->importAll();
 
         return response()->json($result);
     }
