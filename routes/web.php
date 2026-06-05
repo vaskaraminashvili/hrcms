@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepartmentTypeCountController;
+use App\Http\Controllers\EmployeeCvController;
 use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,4 +26,8 @@ Route::controller(ImportController::class)->group(function () {
 Route::middleware(['auth'])->group(function (): void {
     Route::get('/departments/{department}/type-counts', [DepartmentTypeCountController::class, 'show'])
         ->name('departments.type-counts');
+
+    Route::get('/employees/{employee}/cv/{locale}', [EmployeeCvController::class, 'show'])
+        ->name('employees.cv.show')
+        ->where('locale', 'ka|en');
 });
