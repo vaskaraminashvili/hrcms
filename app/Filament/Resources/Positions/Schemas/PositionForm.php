@@ -99,6 +99,8 @@ class PositionForm
                                 )
                                 ->searchable()
                                 ->preload()
+                                ->live()
+                                ->helperText(fn ($get): ?string => self::departmentHierarchyHelperText($get('department_id')))
                                 // ->rule(static function (Field $component) {
                                 //     return function (string $attribute, mixed $value, Closure $fail) use ($component): void {
                                 //         if (blank($value)) {
@@ -325,6 +327,30 @@ class PositionForm
         $field->helperText(__('filament.position_history_field_changed_helper', [
             'change' => PositionHistorySnapshotField::formatDiffSegment($changed[$name], $name),
         ]));
+    }
+
+    private static function departmentHierarchyHelperText(mixed $departmentId): ?string
+    {
+        if (blank($departmentId)) {
+            return null;
+        }
+
+        $department = Department::query()
+            ->with('parent')
+            ->find($departmentId);
+
+        if ($department?->show_parent != 1) {
+            return null;
+        }
+
+        $parentName = $department->parent?->name;
+        $departmentName = $department->name;
+
+        if (! filled($parentName) || ! filled($departmentName)) {
+            return null;
+        }
+
+        return $parentName.' → '.$departmentName;
     }
 
     private static function statusIsDismissal(mixed $status): bool

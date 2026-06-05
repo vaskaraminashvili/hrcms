@@ -21,15 +21,14 @@ class PositionsTable
         $filters = Filters::getFilters();
 
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['department.parent']))
             ->columns([
                 TextColumn::make('employee.name')
                     ->label(__('filament.employee.name'))
                     ->formatStateUsing(function (string $state, Position $record): string {
                         return $record->employee->name.' '.$record->employee->surname;
                     })
-                    ->description(function (Position $record): string {
-                        return $record->department->name;
-                    })
+                    ->description(fn (Position $record): string => self::departmentLabel($record))
                     ->searchable(query: function (Builder $query, string $search): void {
                         $pattern = '%'.$search.'%';
 
@@ -40,7 +39,8 @@ class PositionsTable
                         })
                             ->orWhereHas('department', function (Builder $departmentQuery) use ($pattern): void {
                                 $departmentQuery
-                                    ->where('name', 'like', $pattern);
+                                    ->where('name', 'like', $pattern)
+                                    ->orWhereHas('parent', fn (Builder $parentQuery): Builder => $parentQuery->where('name', 'like', $pattern));
                             });
                     })
                     ->wrap()
@@ -150,5 +150,19 @@ class PositionsTable
             ])->recordUrl(
                 fn (Position $record): string => route('filament.admin.resources.positions.edit', ['record' => $record]),
             );
+    }
+
+    private static function departmentLabel(Position $record): string
+    {
+        if ($record->department?->show_parent == 1) {
+            $parentName = $record->department?->parent?->name;
+            $departmentName = $record->department?->name;
+
+            if (filled($parentName) && filled($departmentName)) {
+                return $parentName.' → '.$departmentName;
+            }
+        }
+
+        return $record->department?->name ?? '—';
     }
 }

@@ -11,6 +11,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Support\Enums\IconSize;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -19,13 +20,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
+use function Filament\Support\generate_icon_html;
+
 class EmployeesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with([
-                'appointmentPositions.department',
+                'appointmentPositions.department.parent',
                 'appointmentPositions.place',
             ]))
             ->columns([
@@ -213,7 +216,16 @@ class EmployeesTable
 
         $items = [];
         foreach ($positions->take($listLimit) as $position) {
-            $departmentLabel = $position->department?->name ?? '—';
+            // if department -> show_parent is 1 then show parent name else show department name
+            if ($position->department?->show_parent == 1) {
+                $parentName = $position->department?->parent?->name;
+                $departmentName = $position->department?->name;
+                $departmentLabel = $parentName.' &#8594; '.$departmentName;
+                $departmentLabelIsHtml = true;
+            } else {
+                $departmentLabel = $position->department?->name ?? '—';
+                $departmentLabelIsHtml = false;
+            }
             $placeLabel = $position->place?->name ?? '—';
             $typeLabel = $position->position_type?->getLabel() ?? '';
             $statusLabel = $position->status?->getLabel() ?? '';
@@ -222,8 +234,8 @@ class EmployeesTable
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
             $contentHtml = match ($column) {
                 'department' => $asBadge
-                    ? self::filamentBadgeHtml($departmentLabel, 'gray')
-                    : self::filamentTextHtml($departmentLabel),
+                    ? self::filamentBadgeHtml($departmentLabel, 'gray', raw: $departmentLabelIsHtml)
+                    : self::filamentTextHtml($departmentLabel, raw: $departmentLabelIsHtml),
                 'type' => $asBadge
                     ? self::filamentBadgeHtml($typeLabel, $typeColor)
                     : self::filamentTextHtml($typeLabel),
@@ -276,16 +288,36 @@ class EmployeesTable
         return 'gray';
     }
 
-    private static function filamentBadgeHtml(string $label, string $colorKey): string
+    private static function departmentHierarchyHtml(mixed $position): string
+    {
+        $parentName = $position->department?->parent?->name;
+        $departmentName = $position->department?->name;
+
+        if (! filled($parentName) || ! filled($departmentName)) {
+            return e($departmentName ?? $parentName ?? '—');
+        }
+
+        $iconHtml = generate_icon_html('heroicon-m-chevron-right', size: IconSize::Small)->toHtml();
+
+        return e($parentName)
+            .'<span class="inline-flex shrink-0 items-center mx-0.5 text-gray-400 dark:text-gray-500">'.$iconHtml.'</span>'
+            .e($departmentName);
+    }
+
+    private static function filamentBadgeHtml(string $label, string $colorKey, bool $raw = false): string
     {
         $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
             ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
 
-        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.e($label).'</span>';
+        $content = $raw ? $label : e($label);
+
+        return '<span class="fi-badge rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset '.$classes.'">'.$content.'</span>';
     }
 
-    private static function filamentTextHtml(string $label): string
+    private static function filamentTextHtml(string $label, bool $raw = false): string
     {
-        return '<span class="text-xs whitespace-normal break-words">'.e($label).'</span>';
+        $content = $raw ? $label : e($label);
+
+        return '<span class="text-xs whitespace-normal break-words">'.$content.'</span>';
     }
 }
