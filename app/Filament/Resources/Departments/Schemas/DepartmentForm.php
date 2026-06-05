@@ -8,6 +8,7 @@ use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -29,6 +30,8 @@ class DepartmentForm
         return [
             Section::make()
                 ->schema([
+                    TextInput::make('index')
+                        ->label(__('filament.index')),
                     Select::make('type')
                         ->label(__('filament.type'))
                         ->options(DepartmentType::class)
@@ -69,6 +72,11 @@ class DepartmentForm
                             fn (DepartmentStatus $case) => [$case->value => __("filament.department_status.{$case->value}")]
                         ))
                         ->default(__('filament.status_default')),
+
+                    Toggle::make('show_parent')
+                        ->label(__('filament.show_parent'))
+                        ->inline(false)
+                        ->default(false),
                 ])
                 ->columnSpanFull(),
 
