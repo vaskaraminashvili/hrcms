@@ -13,7 +13,6 @@ class EmployeeCvController extends Controller
     public function show(Employee $employee, string $locale, EmployeeCvService $employeeCvService): View
     {
         $cvLocale = CvLocale::tryFromRoute($locale);
-
         abort_unless($cvLocale !== null, 404);
 
         Gate::authorize('viewCv', $employee);
