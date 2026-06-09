@@ -16,6 +16,7 @@ enum PositionStatus: string implements HasColor, HasLabel
     case ElectedIndefiniteAttestation = 'elected_indefinite_attestation'; // არჩევა უვადოდ (ეკუთვნის ატესტაცია)
     case Agreement = 'agreement';         // შეთანხმება
     case Achieved = 'achieved';         // დაარქივებული
+    case Compatibility = 'compatibility';         // შეთავსება
 
     public function getLabel(): string
     {
@@ -29,6 +30,7 @@ enum PositionStatus: string implements HasColor, HasLabel
             self::ElectedIndefiniteAttestation => 'არჩევა უვადოდ (ეკუთვნის ატესტაცია)',
             self::Agreement => 'შეთანხმება',
             self::Achieved => 'დაარქივებული',
+            self::Compatibility => 'შეთავსება',
         };
     }
 
@@ -44,6 +46,7 @@ enum PositionStatus: string implements HasColor, HasLabel
             self::ElectedIndefiniteAttestation => 'warning',
             self::Agreement => 'gray',
             self::Achieved => 'warning',
+            self::Compatibility => 'info',
         };
     }
 }

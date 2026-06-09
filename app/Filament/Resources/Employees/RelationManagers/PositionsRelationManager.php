@@ -39,6 +39,7 @@ class PositionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['department.parent']))
             ->filters(
                 [
                     PositionTableFilters::hideScheduledDismissals(),
@@ -48,7 +49,20 @@ class PositionsRelationManager extends RelationManager
             ->recordTitleAttribute('date_start')
             ->columns([
                 TextColumn::make('department.name')
-                    ->searchable()
+                    ->html()
+                    ->formatStateUsing(function (?string $state, Position $record): HtmlString|string {
+                        if ($record->department?->show_parent == 1) {
+                            $parentName = $record->department?->parent?->name;
+                            $departmentName = $record->department?->name;
+
+                            if (filled($parentName) && filled($departmentName)) {
+                                return new HtmlString($parentName.' &#8594; '.$departmentName);
+                            }
+                        }
+
+                        return $record->department?->name ?? '—';
+                    })
+                    ->searchable(['department.name', 'department.parent.name'])
                     ->sortable(),
                 TextColumn::make('position_type')
                     ->badge()

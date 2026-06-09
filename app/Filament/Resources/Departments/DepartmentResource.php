@@ -47,6 +47,7 @@ class DepartmentResource extends Resource
     {
         return $tree
             ->fields([
+                DepartmentTextField::make('index'),
                 DepartmentTextField::make('name')
                     ->limit(60, '...')
                     ->url(

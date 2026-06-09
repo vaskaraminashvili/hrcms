@@ -37,6 +37,8 @@ return [
     'surrname_eng' => 'გვარი (ინგლისურად)',
     'personal_number' => 'პირადი ნომერი',
     'personal_number_short' => 'პ.ნ.',
+    'show_parent' => 'მშობელის სახელის ჩვენება',
+    'index' => 'ინდექსი',
     'email' => 'ელფოსტა',
     'birth_date' => 'დაბადების თარიღი',
     'birth_date_placeholder' => 'დაბ. თარ.',
