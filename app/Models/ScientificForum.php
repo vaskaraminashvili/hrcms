@@ -21,6 +21,8 @@ class ScientificForum extends Model implements HasMedia
         'employee_id',
         'title',
         'held_at',
+        'start_date',
+        'end_date',
         'participation_form',
     ];
 
