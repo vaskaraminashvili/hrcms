@@ -43,6 +43,8 @@ return [
     'email' => 'Email address',
     'birth_date' => 'Birth date',
     'employee_birthdays_this_week' => 'Birthdays this week',
+    'employee_date_end_this_month' => 'Contract endings this month',
+    'date_end_diff' => 'Time left',
     'turning_age' => 'Turning',
     'mobile_number' => 'Mobile number',
     'gender' => 'Gender',

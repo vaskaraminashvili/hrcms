@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Enums\EmployeeStatusEnum;
 use App\Filament\Widgets\EmployeeBirthdaysWidget;
+use App\Filament\Widgets\EmployeeContractEndingsWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
@@ -64,6 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->widgets([
                 EmployeeBirthdaysWidget::class,
+                EmployeeContractEndingsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
