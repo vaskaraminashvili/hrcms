@@ -1,0 +1,51 @@
+// ============================================================
+// _badges.scss – type badge & descendant-count badge styles
+// ============================================================
+@use 'sass:map';
+@use 'tokens' as t;
+
+// ── Shared pill base ───────────────────────────────────────
+%badge-base {
+    display:      inline-flex;
+    align-items:  center;
+    padding:      2px 8px;
+    border-radius: t.$radius-pill;
+    font-size:    11px;
+    font-weight:  500;
+    white-space:  nowrap;
+    line-height:  1.6;
+    flex-shrink:  0;
+}
+
+// ── Type badge (single, aligned right of counts) ───────────
+.dept-tree-node__badge {
+    @extend %badge-base;
+
+    // Generate a colour variant for every palette key
+    @each $name, $pair in t.$badge-palettes {
+        $fill: nth($pair, 1);
+        $text: nth($pair, 2);
+
+        &--#{$name} {
+            background: $fill;
+            color:      $text;
+        }
+    }
+}
+
+// ── Descendant count badges (many, smaller) ────────────────
+.dept-tree-node__count-badge {
+    @extend %badge-base;
+    font-size: 10.5px;
+    padding:   1px 7px;
+
+    @each $name, $pair in t.$badge-palettes {
+        $fill: nth($pair, 1);
+        $text: nth($pair, 2);
+
+        &--#{$name} {
+            background: $fill;
+            color:      $text;
+        }
+    }
+}

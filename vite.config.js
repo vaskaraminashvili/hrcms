@@ -10,6 +10,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/filament/admin/custom.css',
+                'resources/scss/department-tree/department-tree.scss',
                 'resources/js/app.js',
             ],
             refresh: true,

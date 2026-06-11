@@ -11,7 +11,7 @@ class DepartmentTypeCountController extends Controller
     /**
      * Return a count of each DepartmentType among all descendants of the given department.
      *
-     * @return JsonResponse<array<int, array{label: string, count: int, classes: string}>>
+     * @return JsonResponse<array<int, array{label: string, count: int, color: string, classes: string}>>
      */
     public function show(Department $department, DepartmentDescendantTypeCountService $departmentDescendantTypeCountService): JsonResponse
     {

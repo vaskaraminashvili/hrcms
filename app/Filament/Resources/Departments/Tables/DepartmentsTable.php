@@ -60,11 +60,7 @@ class DepartmentsTable
                     ->formatStateUsing(function (string $state, Department $record): string {
                         return $record->parent?->name ?? 'Unknown';
                     }),
-                TextColumn::make('level')
-                    ->label('დეპარტამენტის დონე')
-                    ->formatStateUsing(function (string $state, Department $record): string {
-                        return $record->ancestors()->count() + 1;
-                    }),
+
                 TextColumn::make('type')
                     ->label(__('filament.type'))
                     ->badge()

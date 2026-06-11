@@ -104,7 +104,10 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
-                fn (): string => Vite::withEntryPoints(['resources/css/filament/admin/custom.css'])->toHtml()
+                fn (): string => Vite::withEntryPoints([
+                    'resources/css/filament/admin/custom.css',
+                    'resources/scss/department-tree/department-tree.scss',
+                ])->toHtml()
             )
             ->globalSearch(false);
     }

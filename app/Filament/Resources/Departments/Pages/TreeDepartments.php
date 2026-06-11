@@ -4,27 +4,19 @@ namespace App\Filament\Resources\Departments\Pages;
 
 use App\Enums\DepartmentStatus;
 use App\Filament\Resources\Departments\DepartmentResource;
+use App\Models\Department;
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Relations\Relation;
-use Openplain\FilamentTreeView\Resources\Pages\TreePage;
+use Filament\Actions\CreateAction;
+use Filament\Resources\Pages\Page;
+use Illuminate\Database\Eloquent\Collection;
 
-class TreeDepartments extends TreePage
+class TreeDepartments extends Page
 {
     protected static string $resource = DepartmentResource::class;
 
+    protected string $view = 'filament.resources.departments.pages.tree-departments';
+
     public bool $showArchivedDepartments = false;
-
-    public function getTreeQuery(): Builder|Relation
-    {
-        $query = parent::getTreeQuery();
-
-        if (! $this->showArchivedDepartments) {
-            $query->whereNot('status', DepartmentStatus::ARCHIVED);
-        }
-
-        return $query;
-    }
 
     protected function getHeaderActions(): array
     {
@@ -40,10 +32,24 @@ class TreeDepartments extends TreePage
                 ->action(function (): void {
                     $this->showArchivedDepartments = ! $this->showArchivedDepartments;
                 }),
-            Action::make('newDepartment')
-                ->label(__('filament.tree_departments.new_department'))
-                ->icon('heroicon-o-plus')
-                ->url(DepartmentResource::getUrl('create')),
+
+            CreateAction::make()
+                ->label(__('filament.resources.departments.new_structure'))
+                ->icon('heroicon-o-plus'),
         ];
+    }
+
+    public function getRecords(): Collection
+    {
+        $query = Department::query()
+            ->orderBy('parent_id')
+            ->orderBy('order')
+            ->with(['children', 'parent']);
+
+        if (! $this->showArchivedDepartments) {
+            $query->whereNot('status', DepartmentStatus::ARCHIVED);
+        }
+
+        return $query->get();
     }
 }
