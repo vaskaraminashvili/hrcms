@@ -36,8 +36,23 @@
     )->getCachedDescendantTypeCountsPayload($record);
 @endphp
 
-<div class="dept-tree-node {{ $depthClass }}" role="treeitem" aria-expanded="{{ $hasChildren ? 'true' : 'false' }}"
-    x-data="treeNode({{ $hasChildren ? 'true' : 'false' }})">
+<div
+    class="dept-tree-node {{ $depthClass }}"
+    role="treeitem"
+    aria-expanded="{{ $hasChildren ? 'true' : 'false' }}"
+    x-data="{
+        open: true,
+        hasChildren: @js($hasChildren),
+        toggle() {
+            if (! this.hasChildren) {
+                return;
+            }
+
+            this.open = ! this.open;
+        },
+    }"
+    x-on:dept-tree-set-open.window="open = $event.detail"
+>
     {{-- Row --}}
     <div class="dept-tree-node__row" x-bind:class="{ 'dept-tree-node__row--collapsed': !open }" x-on:click="toggle()">
         {{-- Depth accent bar is applied via CSS on the wrapper --}}

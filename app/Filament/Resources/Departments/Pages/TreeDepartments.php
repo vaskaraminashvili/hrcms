@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Departments\Pages;
 use App\Enums\DepartmentStatus;
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
+use App\Services\DepartmentTreeCacheService;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\Page;
@@ -41,15 +42,16 @@ class TreeDepartments extends Page
 
     public function getRecords(): Collection
     {
-        $query = Department::query()
-            ->orderBy('parent_id')
-            ->orderBy('order')
-            ->with(['children', 'parent']);
+        return once(function (): Collection {
+            $records = app(DepartmentTreeCacheService::class)->getRecords();
 
-        if (! $this->showArchivedDepartments) {
-            $query->whereNot('status', DepartmentStatus::ARCHIVED);
-        }
+            if ($this->showArchivedDepartments) {
+                return $records;
+            }
 
-        return $query->get();
+            return $records->reject(
+                fn (Department $department): bool => $department->status === DepartmentStatus::ARCHIVED,
+            );
+        });
     }
 }

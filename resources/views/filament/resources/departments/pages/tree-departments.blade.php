@@ -1,8 +1,14 @@
 <x-filament-panels::page>
     <div
         class="dept-tree-page"
-        x-data="departmentTree()"
-        x-init="init()"
+        x-data="{
+            expandAll() {
+                window.dispatchEvent(new CustomEvent('dept-tree-set-open', { detail: true }));
+            },
+            collapseAll() {
+                window.dispatchEvent(new CustomEvent('dept-tree-set-open', { detail: false }));
+            },
+        }"
     >
         {{-- Page Header Toolbar --}}
         <div class="dept-tree-toolbar">
@@ -37,49 +43,4 @@
             @endforeach
         </div>
     </div>
-
-    @push('scripts')
-        <script>
-            function departmentTree() {
-                return {
-                    init() {},
-
-                    expandAll() {
-                        this.$el.querySelectorAll('[data-tree-children]').forEach(el => {
-                            el.style.display = 'block';
-                        });
-                        this.$el.querySelectorAll('[data-tree-chevron]').forEach(el => {
-                            el.classList.remove('dept-tree-node__chevron--collapsed');
-                        });
-                        this.$el.querySelectorAll('[data-tree-toggle]').forEach(el => {
-                            el.setAttribute('aria-expanded', 'true');
-                        });
-                    },
-
-                    collapseAll() {
-                        this.$el.querySelectorAll('[data-tree-children]').forEach(el => {
-                            el.style.display = 'none';
-                        });
-                        this.$el.querySelectorAll('[data-tree-chevron]').forEach(el => {
-                            el.classList.add('dept-tree-node__chevron--collapsed');
-                        });
-                        this.$el.querySelectorAll('[data-tree-toggle]').forEach(el => {
-                            el.setAttribute('aria-expanded', 'false');
-                        });
-                    },
-                }
-            }
-
-            function treeNode(hasChildren) {
-                return {
-                    open: true,
-
-                    toggle() {
-                        if (!hasChildren) return;
-                        this.open = !this.open;
-                    },
-                }
-            }
-        </script>
-    @endpush
 </x-filament-panels::page>

@@ -7,20 +7,20 @@
 // purple → teal ramp so hierarchy is visible at a glance.
 
 $depth-colors: (
-    0: #534AB7,
-    // indigo-600  – root
-    1: #AFA9EC,
-    // purple-200  – level 1
-    2: #CECBF6,
-    // purple-100  – level 2
-    3: #5DCAA5,
-    // teal-400    – level 3
-    4: #9FE1CB,
-    // teal-200    – level 4
-    5: #1D9E75,
-    // teal-600    – level 5
-    6: #085041,
-    // teal-900    – level 6
+    0: #742d75,
+    // purple      – root
+    1: #373463,
+    // indigo      – level 1
+    2: #1e8181,
+    // teal        – level 2
+    3: #62975e,
+    // green       – level 3
+    4: #9c7a39,
+    // amber       – level 4
+    5: #682e44,
+    // burgundy    – level 5
+    6: #682e44,
+    // burgundy    – level 6 (same as 5)
 );
 
 $depth-border-width: 6px;
