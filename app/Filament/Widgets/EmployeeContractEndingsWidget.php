@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\EmployeeStatusEnum;
 use App\Filament\Resources\Employees\EmployeeResource;
+use App\Filament\Resources\Positions\PositionResource;
 use App\Models\Employee;
 use App\Models\Position;
 use Carbon\CarbonInterface;
@@ -30,14 +31,35 @@ class EmployeeContractEndingsWidget extends TableWidget
                     ->url(fn (Employee $record): string => EmployeeResource::getUrl('edit', ['record' => $record])),
                 TextColumn::make('date_end_this_month')
                     ->label(__('filament.date_end_placeholder'))
-                    ->state(fn (Employee $record): ?string => $this->endingPosition($record)?->date_end?->format('d.m.Y')),
+                    ->state(fn (Employee $record): ?string => $this->endingPosition($record)?->date_end?->format('d.m.Y'))
+                    ->url(fn (Employee $record): ?string => ($position = $this->endingPosition($record))
+                        ? PositionResource::getUrl('edit', ['record' => $position])
+                        : null),
+
                 TextColumn::make('date_end_diff')
                     ->label(__('filament.date_end_diff_placeholder'))
                     ->state(fn (Employee $record): ?string => $this->endingPosition($record)?->date_end?->locale(app()->getLocale())->diffForHumans()),
-                TextColumn::make('mobile_number')
-                    ->label(__('filament.mobile_number_placeholder')),
-                TextColumn::make('email')
-                    ->label(__('filament.email')),
+                TextColumn::make('department')
+                    ->label(__('filament.department_id'))
+                    ->state(function (Employee $record): string {
+                        $position = $this->endingPosition($record);
+                        $parentName = $position?->department?->parent?->name;
+                        $departmentName = $position?->department?->name;
+
+                        if (filled($parentName) && filled($departmentName)) {
+                            return $parentName.' → '.$departmentName;
+                        }
+
+                        return $departmentName ?? $parentName ?? '—';
+                    }),
+                TextColumn::make('place.name')
+                    ->label(__('filament.place_id'))
+                    ->badge()
+                    ->state(fn (Employee $record): ?string => $this->endingPosition($record)?->place?->name),
+                TextColumn::make('position_type')
+                    ->label(__('filament.position_type'))
+                    ->badge()
+                    ->state(fn (Employee $record): ?string => $this->endingPosition($record)?->position_type?->label()),
             ]);
     }
 
@@ -53,6 +75,7 @@ class EmployeeContractEndingsWidget extends TableWidget
             ->with(['positions' => fn ($query) => $query
                 ->whereNotNull('date_end')
                 ->whereBetween('date_end', [$monthStart, $monthEnd])
+                ->with(['department.parent'])
                 ->orderBy('date_end')])
             ->orderBy(
                 Position::query()
