@@ -162,7 +162,6 @@ class EmployeeCvService
         $entries = $employee->academicDegrees
             ->map(fn (AcademicDegree $degree): array => $this->entry([
                 $this->field(__('cv.degree_title'), $this->academicDegreeTitle($degree, $this->localeKey)),
-                $this->field(__('cv.degree_awarded_at'), null, alwaysShow: true),
             ]))
             ->all();
 

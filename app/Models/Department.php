@@ -54,6 +54,8 @@ class Department extends Model
         'parent_id',
         'order',
         'type',
+        'show_parent',
+        'index',
     ];
 
     protected $casts = [
