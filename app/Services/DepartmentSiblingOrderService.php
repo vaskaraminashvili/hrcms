@@ -24,6 +24,8 @@ class DepartmentSiblingOrderService
             )
             ->where('order', '>=', $desiredOrder)
             ->increment('order');
+
+        app(DepartmentTreeCacheService::class)->forget();
     }
 
     /**

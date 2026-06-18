@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Enums\DepartmentType;
-use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Models\Department;
+use App\Support\DepartmentBadgeColors;
 use Illuminate\Support\Facades\Cache;
 
 class DepartmentDescendantTypeCountService
@@ -14,7 +14,7 @@ class DepartmentDescendantTypeCountService
     /**
      * Cached payload for the HTTP endpoint and Filament tree (matches prior controller behavior).
      *
-     * @return array<int, array{label: string, count: int, classes: string}>
+     * @return array<int, array{label: string, count: int, color: string, classes: string}>
      */
     public function getCachedDescendantTypeCountsPayload(Department $department): array
     {
@@ -28,7 +28,7 @@ class DepartmentDescendantTypeCountService
     /**
      * Uncached descendant type counts (e.g. tests).
      *
-     * @return array<int, array{label: string, count: int, classes: string}>
+     * @return array<int, array{label: string, count: int, color: string, classes: string}>
      */
     public function descendantTypeCountsPayload(Department $department): array
     {
@@ -45,12 +45,13 @@ class DepartmentDescendantTypeCountService
                 $enum = DepartmentType::from($typeValue);
                 $colorKey = $enum->getColor() ?? 'gray';
 
-                $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
-                    ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
+                $classes = DepartmentBadgeColors::BADGE_COLOR_CLASSES[$colorKey]
+                    ?? DepartmentBadgeColors::BADGE_COLOR_CLASSES['gray'];
 
                 return [
                     'label' => $enum->getLabel(),
                     'count' => (int) $row->total,
+                    'color' => DepartmentBadgeColors::treePaletteKey($colorKey),
                     'classes' => $classes,
                 ];
             })
