@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Department;
 use App\Models\Position;
 use App\Models\PublicHoliday;
+use App\Observers\DepartmentObserver;
 use App\Observers\PositionObserver;
 use App\Observers\PublicHolidayObserver;
 use Carbon\Carbon;
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->registerFilamentAssets();
+        Department::observe(DepartmentObserver::class);
         Position::observe(PositionObserver::class);
         PublicHoliday::observe(PublicHolidayObserver::class);
         Carbon::setLocale(config('app.locale'));
