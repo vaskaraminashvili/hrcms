@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(ImportController::class)->group(function () {
     // Route::get('/import-employees', 'importEmployees')->name('import.employees');
-    // Route::get('/import-positions', 'importPositions')->name('import.positions');
+    Route::get('/import-positions', 'importPositions')->name('import.positions');
+    Route::get('/map-departments', 'mapDepartments')->name('map.departments');
     Route::prefix('/import-personal-data')->group(function () {
         //     Route::get('/computer-skills', 'importComputerSkills')->name('import.computer-skills');
         //     Route::get('/projects', 'importProjects')->name('import.projects');
