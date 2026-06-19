@@ -94,8 +94,7 @@ class PublicationsSchema
                 ->searchable()
                 ->label(__('filament.personal_file.dates.published_at')),
             TextInput::make('page_count')
-                ->label(__('filament.personal_file.page_count'))
-                ->numeric(),
+                ->label(__('filament.personal_file.page_count')),
         ];
     }
 }

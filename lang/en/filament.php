@@ -386,12 +386,24 @@ return [
             'project_name' => 'Project name',
             'institution' => 'Institution',
             'position' => 'Position',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scientific projects',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scientific projects imported successfully.',
         ],
 
         'education' => [
             'institution' => 'Institution',
             'program' => 'Program',
             'specialty' => 'Specialty',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import education',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Education records imported successfully.',
         ],
 
         'work_experience' => [
@@ -432,6 +444,12 @@ return [
             'title' => 'Title',
             'publisher' => 'Publisher',
             'co_authors' => 'Co-authors',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import textbooks',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Textbooks imported successfully.',
         ],
 
         'scientific_forums' => [
