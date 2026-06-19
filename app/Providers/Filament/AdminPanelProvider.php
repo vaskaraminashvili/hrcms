@@ -4,6 +4,8 @@ namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Widgets\EmployeeBirthdaysWidget;
+use App\Filament\Widgets\EmployeeContractEndingsWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
 use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
@@ -18,7 +20,6 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\View\PanelsRenderHook;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -63,7 +64,8 @@ class AdminPanelProvider extends PanelProvider
                     ->sort(1),
             ])
             ->widgets([
-                FilamentInfoWidget::class,
+                EmployeeBirthdaysWidget::class,
+                EmployeeContractEndingsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -104,7 +106,10 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::STYLES_AFTER,
-                fn (): string => Vite::withEntryPoints(['resources/css/filament/admin/custom.css'])->toHtml()
+                fn (): string => Vite::withEntryPoints([
+                    'resources/css/filament/admin/custom.css',
+                    'resources/scss/department-tree/department-tree.scss',
+                ])->toHtml()
             )
             ->globalSearch(false);
     }

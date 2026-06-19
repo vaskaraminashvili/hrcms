@@ -2,22 +2,14 @@
 
 namespace App\Filament\Resources\Departments;
 
-use App\Filament\Resources\Departments\Fields\DepartmentDescendantTypeCountField;
-use App\Filament\Resources\Departments\Fields\DepartmentStatusIconField;
-use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Filament\Resources\Departments\Schemas\DepartmentForm;
 use App\Filament\Resources\Departments\Tables\DepartmentsTable;
 use App\Models\Department;
-use App\Services\DepartmentDescendantTypeCountService;
 use BackedEnum;
-use Filament\Actions\CreateAction;
-use Filament\Actions\EditAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Openplain\FilamentTreeView\Tree;
 
 class DepartmentResource extends Resource
 {
@@ -41,84 +33,6 @@ class DepartmentResource extends Resource
     public static function table(Table $table): Table
     {
         return DepartmentsTable::configure($table);
-    }
-
-    public static function tree(Tree $tree): Tree
-    {
-        return $tree
-            ->fields([
-                DepartmentTextField::make('index'),
-                DepartmentTextField::make('name')
-                    ->limit(60, '...')
-                    ->url(
-                        fn (Department $record): string => route('filament.admin.resources.positions.index', [
-                            'filters[department_id][value]' => $record->getKey(),
-                            'filters[hide_scheduled_dismissals][isActive]' => true,
-                        ])
-                    )
-                    ->openUrlInNewTab(),
-                DepartmentTextField::make('order')
-                    ->alignEnd(),
-                DepartmentTextField::make('type')
-                    ->badge()
-                    ->badgeColor('info')
-                    ->hidden(function (Department $record): bool {
-                        return $record->type === null;
-                    })
-                    ->formatStateUsing(
-                        fn (mixed $state): string => $state ? $state->getLabel() : 'dsa'
-                    )
-                    ->alignEnd(),
-                DepartmentDescendantTypeCountField::make('id')
-                    ->alignEnd()
-                    ->payloadUsing(
-                        fn (Department $record): array => app(DepartmentDescendantTypeCountService::class)
-                            ->getCachedDescendantTypeCountsPayload($record)
-                    ),
-                DepartmentStatusIconField::make('status')
-                    ->boolean()
-                    ->icons('heroicon-o-check-circle', 'heroicon-o-archive-box')
-                    ->colors('success', 'warning')
-                    ->alignEnd(),
-            ])
-            ->recordActions([
-
-                // Navigate to edit page
-                CreateAction::make()
-                    ->label('')
-                    ->icon('heroicon-o-plus')
-                    ->url(
-                        fn (Department $record): string => static::getUrl('create', ['record' => $record])
-                    ),
-                EditAction::make()
-                    ->label('')
-                    ->icon('heroicon-o-pencil')
-                    ->url(
-                        fn (Department $record): string => static::getUrl('edit', ['record' => $record])
-                    ),
-            ])
-            ->maxDepth(6)
-            ->reorderable(false)
-        // ->modifyQueryUsing(function (Builder $query): Builder {
-        //     $table = $query->getModel()->getTable();
-
-        //     return $query->select([
-        //         "{$table}.id",
-        //         "{$table}.parent_id",
-        //         "{$table}.order",
-        //         "{$table}.name",
-        //         "{$table}.slug",
-        //         "{$table}.status",
-        //         "{$table}.vacancy_count",
-        //         "{$table}.color",
-        //     ]);
-        // })
-            ->modifyQueryUsing(function (Builder $query): Builder {
-                return $query
-                    ->orderBy($query->qualifyColumn('parent_id'))
-                    ->orderBy($query->qualifyColumn('order'))
-                    ->with(['children', 'parent']);
-            });
     }
 
     public static function getPages(): array

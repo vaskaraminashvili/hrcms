@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
-use App\Filament\Resources\Departments\Fields\DepartmentTextField;
 use App\Models\Employee;
+use App\Support\DepartmentBadgeColors;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -281,7 +281,7 @@ class EmployeesTable
      */
     private static function filamentBadgeColorKey(mixed $color): string
     {
-        if (is_string($color) && array_key_exists($color, DepartmentTextField::BADGE_COLOR_CLASSES)) {
+        if (is_string($color) && array_key_exists($color, DepartmentBadgeColors::BADGE_COLOR_CLASSES)) {
             return $color;
         }
 
@@ -306,8 +306,8 @@ class EmployeesTable
 
     private static function filamentBadgeHtml(string $label, string $colorKey, bool $raw = false): string
     {
-        $classes = DepartmentTextField::BADGE_COLOR_CLASSES[$colorKey]
-            ?? DepartmentTextField::BADGE_COLOR_CLASSES['gray'];
+        $classes = DepartmentBadgeColors::BADGE_COLOR_CLASSES[$colorKey]
+            ?? DepartmentBadgeColors::BADGE_COLOR_CLASSES['gray'];
 
         $content = $raw ? $label : e($label);
 

@@ -1,0 +1,11 @@
+// ============================================================
+// Department Tree – main SCSS entry point
+// Import order matters: tokens → layout → node → badges → dark
+// ============================================================
+
+@use 'tokens'    as t;
+@use 'toolbar';
+@use 'tree';
+@use 'node';
+@use 'badges';
+@use 'dark';

@@ -1,0 +1,93 @@
+// ============================================================
+// tokens.scss – design tokens for the department tree UI
+// ============================================================
+
+// --------------- Depth accent colours ----------------------
+// Each nesting depth gets a left-border accent from the
+// purple → teal ramp so hierarchy is visible at a glance.
+
+$depth-colors: (
+    0: #534AB7,   // indigo-600  – root
+    1: #AFA9EC,   // purple-200  – level 1
+    2: #CECBF6,   // purple-100  – level 2
+    3: #5DCAA5,   // teal-400    – deepest
+);
+
+$depth-border-width: 3px;
+
+// --------------- Neutral surface ---------------------------
+$surface-bg:          #ffffff;
+$surface-border:      rgba(0, 0, 0, 0.08);
+$surface-hover:       rgba(0, 0, 0, 0.03);
+
+// Dark-mode equivalents (used in _dark.scss)
+$surface-bg-dark:     #1e1e2e;
+$surface-border-dark: rgba(255, 255, 255, 0.08);
+$surface-hover-dark:  rgba(255, 255, 255, 0.04);
+
+// --------------- Typography --------------------------------
+$text-primary:        #111827;
+$text-secondary:      #6b7280;
+$text-muted:          #9ca3af;
+
+$text-primary-dark:   #f3f4f6;
+$text-secondary-dark: #9ca3af;
+$text-muted-dark:     #6b7280;
+
+// --------------- Spacing -----------------------------------
+$row-padding-y:   9px;
+$row-padding-x:   12px;
+$row-gap:         3px;
+$indent-step:     20px;   // px added per depth level
+
+// --------------- Border radius ----------------------------
+$radius-sm:   6px;
+$radius-md:   8px;
+$radius-pill: 20px;
+
+// --------------- Status colours ----------------------------
+$status-active:   #1D9E75;   // teal-600
+$status-archived: #F59E0B;   // amber-400
+
+// --------------- Badge colour map --------------------------
+// Keyed to Filament colour names (info, success, warning, danger, gray …)
+// and to the descendant-count type slugs emitted by the service.
+
+$badge-palettes: (
+    info:        (#E6F1FB, #0C447C),
+    success:     (#EAF3DE, #27500A),
+    warning:     (#FAEEDA, #633806),
+    danger:      (#FCEBEB, #791F1F),
+    gray:        (#F1EFE8, #444441),
+    purple:      (#EEEDFE, #3C3489),
+    teal:        (#E1F5EE, #085041),
+    coral:       (#FAECE7, #712B13),
+    pink:        (#FBEAF0, #72243E),
+    amber:       (#FAEEDA, #633806),
+    blue:        (#E6F1FB, #0C447C),
+    green:       (#EAF3DE, #27500A),
+);
+
+// Dark-mode badge overrides (fill, text)
+$badge-palettes-dark: (
+    info:        (#0C447C, #B5D4F4),
+    success:     (#27500A, #C0DD97),
+    warning:     (#633806, #FAC775),
+    danger:      (#791F1F, #F7C1C1),
+    gray:        (#444441, #D3D1C7),
+    purple:      (#3C3489, #CECBF6),
+    teal:        (#085041, #9FE1CB),
+    coral:       (#712B13, #F5C4B3),
+    pink:        (#72243E, #F4C0D1),
+    amber:       (#633806, #FAC775),
+    blue:        (#0C447C, #B5D4F4),
+    green:       (#27500A, #C0DD97),
+);
+
+// --------------- Transitions -------------------------------
+$transition-speed: 0.15s;
+$transition-ease:  ease;
+
+// --------------- Toolbar -----------------------------------
+$toolbar-gap:      8px;
+$toolbar-mb:       1rem;
