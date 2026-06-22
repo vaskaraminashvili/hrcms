@@ -26,7 +26,6 @@ class AcademicPositionImportService
     public function importAll(bool $clearTableBefore = true): array
     {
         set_time_limit(0);
-
         if ($clearTableBefore) {
             $this->clearAcademicPositionsTable();
         }

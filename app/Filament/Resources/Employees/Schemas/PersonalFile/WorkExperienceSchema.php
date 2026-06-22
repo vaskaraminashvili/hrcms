@@ -53,7 +53,7 @@ class WorkExperienceSchema
                         ->required(),
                 ])
                 ->visible(fn (?Model $record): bool => $record !== null)
-                ->authorize('update')
+                ->authorize('importPersonalFile')
                 ->action(function (array $data, $livewire): void {
                     $record = $livewire->getRecord();
                     $file = $data['file'];

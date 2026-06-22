@@ -502,6 +502,8 @@ return [
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'პუბლიკაციები წარმატებით იქნა იმპორტირებული.',
+            'import_invalid_structure' => 'Excel ფაილის არასწორი სტრუქტურა',
+            'import_invalid_structure_body' => 'ატვირთული ფაილი არ ემთხვევა ექსპორტის შაბლონს. გთხოვთ, ჩამოტვირთოთ შაბლონი და გამოიყენოთ იგივე სვეტების განლაგება (Year, Title, Authors, Venue).',
         ],
 
         'textbooks' => [

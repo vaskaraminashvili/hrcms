@@ -41,6 +41,16 @@ class EmployeePolicy
         return $authUser->can('Update:Employee');
     }
 
+    public function importPersonalFile(AuthUser $authUser, Employee $employee): bool
+    {
+        if ($authUser->can('Update:Employee')) {
+            return true;
+        }
+
+        return $authUser->hasRole('employee')
+            && (int) $employee->user_id === (int) $authUser->getAuthIdentifier();
+    }
+
     public function delete(AuthUser $authUser, Employee $employee): bool
     {
         return $authUser->can('Delete:Employee');

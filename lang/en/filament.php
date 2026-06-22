@@ -438,6 +438,8 @@ return [
             'import_submit' => 'Import',
             'import_file_label' => 'Excel file',
             'import_success' => 'Publications imported successfully.',
+            'import_invalid_structure' => 'Invalid Excel file structure',
+            'import_invalid_structure_body' => 'The uploaded file does not match the export template. Please download the template and use the same column layout (Year, Title, Authors, Venue).',
         ],
 
         'textbooks' => [
