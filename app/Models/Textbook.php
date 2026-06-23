@@ -19,6 +19,7 @@ class Textbook extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'publisher',
         'published_at',
@@ -34,7 +35,6 @@ class Textbook extends Model implements HasMedia
             'title' => 'array',
             'publisher' => 'array',
             'co_authors' => 'array',
-            'published_at' => 'date',
             'page_count' => 'integer',
         ];
     }

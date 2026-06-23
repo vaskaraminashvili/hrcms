@@ -19,6 +19,7 @@ class ScientificForum extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'held_at',
         'start_date',

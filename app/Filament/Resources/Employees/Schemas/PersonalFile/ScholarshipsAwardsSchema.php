@@ -5,8 +5,8 @@ namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\ScholarshipsAwardsImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Support\Icons\Heroicon;
@@ -82,7 +82,7 @@ class ScholarshipsAwardsSchema
             static::translatableField('title', __('filament.personal_file.scholarships_awards.title')),
             static::translatableField('issuer', __('filament.personal_file.scholarships_awards.issuer')),
             static::translatableField('grant_details', __('filament.personal_file.scholarships_awards.grant_details')),
-            DatePicker::make('issued_at')->label(__('filament.personal_file.dates.issued_at')),
+            TextInput::make('issued_at')->label(__('filament.personal_file.dates.issued_at')),
         ];
     }
 }

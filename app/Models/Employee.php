@@ -82,67 +82,67 @@ class Employee extends Model implements HasMedia
 
     public function academicPositions(): HasMany
     {
-        return $this->hasMany(AcademicPosition::class);
+        return $this->hasMany(AcademicPosition::class)->orderBy('sort');
     }
 
     public function educations(): HasMany
     {
-        return $this->hasMany(Education::class);
+        return $this->hasMany(Education::class)->orderBy('sort');
     }
 
     public function academicDegrees(): HasMany
     {
-        return $this->hasMany(AcademicDegree::class);
+        return $this->hasMany(AcademicDegree::class)->orderBy('sort');
     }
 
     public function workExperiences(): HasMany
     {
-        return $this->hasMany(WorkExperience::class);
+        return $this->hasMany(WorkExperience::class)->orderBy('sort');
     }
 
     public function scientificProjects(): HasMany
     {
-        return $this->hasMany(ScientificProject::class);
+        return $this->hasMany(ScientificProject::class)->orderBy('sort');
     }
 
     public function trainingsSeminars(): HasMany
     {
-        return $this->hasMany(TrainingSeminar::class);
+        return $this->hasMany(TrainingSeminar::class)->orderBy('sort');
     }
 
     public function publications(): HasMany
     {
-        return $this->hasMany(Publication::class);
+        return $this->hasMany(Publication::class)->orderBy('sort');
     }
 
     public function textbooks(): HasMany
     {
-        return $this->hasMany(Textbook::class);
+        return $this->hasMany(Textbook::class)->orderBy('sort');
     }
 
     public function scientificForums(): HasMany
     {
-        return $this->hasMany(ScientificForum::class);
+        return $this->hasMany(ScientificForum::class)->orderBy('sort');
     }
 
     public function scholarshipsAwards(): HasMany
     {
-        return $this->hasMany(ScholarshipAward::class);
+        return $this->hasMany(ScholarshipAward::class)->orderBy('sort');
     }
 
     public function foreignLanguages(): HasMany
     {
-        return $this->hasMany(ForeignLanguage::class);
+        return $this->hasMany(ForeignLanguage::class)->orderBy('sort');
     }
 
     public function computerSkills(): HasMany
     {
-        return $this->hasMany(ComputerSkill::class);
+        return $this->hasMany(ComputerSkill::class)->orderBy('sort');
     }
 
     public function other(): HasMany
     {
-        return $this->hasMany(OtherDocument::class);
+        return $this->hasMany(OtherDocument::class)->orderBy('sort');
     }
 
     public function getActivitylogOptions(): LogOptions

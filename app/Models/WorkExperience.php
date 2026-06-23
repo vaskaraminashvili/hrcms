@@ -19,6 +19,7 @@ class WorkExperience extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'institution',
         'position',
         'started_at',
