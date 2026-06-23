@@ -19,6 +19,7 @@ class ScholarshipAward extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'issuer',
         'issued_at',

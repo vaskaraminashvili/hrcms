@@ -19,6 +19,7 @@ class TrainingSeminar extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'institution',
         'topic',
         'started_at',

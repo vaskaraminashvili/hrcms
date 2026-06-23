@@ -19,6 +19,7 @@ class ForeignLanguage extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'language',
         'level',
     ];

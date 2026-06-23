@@ -21,6 +21,7 @@ class OtherDocument extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
     ];
 

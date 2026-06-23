@@ -148,7 +148,7 @@ class EmployeeForm
                                         ->schema($schemaClass::schema())
                                         ->collapsed()
                                         ->collapsible()
-                                        ->reorderable()
+                                        ->orderColumn('sort')
                                         ->columnSpanFull()
                                         ->afterLabel([
                                             Action::make('add_repeater_item_'.$case->value)

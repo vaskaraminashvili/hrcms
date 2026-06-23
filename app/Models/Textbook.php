@@ -19,6 +19,7 @@ class Textbook extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'publisher',
         'published_at',

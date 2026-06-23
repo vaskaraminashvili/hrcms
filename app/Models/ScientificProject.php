@@ -19,6 +19,7 @@ class ScientificProject extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'project_name',
         'institution',
         'position',
