@@ -446,7 +446,13 @@ class EmployeeCvService
             return null;
         }
 
-        return AcademicPositionEnum::tryFrom($title)?->getLabel() ?? $title;
+        $enum = AcademicPositionEnum::tryFrom($title);
+
+        if ($enum !== null) {
+            return __('cv.academic_positions.'.strtolower($enum->value));
+        }
+
+        return $title;
     }
 
     private function languageProficiencyLabel(?string $level): ?string
@@ -482,12 +488,10 @@ class EmployeeCvService
         if ($locale === CvLocale::English) {
             $parts = array_filter([
                 $details['en_address_physical'] ?? null,
-                $details['en_address_jurisdiction'] ?? null,
             ]);
         } else {
             $parts = array_filter([
                 $details['address_physical'] ?? null,
-                $details['address_jurisdiction'] ?? null,
             ]);
         }
 
@@ -495,8 +499,6 @@ class EmployeeCvService
             $parts = array_filter([
                 $details['address_physical'] ?? null,
                 $details['address_jurisdiction'] ?? null,
-                $details['en_address_physical'] ?? null,
-                $details['en_address_jurisdiction'] ?? null,
             ]);
         }
 
@@ -528,10 +530,14 @@ class EmployeeCvService
         if ($enum === AcademicDegreeEnum::OTHER) {
             $custom = $this->translatable($degree->other, $localeKey);
 
-            return $custom ?? $enum->getLabel();
+            return $custom ?? __('cv.academic_degrees.other');
         }
 
-        return $enum?->getLabel() ?? (string) $degree->degree;
+        if ($enum !== null) {
+            return __('cv.academic_degrees.'.strtolower($enum->value));
+        }
+
+        return (string) $degree->degree;
     }
 
     private function employeeQualificationLabel(Employee $employee, CvLocale $locale): ?string
@@ -592,7 +598,12 @@ class EmployeeCvService
         }
 
         if ($date instanceof Carbon) {
-            return $date->format('Y-m-d');
+
+            return $date->format('d.m.Y');
+        } else {
+            $date = Carbon::parse($date);
+
+            return $date->format('d.m.Y');
         }
 
         return (string) $date;
@@ -600,8 +611,8 @@ class EmployeeCvService
 
     private function formatPeriod(mixed $startedAt, mixed $endedAt): string
     {
-        $start = $this->formatDate($startedAt) ?? '0000-00-00';
-        $end = $this->formatDate($endedAt) ?? '0000-00-00';
+        $start = $this->formatDate($startedAt) ?? '';
+        $end = $this->formatDate($endedAt) ?? '';
 
         return "{$start} - {$end}";
     }

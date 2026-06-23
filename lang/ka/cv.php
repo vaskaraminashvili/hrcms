@@ -11,7 +11,7 @@ return [
     'birth_date' => 'დაბადების თარიღი',
     'gender_label' => 'სქესი',
     'academic_qualification' => 'აკადემიური ხარისხი',
-    'degree_title' => 'წოდება',
+    'degree_title' => 'ხარისხი',
     'degree_awarded_at' => 'მინიჭების თარიღი',
     'education' => 'განათლება',
     'country' => 'ქვეყ.',
@@ -37,5 +37,16 @@ return [
         'female_ka' => 'ქალი',
         'male_en' => 'Male',
         'female_en' => 'Female',
+    ],
+    'academic_degrees' => [
+        'doctor' => 'დოქტორი',
+        'magister' => 'მაგისტრი',
+        'other' => 'სხვა',
+    ],
+
+    'academic_positions' => [
+        'assistant' => 'ასისტენტ პროფესორი',
+        'associated' => 'ასოცირებული პროფესორი',
+        'professor' => 'პროფესორი',
     ],
 ];
