@@ -253,7 +253,7 @@ class EmployeeCvService
                 $this->field(__('filament.personal_file.textbooks.title'), $this->translatable($textbook->title, $this->localeKey)),
                 $this->field(__('filament.personal_file.textbooks.publisher'), $this->translatable($textbook->publisher, $this->localeKey)),
                 $this->field(__('filament.personal_file.textbooks.co_authors'), $this->translatable($textbook->co_authors, $this->localeKey)),
-                $this->field(__('filament.personal_file.dates.published_at'), $this->formatDate($textbook->published_at)),
+                $this->field(__('filament.personal_file.dates.published_at'), $textbook->published_at),
                 $this->field(__('filament.personal_file.page_count'), $textbook->page_count !== null ? (string) $textbook->page_count : null),
             ]))
             ->filter(fn (array $entry): bool => $entry['fields'] !== [])
@@ -291,7 +291,7 @@ class EmployeeCvService
     {
         $entries = $employee->scholarshipsAwards
             ->map(fn (ScholarshipAward $award): array => $this->entry([
-                $this->field(__('cv.date'), $this->formatDate($award->issued_at), alwaysShow: true),
+                $this->field(__('cv.date'), $award->issued_at, alwaysShow: true),
                 $this->field(__('cv.scholarship_title'), $this->translatable($award->title, $this->localeKey)),
                 $this->field(__('filament.personal_file.scholarships_awards.issuer'), $this->translatable($award->issuer, $this->localeKey), alwaysShow: true),
                 $this->field(__('filament.personal_file.scholarships_awards.grant_details'), $this->grantDetails($award)),

@@ -35,7 +35,6 @@ class Textbook extends Model implements HasMedia
             'title' => 'array',
             'publisher' => 'array',
             'co_authors' => 'array',
-            'published_at' => 'date',
             'page_count' => 'integer',
         ];
     }

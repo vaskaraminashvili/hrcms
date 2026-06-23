@@ -28,7 +28,7 @@ class TextbooksImport implements ToModel, WithHeadingRow
             'title' => $this->translatable($title),
             'publisher' => $this->optionalTranslatable($row['publisher'] ?? null),
             'co_authors' => $this->optionalTranslatable($row['co_authors'] ?? null),
-            'published_at' => $this->optionalDate($row['published_at'] ?? null),
+            'published_at' => $this->string($row['published_at'] ?? null) ?: null,
             'page_count' => $this->optionalInteger($row['page_count'] ?? null),
         ]);
     }
