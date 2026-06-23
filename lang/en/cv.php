@@ -38,4 +38,16 @@ return [
         'male_en' => 'Male',
         'female_en' => 'Female',
     ],
+
+    'academic_degrees' => [
+        'doctor' => 'Doctor',
+        'magister' => 'Magister',
+        'other' => 'Other',
+    ],
+
+    'academic_positions' => [
+        'assistant' => 'Assistant Professor',
+        'associated' => 'Associate Professor',
+        'professor' => 'Professor',
+    ],
 ];
