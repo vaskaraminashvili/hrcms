@@ -428,7 +428,16 @@
                         {{ $contact['email'] }}
                     </div>
                 @endif
-
+                @if ($country)
+                    <div class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="10" r="3" />
+                            <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 14 8 14s8-8.75 8-14a8 8 0 0 0-8-8z" />
+                        </svg>
+                        {{ $country }}
+                    </div>
+                @endif
                 @if ($contact['address'])
                     <div class="contact-item">
                         <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -439,6 +448,7 @@
                         {{ $contact['address'] }}
                     </div>
                 @endif
+
                 <div class="sidebar-watermark-container">
                     <img class="sidebar-watermark" src="{{ $assets['logo'] }}" onerror="this.style.display='none'"
                         alt="" aria-hidden="true">

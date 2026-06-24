@@ -51,7 +51,16 @@ class EmployeesTable
                     })
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(['name_eng', 'surrname_eng']),
-
+                TextColumn::make('mobile_number')
+                    ->label(__('filament.mobile_number_placeholder'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->mobile_number;
+                    })
+                    ->color('info')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
+                    ->searchable(),
                 TextColumn::make('personal_number')
                     ->badge()
                     ->label(__('filament.personal_number_short'))
