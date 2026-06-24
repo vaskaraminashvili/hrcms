@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Models\Employee;
 use App\Support\DepartmentBadgeColors;
 use Filament\Actions\BulkActionGroup;
@@ -182,6 +183,8 @@ class EmployeesTable
                     }),
             ])
             ->recordActions([
+                ResetEmployeeUserPasswordAction::make()
+                    ->visible(fn (Employee $record): bool => ResetEmployeeUserPasswordAction::canReset($record)),
                 EditAction::make()
                     ->label(''),
                 // when on tab deleted show restore action only
