@@ -65,6 +65,7 @@ class EmployeeCvService
                 'address' => $this->formatAddress($employee, $locale),
             ],
             'birthDate' => $this->formatDate($employee->birth_date),
+            'country' => $employee->citizenship,
             'gender' => $this->genderLabel($employee->gender, $locale),
             'sections' => $this->buildSections($employee, $locale),
             'assets' => [
@@ -133,11 +134,8 @@ class EmployeeCvService
         $entries = $employee->educations
             ->map(function (Education $education) use ($employee, $locale): array {
                 $periodLine = $this->formatPeriod($education->started_at, $education->ended_at);
-                $country = $employee->citizenship;
 
-                $header = $country !== null && $country !== ''
-                    ? "{$periodLine} &nbsp; ".__('cv.country').': '.$country
-                    : $periodLine;
+                $header = $periodLine;
 
                 return $this->entry([
                     $this->field(null, $header),
