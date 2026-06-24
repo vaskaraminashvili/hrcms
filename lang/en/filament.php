@@ -283,6 +283,11 @@ return [
         ],
         'edit_employee' => [
             'title' => 'Edit employee',
+            'reset_password' => 'Reset password',
+            'reset_password_modal_heading' => 'Reset employee password?',
+            'reset_password_modal_description' => 'This will reset the employee\'s login password to the default and require them to set a new password on next sign-in.',
+            'reset_password_success' => 'Password reset successfully.',
+            'reset_password_no_user' => 'This employee does not have a user account.',
         ],
         'view_employee' => [
             'title' => 'View employee',

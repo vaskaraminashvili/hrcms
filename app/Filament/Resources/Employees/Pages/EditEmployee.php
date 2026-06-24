@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Pages;
 
 use App\Enums\PersonalFile;
+use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Filament\Resources\Employees\EmployeeResource;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -68,6 +69,11 @@ class EditEmployee extends EditRecord
                 ->label(__('cv.actions.generate'))
                 ->color('primary')
                 ->icon('heroicon-m-document-text'),
+            ResetEmployeeUserPasswordAction::make()
+                ->visible(fn (): bool => ResetEmployeeUserPasswordAction::canReset($this->getRecord()))
+                ->action(function (): void {
+                    ResetEmployeeUserPasswordAction::reset($this->getRecord());
+                }),
         ];
     }
 
