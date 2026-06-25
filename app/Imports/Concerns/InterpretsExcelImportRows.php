@@ -32,6 +32,40 @@ trait InterpretsExcelImportRows
         return $s !== '' ? $this->translatable($s) : null;
     }
 
+    /**
+     * @return array{ka: string, en: string}
+     */
+    protected function translatableFromKaEn(string $ka, string $en): array
+    {
+        return [
+            'ka' => $ka !== '' ? $ka : $en,
+            'en' => $en !== '' ? $en : $ka,
+        ];
+    }
+
+    /**
+     * @return array{ka: string, en: string}|null
+     */
+    protected function optionalTranslatableFromRow(array $row, string $base): ?array
+    {
+        $ka = $this->string($row["{$base}_ka"] ?? null);
+        $en = $this->string($row["{$base}_en"] ?? null);
+
+        if ($ka === '' && $en === '') {
+            return null;
+        }
+
+        return $this->translatableFromKaEn($ka, $en);
+    }
+
+    /**
+     * @return array{ka: string, en: string}|null
+     */
+    protected function requiredTranslatableFromRow(array $row, string $base): ?array
+    {
+        return $this->optionalTranslatableFromRow($row, $base);
+    }
+
     protected function optionalDate(mixed $value): ?string
     {
         if ($value === null || $value === '') {

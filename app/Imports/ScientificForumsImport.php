@@ -17,17 +17,18 @@ class ScientificForumsImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?ScientificForum
     {
-        $title = $this->string($row['title'] ?? null);
+        $title = $this->requiredTranslatableFromRow($row, 'title');
 
-        if ($title === '') {
+        if ($title === null) {
             return null;
         }
 
         return new ScientificForum([
             'employee_id' => $this->employeeId,
-            'title' => $this->translatable($title),
-            'participation_form' => $this->optionalTranslatable($row['participation_form'] ?? null),
-            'held_at' => $this->optionalDate($row['held_at'] ?? null),
+            'title' => $title,
+            'participation_form' => $this->optionalTranslatableFromRow($row, 'participation_form'),
+            'start_date' => $this->optionalDate($row['start_date'] ?? null),
+            'end_date' => $this->optionalDate($row['end_date'] ?? null),
         ]);
     }
 }
