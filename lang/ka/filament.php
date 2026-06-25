@@ -343,6 +343,11 @@ return [
         ],
         'edit_employee' => [
             'title' => 'თანამშრომლის რედაქტირება',
+            'reset_password' => 'პაროლის გადატვირთვა',
+            'reset_password_modal_heading' => 'გსურთ თანამშრომლის პაროლის გადატვირთვა?',
+            'reset_password_modal_description' => 'ეს გადააყენებს თანამშრომლის შესვლის პაროლს საწყის მნიშვნელობაზე და შემდეგი შესვლისას ახალი პაროლის დაყენებას მოითხოვს.',
+            'reset_password_success' => 'პაროლი წარმატებით გადაიტვირთა.',
+            'reset_password_no_user' => 'ამ თანამშრომელს მომხმარებლის ანგარიში არ აქვს.',
         ],
         'view_employee' => [
             'title' => 'თანამშრომლის ნახვა',
@@ -450,12 +455,24 @@ return [
             'project_name' => 'პროექტის სახელწოდება',
             'institution' => 'დაწესებულება',
             'position' => 'თანამდებობა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სამეცნიერო პროექტების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სამეცნიერო პროექტები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'education' => [
             'institution' => 'დაწესებულება',
             'program' => 'პროგრამა',
             'specialty' => 'სპეციალობა',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'განათლების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'განათლების ჩანაწერები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'work_experience' => [
@@ -498,6 +515,12 @@ return [
             'title' => 'სახელწოდება',
             'publisher' => 'გამომცემელი',
             'co_authors' => 'თანაავტორები',
+            'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'import' => 'იმპორტი Excel-იდან',
+            'import_modal_heading' => 'სახელმძღვანელოების იმპორტი',
+            'import_submit' => 'იმპორტი',
+            'import_file_label' => 'Excel ფაილი',
+            'import_success' => 'სახელმძღვანელოები წარმატებით იქნა იმპორტირებული.',
         ],
 
         'scientific_forums' => [

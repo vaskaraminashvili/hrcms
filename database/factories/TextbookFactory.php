@@ -19,13 +19,13 @@ class TextbookFactory extends Factory
                 'en' => $this->faker->sentence(4),
             ],
             'publisher' => [
-                'ka' => $this->faker->company() . ' გამომცემლობა',
-                'en' => $this->faker->company() . ' Publishing',
+                'ka' => $this->faker->company().' გამომცემლობა',
+                'en' => $this->faker->company().' Publishing',
             ],
-            'published_at' => $this->faker->dateTimeBetween('-15 years', 'now'),
+            'published_at' => $this->faker->date('Y-m-d'),
             'co_authors' => [
-                'ka' => $this->faker->name() . ', ' . $this->faker->name(),
-                'en' => $this->faker->name() . ', ' . $this->faker->name(),
+                'ka' => $this->faker->name().', '.$this->faker->name(),
+                'en' => $this->faker->name().', '.$this->faker->name(),
             ],
             'page_count' => $this->faker->numberBetween(50, 500),
         ];

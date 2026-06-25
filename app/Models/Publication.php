@@ -19,6 +19,7 @@ class Publication extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'place',
         'published_at',

@@ -19,6 +19,7 @@ class ScholarshipAward extends Model implements HasMedia
 
     protected $fillable = [
         'employee_id',
+        'sort',
         'title',
         'issuer',
         'issued_at',
@@ -31,7 +32,6 @@ class ScholarshipAward extends Model implements HasMedia
         return [
             'title' => 'array',
             'issuer' => 'array',
-            'issued_at' => 'date',
         ];
     }
 

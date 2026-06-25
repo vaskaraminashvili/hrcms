@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Models\Employee;
 use App\Support\DepartmentBadgeColors;
 use Filament\Actions\BulkActionGroup;
@@ -50,7 +51,16 @@ class EmployeesTable
                     })
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(['name_eng', 'surrname_eng']),
-
+                TextColumn::make('mobile_number')
+                    ->label(__('filament.mobile_number_placeholder'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->mobile_number;
+                    })
+                    ->color('info')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
+                    ->searchable(),
                 TextColumn::make('personal_number')
                     ->badge()
                     ->label(__('filament.personal_number_short'))
@@ -182,6 +192,8 @@ class EmployeesTable
                     }),
             ])
             ->recordActions([
+                ResetEmployeeUserPasswordAction::make()
+                    ->visible(fn (Employee $record): bool => ResetEmployeeUserPasswordAction::canReset($record)),
                 EditAction::make()
                     ->label(''),
                 // when on tab deleted show restore action only

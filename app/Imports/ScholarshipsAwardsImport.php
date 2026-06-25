@@ -28,7 +28,7 @@ class ScholarshipsAwardsImport implements ToModel, WithHeadingRow
             'title' => $this->translatable($title),
             'grant_details' => $this->translatable($grantDetails),
             'issuer' => $this->optionalTranslatable($row['issuer'] ?? null),
-            'issued_at' => $this->optionalDate($row['issued_at'] ?? null),
+            'issued_at' => $this->string($row['issued_at'] ?? null) ?: null,
         ]);
     }
 }

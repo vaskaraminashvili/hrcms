@@ -15,14 +15,14 @@ class ScholarshipAwardFactory extends Factory
         return [
             'employee_id' => Employee::factory(),
             'title' => [
-                'ka' => $this->faker->bs() . ' სტიპენდია',
-                'en' => $this->faker->bs() . ' Scholarship',
+                'ka' => $this->faker->bs().' სტიპენდია',
+                'en' => $this->faker->bs().' Scholarship',
             ],
             'issuer' => [
-                'ka' => $this->faker->company() . ' ფონდი',
-                'en' => $this->faker->company() . ' Foundation',
+                'ka' => $this->faker->company().' ფონდი',
+                'en' => $this->faker->company().' Foundation',
             ],
-            'issued_at' => $this->faker->dateTimeBetween('-10 years', 'now'),
+            'issued_at' => $this->faker->date('Y-m-d'),
         ];
     }
 }

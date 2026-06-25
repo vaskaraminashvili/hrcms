@@ -7,7 +7,6 @@ use App\Enums\AcademicPosition as AcademicPositionEnum;
 use App\Enums\CvLocale;
 use App\Enums\Education as EducationDegreeEnum;
 use App\Enums\Gender;
-use App\Enums\LanguageProficiency;
 use App\Enums\PersonalFile;
 use App\Models\AcademicDegree;
 use App\Models\AcademicPosition;
@@ -65,6 +64,7 @@ class EmployeeCvService
                 'address' => $this->formatAddress($employee, $locale),
             ],
             'birthDate' => $this->formatDate($employee->birth_date),
+            'country' => __('cv.countries.'.strtolower($employee->citizenship)),
             'gender' => $this->genderLabel($employee->gender, $locale),
             'sections' => $this->buildSections($employee, $locale),
             'assets' => [
@@ -131,19 +131,15 @@ class EmployeeCvService
     private function educationSection(Employee $employee, CvLocale $locale): ?array
     {
         $entries = $employee->educations
-            ->map(function (Education $education) use ($employee, $locale): array {
+            ->map(function (Education $education): array {
                 $periodLine = $this->formatPeriod($education->started_at, $education->ended_at);
-                $country = $employee->citizenship;
 
-                $header = $country !== null && $country !== ''
-                    ? "{$periodLine} &nbsp; ".__('cv.country').': '.$country
-                    : $periodLine;
+                $header = $periodLine;
 
                 return $this->entry([
                     $this->field(null, $header),
                     $this->field(__('cv.faculty'), $this->translatable($education->program, $this->localeKey)),
                     $this->field(__('cv.specialty'), $this->translatable($education->specialty, $this->localeKey)),
-                    $this->field(__('cv.qualification'), $this->employeeQualificationLabel($employee, $locale)),
                     $this->field(__('filament.personal_file.education.institution'), $this->translatable($education->institution, $this->localeKey)),
                 ]);
             })
@@ -253,7 +249,7 @@ class EmployeeCvService
                 $this->field(__('filament.personal_file.textbooks.title'), $this->translatable($textbook->title, $this->localeKey)),
                 $this->field(__('filament.personal_file.textbooks.publisher'), $this->translatable($textbook->publisher, $this->localeKey)),
                 $this->field(__('filament.personal_file.textbooks.co_authors'), $this->translatable($textbook->co_authors, $this->localeKey)),
-                $this->field(__('filament.personal_file.dates.published_at'), $this->formatDate($textbook->published_at)),
+                $this->field(__('filament.personal_file.dates.published_at'), $textbook->published_at),
                 $this->field(__('filament.personal_file.page_count'), $textbook->page_count !== null ? (string) $textbook->page_count : null),
             ]))
             ->filter(fn (array $entry): bool => $entry['fields'] !== [])
@@ -291,7 +287,7 @@ class EmployeeCvService
     {
         $entries = $employee->scholarshipsAwards
             ->map(fn (ScholarshipAward $award): array => $this->entry([
-                $this->field(__('cv.date'), $this->formatDate($award->issued_at), alwaysShow: true),
+                $this->field(__('cv.date'), $award->issued_at, alwaysShow: true),
                 $this->field(__('cv.scholarship_title'), $this->translatable($award->title, $this->localeKey)),
                 $this->field(__('filament.personal_file.scholarships_awards.issuer'), $this->translatable($award->issuer, $this->localeKey), alwaysShow: true),
                 $this->field(__('filament.personal_file.scholarships_awards.grant_details'), $this->grantDetails($award)),
@@ -308,7 +304,7 @@ class EmployeeCvService
     {
         $entries = $employee->foreignLanguages
             ->map(fn (ForeignLanguage $language): array => $this->entry([
-                $this->field(__('filament.personal_file.foreign_languages.language'), $language->language),
+                $this->field(__('filament.personal_file.foreign_languages.language'), $this->languageLabel($language)),
                 $this->field(__('filament.personal_file.foreign_languages.level'), $this->languageProficiencyLabel($language->level)),
             ]))
             ->filter(fn (array $entry): bool => $entry['fields'] !== [])
@@ -446,7 +442,13 @@ class EmployeeCvService
             return null;
         }
 
-        return AcademicPositionEnum::tryFrom($title)?->getLabel() ?? $title;
+        $enum = AcademicPositionEnum::tryFrom($title);
+
+        if ($enum !== null) {
+            return __('cv.academic_positions.'.strtolower($enum->value));
+        }
+
+        return $title;
     }
 
     private function languageProficiencyLabel(?string $level): ?string
@@ -455,7 +457,60 @@ class EmployeeCvService
             return null;
         }
 
-        return LanguageProficiency::tryFrom($level)?->getDisplayLabel() ?? $level;
+        return __('cv.language_proficiencies.'.strtolower($level));
+    }
+
+    private function languageLabel(ForeignLanguage $foreignLanguage): ?string
+    {
+        $raw = $foreignLanguage->getAttributes()['language'] ?? null;
+
+        if ($raw === null) {
+            return null;
+        }
+
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+
+            if (is_array($decoded)) {
+                $raw = $decoded;
+            }
+        }
+
+        if (is_array($raw)) {
+            $label = $this->translatable($raw, $this->localeKey);
+        } else {
+            $label = trim((string) $raw);
+        }
+
+        if ($label === null || $label === '') {
+            return null;
+        }
+
+        if ($this->localeKey === 'en') {
+            return $this->translateLanguageNameToEnglish($label);
+        }
+
+        return $label;
+    }
+
+    private function translateLanguageNameToEnglish(string $name): string
+    {
+        $trimmed = trim($name);
+
+        /** @var array<string, string> $map */
+        $map = __('cv.languages');
+
+        if (isset($map[$trimmed])) {
+            return $map[$trimmed];
+        }
+
+        foreach ($map as $english) {
+            if (strcasecmp($english, $trimmed) === 0) {
+                return $english;
+            }
+        }
+
+        return $trimmed;
     }
 
     private function fullName(Employee $employee, CvLocale $locale): string
@@ -482,12 +537,10 @@ class EmployeeCvService
         if ($locale === CvLocale::English) {
             $parts = array_filter([
                 $details['en_address_physical'] ?? null,
-                $details['en_address_jurisdiction'] ?? null,
             ]);
         } else {
             $parts = array_filter([
                 $details['address_physical'] ?? null,
-                $details['address_jurisdiction'] ?? null,
             ]);
         }
 
@@ -495,8 +548,6 @@ class EmployeeCvService
             $parts = array_filter([
                 $details['address_physical'] ?? null,
                 $details['address_jurisdiction'] ?? null,
-                $details['en_address_physical'] ?? null,
-                $details['en_address_jurisdiction'] ?? null,
             ]);
         }
 
@@ -528,10 +579,14 @@ class EmployeeCvService
         if ($enum === AcademicDegreeEnum::OTHER) {
             $custom = $this->translatable($degree->other, $localeKey);
 
-            return $custom ?? $enum->getLabel();
+            return $custom ?? __('cv.academic_degrees.other');
         }
 
-        return $enum?->getLabel() ?? (string) $degree->degree;
+        if ($enum !== null) {
+            return __('cv.academic_degrees.'.strtolower($enum->value));
+        }
+
+        return (string) $degree->degree;
     }
 
     private function employeeQualificationLabel(Employee $employee, CvLocale $locale): ?string
@@ -592,7 +647,12 @@ class EmployeeCvService
         }
 
         if ($date instanceof Carbon) {
-            return $date->format('Y-m-d');
+
+            return $date->format('d.m.Y');
+        } else {
+            $date = Carbon::parse($date);
+
+            return $date->format('d.m.Y');
         }
 
         return (string) $date;
@@ -600,8 +660,8 @@ class EmployeeCvService
 
     private function formatPeriod(mixed $startedAt, mixed $endedAt): string
     {
-        $start = $this->formatDate($startedAt) ?? '0000-00-00';
-        $end = $this->formatDate($endedAt) ?? '0000-00-00';
+        $start = $this->formatDate($startedAt) ?? '';
+        $end = $this->formatDate($endedAt) ?? '';
 
         return "{$start} - {$end}";
     }

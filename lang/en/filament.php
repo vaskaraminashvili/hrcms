@@ -283,6 +283,11 @@ return [
         ],
         'edit_employee' => [
             'title' => 'Edit employee',
+            'reset_password' => 'Reset password',
+            'reset_password_modal_heading' => 'Reset employee password?',
+            'reset_password_modal_description' => 'This will reset the employee\'s login password to the default and require them to set a new password on next sign-in.',
+            'reset_password_success' => 'Password reset successfully.',
+            'reset_password_no_user' => 'This employee does not have a user account.',
         ],
         'view_employee' => [
             'title' => 'View employee',
@@ -386,12 +391,24 @@ return [
             'project_name' => 'Project name',
             'institution' => 'Institution',
             'position' => 'Position',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import scientific projects',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Scientific projects imported successfully.',
         ],
 
         'education' => [
             'institution' => 'Institution',
             'program' => 'Program',
             'specialty' => 'Specialty',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import education',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Education records imported successfully.',
         ],
 
         'work_experience' => [
@@ -434,6 +451,12 @@ return [
             'title' => 'Title',
             'publisher' => 'Publisher',
             'co_authors' => 'Co-authors',
+            'download_template' => 'Download Excel template',
+            'import' => 'Import from Excel',
+            'import_modal_heading' => 'Import textbooks',
+            'import_submit' => 'Import',
+            'import_file_label' => 'Excel file',
+            'import_success' => 'Textbooks imported successfully.',
         ],
 
         'scientific_forums' => [
