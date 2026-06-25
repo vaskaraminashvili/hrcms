@@ -64,7 +64,7 @@ class EmployeeCvService
                 'address' => $this->formatAddress($employee, $locale),
             ],
             'birthDate' => $this->formatDate($employee->birth_date),
-            'country' => __('cv.countries.'.strtolower($employee->citizenship)),
+            'country' => __('cv.citizenship.'.strtolower($employee->citizenship)),
             'gender' => $this->genderLabel($employee->gender, $locale),
             'sections' => $this->buildSections($employee, $locale),
             'assets' => [

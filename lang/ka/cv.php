@@ -49,6 +49,17 @@ return [
         'associated' => 'ასოცირებული პროფესორი',
         'professor' => 'პროფესორი',
     ],
+    'citizenship' => [
+        'ქართველი' => 'Georgian',
+        'სომეხი' => 'Armenian',
+        'აზერბაიჯანელი' => 'Azerbaijani',
+        'ბელარუსი' => 'Belarusian',
+        'ბულგარელი' => 'Bulgarian',
+        'ჩინელი' => 'Chinese',
+        'კვიპროსელი' => 'Cypriot',
+        'ჩეხი' => 'Czech',
+        'დანიელი' => 'Danish',
+    ],
     'countries' => [
         'საქართველო' => 'საქართველო',
         'სომხეთი' => 'სომხეთი',
