@@ -7,7 +7,6 @@ use App\Enums\AcademicPosition as AcademicPositionEnum;
 use App\Enums\CvLocale;
 use App\Enums\Education as EducationDegreeEnum;
 use App\Enums\Gender;
-use App\Enums\LanguageProficiency;
 use App\Enums\PersonalFile;
 use App\Models\AcademicDegree;
 use App\Models\AcademicPosition;
@@ -65,7 +64,7 @@ class EmployeeCvService
                 'address' => $this->formatAddress($employee, $locale),
             ],
             'birthDate' => $this->formatDate($employee->birth_date),
-            'country' => $employee->citizenship,
+            'country' => __('cv.countries.'.strtolower($employee->citizenship)),
             'gender' => $this->genderLabel($employee->gender, $locale),
             'sections' => $this->buildSections($employee, $locale),
             'assets' => [
@@ -132,7 +131,7 @@ class EmployeeCvService
     private function educationSection(Employee $employee, CvLocale $locale): ?array
     {
         $entries = $employee->educations
-            ->map(function (Education $education) use ($employee, $locale): array {
+            ->map(function (Education $education): array {
                 $periodLine = $this->formatPeriod($education->started_at, $education->ended_at);
 
                 $header = $periodLine;
@@ -141,7 +140,6 @@ class EmployeeCvService
                     $this->field(null, $header),
                     $this->field(__('cv.faculty'), $this->translatable($education->program, $this->localeKey)),
                     $this->field(__('cv.specialty'), $this->translatable($education->specialty, $this->localeKey)),
-                    $this->field(__('cv.qualification'), $this->employeeQualificationLabel($employee, $locale)),
                     $this->field(__('filament.personal_file.education.institution'), $this->translatable($education->institution, $this->localeKey)),
                 ]);
             })
@@ -306,7 +304,7 @@ class EmployeeCvService
     {
         $entries = $employee->foreignLanguages
             ->map(fn (ForeignLanguage $language): array => $this->entry([
-                $this->field(__('filament.personal_file.foreign_languages.language'), $language->language),
+                $this->field(__('filament.personal_file.foreign_languages.language'), $this->languageLabel($language)),
                 $this->field(__('filament.personal_file.foreign_languages.level'), $this->languageProficiencyLabel($language->level)),
             ]))
             ->filter(fn (array $entry): bool => $entry['fields'] !== [])
@@ -459,7 +457,60 @@ class EmployeeCvService
             return null;
         }
 
-        return LanguageProficiency::tryFrom($level)?->getDisplayLabel() ?? $level;
+        return __('cv.language_proficiencies.'.strtolower($level));
+    }
+
+    private function languageLabel(ForeignLanguage $foreignLanguage): ?string
+    {
+        $raw = $foreignLanguage->getAttributes()['language'] ?? null;
+
+        if ($raw === null) {
+            return null;
+        }
+
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+
+            if (is_array($decoded)) {
+                $raw = $decoded;
+            }
+        }
+
+        if (is_array($raw)) {
+            $label = $this->translatable($raw, $this->localeKey);
+        } else {
+            $label = trim((string) $raw);
+        }
+
+        if ($label === null || $label === '') {
+            return null;
+        }
+
+        if ($this->localeKey === 'en') {
+            return $this->translateLanguageNameToEnglish($label);
+        }
+
+        return $label;
+    }
+
+    private function translateLanguageNameToEnglish(string $name): string
+    {
+        $trimmed = trim($name);
+
+        /** @var array<string, string> $map */
+        $map = __('cv.languages');
+
+        if (isset($map[$trimmed])) {
+            return $map[$trimmed];
+        }
+
+        foreach ($map as $english) {
+            if (strcasecmp($english, $trimmed) === 0) {
+                return $english;
+            }
+        }
+
+        return $trimmed;
     }
 
     private function fullName(Employee $employee, CvLocale $locale): string

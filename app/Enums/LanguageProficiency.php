@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum LanguageProficiency: string
 {
+    case NATIVE = 'NATIVE';
     case A1 = 'A1';
     case A2 = 'A2';
     case B1 = 'B1';
@@ -14,6 +15,7 @@ enum LanguageProficiency: string
     public function getLabel(): string
     {
         return match ($this) {
+            self::NATIVE => 'მშობლიური',
             self::A1 => 'A1',
             self::A2 => 'A2',
             self::B1 => 'B1',
@@ -28,7 +30,7 @@ enum LanguageProficiency: string
      */
     public function getDisplayLabel(): string
     {
-        return "{$this->value}: {$this->getLabel()}";
+        return "{$this->getLabel()}";
     }
 
     public function getColor(): string
