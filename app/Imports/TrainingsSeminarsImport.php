@@ -17,18 +17,16 @@ class TrainingsSeminarsImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?TrainingSeminar
     {
-        $institution = $this->string($row['institution'] ?? null);
+        $institution = $this->requiredTranslatableFromRow($row, 'institution');
 
-        if ($institution === '') {
+        if ($institution === null) {
             return null;
         }
 
-        $topic = $this->optionalTranslatable($row['topic'] ?? null);
-
         return new TrainingSeminar([
             'employee_id' => $this->employeeId,
-            'institution' => $this->translatable($institution),
-            'topic' => $topic,
+            'institution' => $institution,
+            'topic' => $this->optionalTranslatableFromRow($row, 'topic'),
             'started_at' => $this->optionalDate($row['started_at'] ?? null),
             'ended_at' => $this->optionalDate($row['ended_at'] ?? null),
         ]);

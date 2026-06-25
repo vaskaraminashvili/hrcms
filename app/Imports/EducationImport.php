@@ -17,17 +17,17 @@ class EducationImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?Education
     {
-        $institution = $this->string($row['institution'] ?? null);
+        $institution = $this->requiredTranslatableFromRow($row, 'institution');
 
-        if ($institution === '') {
+        if ($institution === null) {
             return null;
         }
 
         return new Education([
             'employee_id' => $this->employeeId,
-            'institution' => $this->translatable($institution),
-            'program' => $this->optionalTranslatable($row['program'] ?? null),
-            'specialty' => $this->optionalTranslatable($row['specialty'] ?? null),
+            'institution' => $institution,
+            'program' => $this->optionalTranslatableFromRow($row, 'program'),
+            'specialty' => $this->optionalTranslatableFromRow($row, 'specialty'),
             'started_at' => $this->optionalDate($row['started_at'] ?? null),
             'ended_at' => $this->optionalDate($row['ended_at'] ?? null),
         ]);

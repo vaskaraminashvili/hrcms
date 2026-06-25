@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Imports\Concerns\InterpretsExcelImportRows;
 use App\Models\Publication;
 use Carbon\CarbonInterface;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -9,6 +10,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class PublicationsImport implements ToModel, WithHeadingRow
 {
+    use InterpretsExcelImportRows;
+
     public function __construct(
         private readonly int $employeeId,
     ) {}
@@ -16,40 +19,20 @@ class PublicationsImport implements ToModel, WithHeadingRow
     public function model(array $row): ?Publication
     {
         $year = $this->normalizeYear($row['year'] ?? null);
-        $title = $this->string($row['title'] ?? null);
+        $title = $this->requiredTranslatableFromRow($row, 'title');
 
-        if ($year === null || $title === '') {
+        if ($year === null || $title === null) {
             return null;
         }
 
-        $authors = $this->string($row['authors'] ?? null);
-        $venue = $this->string($row['venue'] ?? null);
-
         return new Publication([
             'employee_id' => $this->employeeId,
-            'title' => $this->translatable($title),
-            'place' => $venue !== '' ? $this->translatable($venue) : null,
-            'co_authors' => $authors !== '' ? $this->translatable($authors) : null,
+            'title' => $title,
+            'place' => $this->optionalTranslatableFromRow($row, 'venue'),
+            'co_authors' => $this->optionalTranslatableFromRow($row, 'authors'),
             'published_at' => $year,
             'page_count' => null,
         ]);
-    }
-
-    /**
-     * @return array{ka: string, en: string}
-     */
-    private function translatable(string $value): array
-    {
-        return ['ka' => $value, 'en' => $value];
-    }
-
-    private function string(mixed $value): string
-    {
-        if ($value === null) {
-            return '';
-        }
-
-        return trim((string) $value);
     }
 
     private function normalizeYear(mixed $value): ?int

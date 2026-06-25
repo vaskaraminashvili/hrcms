@@ -17,17 +17,17 @@ class ScientificProjectsImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?ScientificProject
     {
-        $projectName = $this->string($row['project_name'] ?? null);
+        $projectName = $this->requiredTranslatableFromRow($row, 'project_name');
 
-        if ($projectName === '') {
+        if ($projectName === null) {
             return null;
         }
 
         return new ScientificProject([
             'employee_id' => $this->employeeId,
-            'project_name' => $this->translatable($projectName),
-            'institution' => $this->optionalTranslatable($row['institution'] ?? null),
-            'position' => $this->optionalTranslatable($row['position'] ?? null),
+            'project_name' => $projectName,
+            'institution' => $this->optionalTranslatableFromRow($row, 'institution'),
+            'position' => $this->optionalTranslatableFromRow($row, 'position'),
             'started_at' => $this->optionalDate($row['started_at'] ?? null),
             'ended_at' => $this->optionalDate($row['ended_at'] ?? null),
         ]);
