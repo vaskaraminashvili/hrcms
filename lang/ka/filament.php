@@ -500,7 +500,7 @@ return [
         'publications' => [
             'title' => 'სახელწოდება',
             'place' => 'გამოქვეყნების ადგილი',
-            'co_authors' => 'თანაავტორები',
+            'co_authors' => 'ავტორები',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'პუბლიკაციების იმპორტი',
@@ -512,7 +512,7 @@ return [
         'textbooks' => [
             'title' => 'სახელწოდება',
             'publisher' => 'გამომცემელი',
-            'co_authors' => 'თანაავტორები',
+            'co_authors' => 'ავტორები',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სახელმძღვანელოების იმპორტი',
