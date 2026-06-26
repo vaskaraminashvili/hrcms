@@ -27,8 +27,9 @@ class Filters
             ->query(function (Builder $query, array $data): Builder {
 
                 return $query->when($data['value'], function (Builder $query, $value): Builder {
-
-                    return $query->whereJsonContains('snapshot', ['department_id' => (int) $value]);
+                    return $query
+                        ->whereHas('position')
+                        ->whereJsonContains('snapshot', ['department_id' => (int) $value]);
                 });
             })
             ->columnSpan(2)

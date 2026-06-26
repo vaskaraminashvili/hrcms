@@ -193,8 +193,6 @@ class EmployeeCvService
                 $this->field(__('cv.project'), $this->translatable($project->project_name, $this->localeKey)),
                 $this->field(__('filament.personal_file.scientific_projects.institution'), $this->translatable($project->institution, $this->localeKey)),
                 $this->field(__('filament.personal_file.scientific_projects.position'), $this->translatable($project->position, $this->localeKey)),
-                $this->field(__('cv.supervisor'), null, alwaysShow: true),
-                $this->field(__('cv.donor'), null, alwaysShow: true),
             ]))
             ->all();
 
