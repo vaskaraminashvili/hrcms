@@ -17,7 +17,7 @@ class EmployeeCvController extends Controller
 
         Gate::authorize('viewCv', $employee);
 
-        // dd($employeeCvService->buildViewData($employee, $cvLocale));
+        //        dd($employeeCvService->buildViewData($employee, $cvLocale));
 
         return view('cv.show', $employeeCvService->buildViewData($employee, $cvLocale));
     }

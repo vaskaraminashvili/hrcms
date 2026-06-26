@@ -4,8 +4,8 @@ namespace App\Filament\Resources\PositionHistories\Tables;
 
 use App\Enums\PositionHistoryAffectField;
 use App\Enums\PositionStatus;
-use App\Models\PositionHistory;
 use App\Models\Place;
+use App\Models\PositionHistory;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -47,7 +47,6 @@ class PositionHistoriesTable
                         });
                     })
                     ->label(__('filament.employee_id')),
-
                 TextColumn::make('changes')
                     ->getStateUsing(function (PositionHistory $record) {
                         $changes = collect(PositionHistoryAffectField::cases())
@@ -120,9 +119,10 @@ class PositionHistoriesTable
                     })
                     ->label(__('filament.department_id')),
                 TextColumn::make('snapshot.place_id')
-                    ->formatStateUsing(function($state, $record){
+                    ->formatStateUsing(function ($state, $record) {
                         $place_id = $record->snapshot['place_id'];
                         $place = Place::find($place_id);
+
                         return $place->name;
                     })
                     ->wrap()
