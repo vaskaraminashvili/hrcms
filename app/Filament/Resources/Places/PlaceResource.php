@@ -19,9 +19,15 @@ use UnitEnum;
 
 class PlaceResource extends Resource
 {
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
     protected static ?string $model = Place::class;
+
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -59,5 +65,25 @@ class PlaceResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.system');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.places.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.places.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.places.plural_model_label');
     }
 }

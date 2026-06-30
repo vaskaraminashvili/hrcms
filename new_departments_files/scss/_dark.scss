@@ -1,0 +1,62 @@
+// ============================================================
+// _dark.scss – Filament dark-mode overrides
+// Filament adds `.dark` to <html> when dark mode is active.
+// ============================================================
+@use 'sass:map';
+@use 'tokens' as t;
+
+.dark {
+
+    // ── Row surfaces ───────────────────────────────────────
+    .dept-tree-node__row {
+        background:   t.$surface-bg-dark;
+        border-color: t.$surface-border-dark;
+
+        &:hover {
+            background: t.$surface-hover-dark;
+        }
+    }
+
+    // ── Text ───────────────────────────────────────────────
+    .dept-tree-node__name  { color: t.$text-primary-dark; }
+    .dept-tree-node__index { color: t.$text-muted-dark; }
+    .dept-tree-node__order { color: t.$text-secondary-dark; }
+
+    // ── Toolbar ────────────────────────────────────────────
+    .dept-tree-toolbar__btn {
+        border-color: t.$surface-border-dark;
+        color:        t.$text-secondary-dark;
+
+        &:hover {
+            background: t.$surface-hover-dark;
+            color:      t.$text-primary-dark;
+        }
+    }
+
+    // ── Badges – dark palette swap ─────────────────────────
+    @each $name, $pair in t.$badge-palettes-dark {
+        $fill: nth($pair, 1);
+        $text: nth($pair, 2);
+
+        .dept-tree-node__badge--#{$name},
+        .dept-tree-node__count-badge--#{$name} {
+            background: $fill;
+            color:      $text;
+        }
+    }
+
+    // ── Action buttons ─────────────────────────────────────
+    .dept-tree-node__action-btn {
+        color: t.$text-secondary-dark;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color:      t.$text-primary-dark;
+        }
+    }
+
+    // ── Chevron icon ───────────────────────────────────────
+    .dept-tree-node__chevron-icon {
+        color: t.$text-secondary-dark;
+    }
+}

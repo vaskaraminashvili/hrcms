@@ -1,0 +1,5 @@
+/* Vertical tabs: limit width and overflow-x for the tab list */
+.fi-sc-tabs.fi-vertical .fi-tabs {
+    max-width: 20rem;
+    overflow-x: auto;
+}

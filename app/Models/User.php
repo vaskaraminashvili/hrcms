@@ -4,15 +4,21 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Permission\Traits\HasRoles;
+use Yebor974\Filament\RenewPassword\Contracts\RenewPasswordContract;
+use Yebor974\Filament\RenewPassword\Traits\RenewPassword;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, RenewPasswordContract
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable,RenewPassword;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +29,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'force_renew_password',
     ];
 
     /**
@@ -45,7 +52,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_renew_password_at' => 'datetime',
+            'force_renew_password' => 'boolean',
         ];
+    }
+
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return match ($panel->getId()) {
+            'admin' => $this->canAccessAdminPanel(),
+            'employee' => $this->hasRole('employee'),
+            default => false,
+        };
+    }
+
+    protected function canAccessAdminPanel(): bool
+    {
+        $shield = config('filament-shield');
+
+        if ($this->hasRole($shield['super_admin']['name'])) {
+            return true;
+        }
+
+        if (($shield['panel_user']['enabled'] ?? false) && $this->hasRole($shield['panel_user']['name'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

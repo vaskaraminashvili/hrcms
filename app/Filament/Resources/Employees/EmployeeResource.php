@@ -22,9 +22,15 @@ class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
 
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $recordTitleAttribute = 'full_name';
 
     public static function form(Schema $schema): Schema
     {
@@ -64,5 +70,20 @@ class EmployeeResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.employees.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.employees.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.employees.plural_model_label');
     }
 }

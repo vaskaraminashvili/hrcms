@@ -4,11 +4,15 @@ namespace App\Filament\Resources\Departments\Pages;
 
 use App\Filament\Resources\Departments\DepartmentResource;
 use App\Models\Department;
+use App\Services\DepartmentArchiveService;
+use App\Services\DepartmentSiblingOrderService;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class EditDepartment extends EditRecord
 {
@@ -44,6 +48,33 @@ class EditDepartment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            // Action::make('saveWithArchive')
+            //     ->label(__('filament.department.save_and_archive'))
+            //     ->color('primary')
+            //     ->requiresConfirmation()
+            //     ->modalHeading(__('filament.department.modal_archive_heading'))
+            //     ->modalDescription(__('filament.department.modal_archive_description'))
+            //     ->modalSubmitActionLabel(__('filament.department.modal_submit'))
+            //     ->action(function (DepartmentArchiveService $service) {
+            //         $formData = $this->form->getState();
+            //         $originalData = $this->record->only(['name', 'parent_id']);
+
+            //         $nameChanged = ($originalData['name'] ?? null) !== ($formData['name'] ?? null);
+            //         $parentChanged = ($originalData['parent_id'] ?? null) !== ($formData['parent_id'] ?? null);
+            //         if ($nameChanged || $parentChanged) {
+            //             // Archive original + duplicate with new data
+            //             $newDepartment = $service->archiveAndReplicate($this->record, $formData);
+
+            //             // Full page redirect to the new record's edit page
+            //             return redirect(
+            //                 DepartmentResource::getUrl('edit', ['record' => $newDepartment])
+            //             );
+            //         } else {
+            //             // No relevant change — just do a normal save
+            //             $this->save();
+            //         }
+            //     }),
+
             DeleteAction::make()
                 ->before(function (DeleteAction $action): void {
                     $record = $this->getRecord();
@@ -57,13 +88,51 @@ class EditDepartment extends EditRecord
 
                         Notification::make()
                             ->danger()
-                            ->title('Cannot delete department')
-                            ->body("This department has {$count} position(s) assigned. Reassign or remove them first.")
+                            ->title(__('filament.department.cannot_delete_title'))
+                            ->body(__('filament.department.cannot_delete_body', ['count' => $count]))
                             ->send();
 
                         $action->halt();
                     }
                 }),
+
+        ];
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Action::make('saveWithArchive')
+                ->label(__('filament.department.save_and_archive'))
+                ->color('primary')
+                ->requiresConfirmation()
+                ->modalHeading(__('filament.department.modal_archive_heading'))
+                ->modalDescription(__('filament.department.modal_archive_description'))
+                ->modalSubmitActionLabel(__('filament.department.modal_submit'))
+                ->action(function (DepartmentArchiveService $service) {
+                    $formData = $this->form->getState();
+                    $originalData = $this->record->only(['name', 'parent_id']);
+
+                    $nameChanged = ($originalData['name'] ?? null) !== ($formData['name'] ?? null);
+                    $parentChanged = ($originalData['parent_id'] ?? null) !== ($formData['parent_id'] ?? null);
+                    if ($nameChanged || $parentChanged) {
+                        // Archive original + duplicate with new data
+                        $newDepartment = $service->archiveAndReplicate($this->record, $formData);
+
+                        // Full page redirect to the new record's edit page
+                        return redirect(
+                            DepartmentResource::getUrl('edit', ['record' => $newDepartment])
+                        );
+                    } else {
+                        // No relevant change — just do a normal save
+                        $this->save();
+                    }
+                }),
+            Action::make('cancel')
+                ->label(__('filament.department.cancel'))
+                ->color('gray')
+                ->url(DepartmentResource::getUrl('index')),
+
         ];
     }
 
@@ -72,8 +141,31 @@ class EditDepartment extends EditRecord
         return static::getResource()::getUrl('index');
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['order'] = isset($data['order']) && $data['order'] !== null && $data['order'] !== ''
+            ? (int) $data['order']
+            : 0;
+
+        return $data;
+    }
+
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
+        if (! ($record instanceof Department)) {
+            $record->update($data);
+
+            return $record;
+        }
+
+        $newParentRaw = array_key_exists('parent_id', $data) ? $data['parent_id'] : $record->parent_id;
+        $desiredOrder = isset($data['order']) ? (int) $data['order'] : (int) $record->order;
+        $newParentKey = DepartmentSiblingOrderService::normalizeSiblingParentKey($newParentRaw);
+
         $newParentId = $data['parent_id'] ?? null;
 
         if (filled($newParentId) && $newParentId != $record->parent_id) {
@@ -86,8 +178,11 @@ class EditDepartment extends EditRecord
 
                 if ($requiredDepth > $this->maxDepth) {
                     Notification::make()
-                        ->title('Cannot move department')
-                        ->body("This move would exceed the maximum depth of {$this->maxDepth} levels (deepest node would reach level {$requiredDepth}).")
+                        ->title(__('filament.department.cannot_move_title'))
+                        ->body(__('filament.department.cannot_move_body', [
+                            'max_depth' => $this->maxDepth,
+                            'required_depth' => $requiredDepth,
+                        ]))
                         ->danger()
                         ->send();
 
@@ -96,7 +191,29 @@ class EditDepartment extends EditRecord
             }
         }
 
-        $record->update($data);
+        $orderService = app(DepartmentSiblingOrderService::class);
+        $shouldShift = $orderService->shouldApplyShiftForSave(
+            $record->parent_id,
+            (int) $record->order,
+            $newParentRaw,
+            $desiredOrder,
+            false,
+        );
+
+        DB::transaction(function () use (
+            $record,
+            $data,
+            $orderService,
+            $shouldShift,
+            $newParentKey,
+            $desiredOrder,
+        ): void {
+            if ($shouldShift) {
+                $orderService->shiftSiblingsOpeningSlot($newParentKey, $desiredOrder, $record->getKey());
+            }
+
+            $record->update($data);
+        });
 
         return $record;
     }

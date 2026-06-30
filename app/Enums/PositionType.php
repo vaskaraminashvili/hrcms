@@ -2,9 +2,10 @@
 
 namespace App\Enums;
 
+use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 
-enum PositionType: string implements HasLabel
+enum PositionType: string implements HasColor, HasLabel
 {
     case Emeritus = 'emeritus';
     case AdministrativePersonnel = 'administrative_personnel';
@@ -17,14 +18,33 @@ enum PositionType: string implements HasLabel
     public function getLabel(): ?string
     {
         return match ($this) {
-            self::Emeritus => 'ემერიტუსი',
+            self::Emeritus => 'ემერიტუსი', // არასაშტატო
             self::AdministrativePersonnel => 'ადმინისტრაციული პერსონალი',
             self::AssistantAdministrativePersonnel => 'დამხმარე ადმინისტრაციული პერსონალი',
             self::AcademicPersonnel => 'აკადემიური პერსონალი',
-            self::InvitedTeacher => 'მოწვეული მასწავლებელი',
-            self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული',
+            self::InvitedTeacher => 'მოწვეული მასწავლებელი', // არასაშტატო
+            self::ContractedEmployee => 'ხელშეკრულებით დასაქმებული', // არასაშტატო
             self::AcademicRank => 'აკადემიური წოდება',
         };
+    }
+
+    public function getColor(): string
+    {
+        return match ($this) {
+            self::Emeritus => 'primary',
+            self::AdministrativePersonnel => 'info',
+            self::AssistantAdministrativePersonnel => 'success',
+            self::AcademicPersonnel => 'warning',
+            self::InvitedTeacher => 'danger',
+            self::ContractedEmployee => 'info',
+            self::AcademicRank => 'warning',
+        };
+    }
+
+    public static function fromLabel(string $search): ?self
+    {
+        return collect(self::cases())
+            ->first(fn ($case) => str_contains($case->getLabel(), $search));
     }
 
     public function label(): string
@@ -40,5 +60,14 @@ enum PositionType: string implements HasLabel
     public function showsAutomativeRenewal(): bool
     {
         return $this === self::ContractedEmployee;
+    }
+
+    public function isNonStaffPositionType(): bool
+    {
+        return in_array($this, [
+            self::Emeritus,
+            self::InvitedTeacher,
+            self::ContractedEmployee,
+        ], true);
     }
 }

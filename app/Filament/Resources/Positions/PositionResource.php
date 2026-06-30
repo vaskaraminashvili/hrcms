@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Positions;
 use App\Filament\Resources\Positions\Pages\CreatePosition;
 use App\Filament\Resources\Positions\Pages\EditPosition;
 use App\Filament\Resources\Positions\Pages\ListPositions;
-use App\Filament\Resources\Positions\Pages\ViewPosition;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Filament\Resources\Positions\Schemas\PositionInfolist;
 use App\Filament\Resources\Positions\Tables\PositionsTable;
@@ -19,6 +18,12 @@ use Filament\Tables\Table;
 class PositionResource extends Resource
 {
     protected static ?string $model = Position::class;
+
+    protected static ?string $navigationLabel = null;
+
+    protected static ?string $modelLabel = null;
+
+    protected static ?string $pluralModelLabel = null;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
@@ -42,7 +47,8 @@ class PositionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\VacationTransferRelationManager::class,
+            RelationManagers\VacationsRelationManager::class,
         ];
     }
 
@@ -51,8 +57,22 @@ class PositionResource extends Resource
         return [
             'index' => ListPositions::route('/'),
             'create' => CreatePosition::route('/create'),
-            'view' => ViewPosition::route('/{record}'),
             'edit' => EditPosition::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.resources.positions.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.resources.positions.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.resources.positions.plural_model_label');
     }
 }

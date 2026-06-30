@@ -11,10 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('positions', function (Blueprint $table): void {
-            $table->string('position_type')->nullable()->after('department_id');
-        });
-
         Schema::dropIfExists('position_position_type');
         Schema::dropIfExists('position_types');
     }
@@ -39,10 +35,6 @@ return new class extends Migration
             $table->foreignId('position_type_id')->constrained('position_types')->cascadeOnDelete();
             $table->timestamps();
             $table->unique(['position_id', 'position_type_id']);
-        });
-
-        Schema::table('positions', function (Blueprint $table): void {
-            $table->dropColumn('position_type');
         });
     }
 };

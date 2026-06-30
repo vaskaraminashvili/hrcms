@@ -2,7 +2,16 @@
 
 namespace App\Providers;
 
+use App\Models\Department;
+use App\Models\Position;
+use App\Models\PublicHoliday;
+use App\Observers\DepartmentObserver;
+use App\Observers\PositionObserver;
+use App\Observers\PublicHolidayObserver;
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +33,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerFilamentAssets();
+        Department::observe(DepartmentObserver::class);
+        Position::observe(PositionObserver::class);
+        PublicHoliday::observe(PublicHolidayObserver::class);
+        Carbon::setLocale(config('app.locale'));
+    }
+
+    protected function registerFilamentAssets(): void
+    {
+        FilamentAsset::register([
+            Css::make('vertical-tabs', resource_path('css/filament/vertical-tabs.css')),
+        ]);
     }
 
     /**

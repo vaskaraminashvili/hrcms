@@ -1,5 +1,35 @@
 <?php
 
+use App\Http\Controllers\DepartmentTypeCountController;
+use App\Http\Controllers\EmployeeCvController;
+use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::controller(ImportController::class)->group(function () {
+    // Route::get('/import-employees', 'importEmployees')->name('import.employees');
+    Route::get('/import-positions', 'importPositions')->name('import.positions');
+    Route::get('/map-departments', 'mapDepartments')->name('map.departments');
+    Route::prefix('/import-personal-data')->group(function () {
+        //     Route::get('/computer-skills', 'importComputerSkills')->name('import.computer-skills');
+        //     Route::get('/projects', 'importProjects')->name('import.projects');
+        //     Route::get('/awards', 'importAwards')->name('import.awards');
+        //     Route::get('/academic-positions', 'importAcademicPositions')->name('import.academic-positions');
+        //     Route::get('/languages', 'importLanguages')->name('import.languages');
+        //     Route::get('/work-experiences', 'importWorkExperiences')->name('import.work-experiences');
+        // Route::get('/memberships', 'importMemberships')->name('import.memberships');
+        // Route::get('/patents', 'importPatents')->name('import.patents');
+        Route::get('/education', 'importEducation')->name('import.education');
+    });
+
+    Route::get('/import-employees-photos', 'importEmployeesPhotos')->name('import.employees.photos');
+
+});
+
+Route::middleware(['auth'])->group(function (): void {
+    Route::get('/departments/{department}/type-counts', [DepartmentTypeCountController::class, 'show'])
+        ->name('departments.type-counts');
+
+    Route::get('/employees/{employee}/cv/{locale}', [EmployeeCvController::class, 'show'])
+        ->name('employees.cv.show')
+        ->where('locale', 'ka|en');
+});

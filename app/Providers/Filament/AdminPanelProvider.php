@@ -3,30 +3,43 @@
 namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
+use App\Enums\EmployeeStatusEnum;
+use App\Filament\Widgets\EmployeeBirthdaysWidget;
+use App\Filament\Widgets\EmployeeContractEndingsWidget;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use CmsMulti\FilamentClearCache\FilamentClearCachePlugin;
+use CraftForge\FilamentLanguageSwitcher\FilamentLanguageSwitcherPlugin;
+use Filament\FontProviders\GoogleFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\FilamentInfoWidget;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use MWGuerra\FileManager\Filament\Pages\FileManager;
+use MWGuerra\FileManager\Filament\Pages\FileSystem;
+use MWGuerra\FileManager\FileManagerPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('')
             ->login()
             ->colors([
                 'primary' => Color::Indigo,
@@ -38,8 +51,21 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->navigationItems([
+                NavigationItem::make(EmployeeStatusEnum::ARCHIVED->getLabel())
+                    ->url(fn (): string => route('filament.admin.resources.employees.index', [
+                        'filters' => [
+                            'status' => [
+                                'value' => EmployeeStatusEnum::ARCHIVED->value,
+                            ],
+                        ],
+                    ]))
+                    ->icon('heroicon-o-archive-box')
+                    ->sort(1),
+            ])
             ->widgets([
-                FilamentInfoWidget::class,
+                EmployeeBirthdaysWidget::class,
+                EmployeeContractEndingsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -55,10 +81,36 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->plugins([
+                FilamentLanguageSwitcherPlugin::make()
+                    ->locales([
+                        ['code' => 'en', 'name' => 'English', 'flag' => 'us'],
+                        ['code' => 'ka', 'name' => 'Georgian', 'flag' => 'ge'],
+                    ]),
+                FilamentShieldPlugin::make()
+                    ->registerNavigation(true)
+                    ->navigationGroup(fn (): string => __('filament.shield_navigation_group')),
                 ActivityLogPlugin::make()
                     ->label('Log')
                     ->pluralLabel('Logs')
-                    ->navigationGroup('System'),
-            ]);
+                    ->navigationGroup(__('filament.system')),
+                FilamentClearCachePlugin::make(),
+                FileManagerPlugin::make([
+                    FileManager::class,              // Database mode - full CRUD file manager
+                    FileSystem::class,
+                ]),
+
+            ])
+            ->font(
+                fn () => app()->getLocale() === 'ka' ? 'Noto Sans Georgian' : 'Inter',
+                provider: GoogleFontProvider::class
+            )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER,
+                fn (): string => Vite::withEntryPoints([
+                    'resources/css/filament/admin/custom.css',
+                    'resources/scss/department-tree/department-tree.scss',
+                ])->toHtml()
+            )
+            ->globalSearch(false);
     }
 }

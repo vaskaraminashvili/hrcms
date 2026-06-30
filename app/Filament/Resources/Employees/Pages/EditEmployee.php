@@ -2,24 +2,88 @@
 
 namespace App\Filament\Resources\Employees\Pages;
 
+use App\Enums\PersonalFile;
+use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Filament\Resources\Employees\EmployeeResource;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\ForceDeleteAction;
-use Filament\Actions\RestoreAction;
-use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Enums\Alignment;
+use Illuminate\Database\Eloquent\Model;
 
 class EditEmployee extends EditRecord
 {
     protected static string $resource = EmployeeResource::class;
 
+    public static string|Alignment $formActionsAlignment = Alignment::Center;
+
+    protected function resolveRecord(int|string $key): Model
+    {
+        $record = parent::resolveRecord($key);
+
+        $relationships = array_map(
+            fn (PersonalFile $case) => $case->relationship(),
+            PersonalFile::cases(),
+        );
+
+        $mediaCounts = [];
+        foreach (PersonalFile::cases() as $case) {
+            $mediaCounts[sprintf('media as %s', $case->tabBadgeMediaCountAttribute())] =
+                fn ($query) => $query->where('collection_name', $case->mediaCollectionName());
+        }
+
+        $record->loadCount(array_merge($relationships, $mediaCounts));
+
+        return $record;
+    }
+
+    /**
+     * @return array<Action | ActionGroup>
+     */
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getSaveFormAction(),
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
-            ForceDeleteAction::make(),
-            RestoreAction::make(),
+            ActionGroup::make([
+                Action::make('cvGeorgian')
+                    ->label(__('cv.actions.georgian'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'ka',
+                    ]))
+                    ->openUrlInNewTab(),
+                Action::make('cvEnglish')
+                    ->label(__('cv.actions.english'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'en',
+                    ]))
+                    ->openUrlInNewTab(),
+            ])
+                ->label(__('cv.actions.generate'))
+                ->color('primary')
+                ->icon('heroicon-m-document-text'),
+            ResetEmployeeUserPasswordAction::make()
+                ->visible(fn (): bool => ResetEmployeeUserPasswordAction::canReset($this->getRecord()))
+                ->action(function (): void {
+                    ResetEmployeeUserPasswordAction::reset($this->getRecord());
+                }),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return __('filament.admin.edit_employee.title');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.admin.edit_employee.title');
     }
 }

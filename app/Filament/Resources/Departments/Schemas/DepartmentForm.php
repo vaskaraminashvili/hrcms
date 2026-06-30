@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Departments\Schemas;
 
-use App\Enums\EnumsDepartmentColor;
+use App\Enums\DepartmentStatus;
+use App\Enums\DepartmentType;
 use App\Models\Department;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Select;
@@ -29,38 +30,59 @@ class DepartmentForm
         return [
             Section::make()
                 ->schema([
+                    TextInput::make('index')
+                        ->label(__('filament.index')),
+                    Select::make('type')
+                        ->label(__('filament.type'))
+                        ->options(DepartmentType::class)
+                        ->default(DepartmentType::DEPARTMENT),
                     Select::make('parent_id')
-                        ->label('Parent Department')
+                        ->label(__('filament.parent_id'))
                         ->options($parentOptions)
                         ->nullable()
                         ->searchable()
                         ->preload()
                         ->live()
                         ->hint(fn ($state): string => $state
-                            ? 'Level '.(Department::find($state)?->ancestors()->count() + 2)
-                            : 'Level 1 (Root)'
+                            ? __('filament.department_parent_hint_level', [
+                                'level' => (Department::find($state)?->ancestors()->count() ?? 0) + 2,
+                            ])
+                            : __('filament.department_parent_hint_root')
                         )
                         ->hidden(fn (string $operation): bool => $operation === 'quickView'),
                     TextInput::make('name')
+                        ->label(__('filament.name'))
                         ->required()
                         ->maxLength(255),
 
+                    TextInput::make('order')
+                        ->label(__('filament.resources.departments.order'))
+                        ->numeric()
+                        ->minValue(0)
+                        ->helperText(__('filament.resources.departments.order_helper')),
+
                     TextInput::make('vacancy_count')
-                        ->label('Vacancies')
+                        ->label(__('filament.vacancy_count'))
                         ->numeric()
                         ->default(0),
 
-                    Toggle::make('is_active')
-                        ->label('Active')
-                        ->default(true)
-                        ->columnSpanFull()
-                        ->hidden(fn (string $operation): bool => $operation === 'quickView'),
+                    Select::make('status')
+                        ->label(__('filament.status'))
+                        ->options(collect(DepartmentStatus::cases())->mapWithKeys(
+                            fn (DepartmentStatus $case) => [$case->value => __("filament.department_status.{$case->value}")]
+                        ))
+                        ->default(__('filament.status_default')),
+
+                    Toggle::make('show_parent')
+                        ->label(__('filament.show_parent'))
+                        ->inline(false)
+                        ->default(false),
                 ])
                 ->columnSpanFull(),
 
             // Select::make('color')
             //     ->options(collect(EnumsDepartmentColor::cases())->mapWithKeys(
-            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label()]
+            //         fn (EnumsDepartmentColor $case) => [$case->value => $case->label(__('filament.color'))]
             //     ))
             //     ->nullable()
             //     ->searchable()

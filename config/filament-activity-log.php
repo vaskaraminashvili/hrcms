@@ -242,8 +242,8 @@ return [
         'user_activities' => [
             'enabled' => true,
             'class' => UserActivitiesPage::class,
-            'navigation_label' => null, // null uses translation key
-            'navigation_group' => null, // null uses resource group
+            'navigation_label' => 'მომხმარებლის აქტივობები', // null uses translation key
+            'navigation_group' => 'მომხმარებლის აქტივობები', // null uses resource group
             'navigation_sort' => 2,
             'polling_interval' => null,
         ],
@@ -258,20 +258,20 @@ return [
     |
     */
     'widgets' => [
-        'enabled' => true,
-        'dashboard' => true,
+        'enabled' => false,
+        'dashboard' => false,
         'widgets' => [
-            // ActivityChartWidget::class,
-            // LatestActivityWidget::class,
-            // ActivityHeatmapWidget::class,
-            // ActivityStatsWidget::class,
+            ActivityChartWidget::class,
+            LatestActivityWidget::class,
+            ActivityHeatmapWidget::class,
+            ActivityStatsWidget::class,
         ],
 
         /**
          * Activity Chart Widget Configuration
          */
         'activity_chart' => [
-            'enabled' => true,
+            'enabled' => false,
             'heading' => 'Activity Over Time',
             'sort' => 1,
             'max_height' => '300px',
@@ -305,7 +305,7 @@ return [
          * Latest Activity Widget Configuration
          */
         'latest_activity' => [
-            'enabled' => true,
+            'enabled' => false,
             'heading' => null, // null uses translation key
             'sort' => 2,
             'polling_interval' => null, // e.g., '10s', '1m', null to disable

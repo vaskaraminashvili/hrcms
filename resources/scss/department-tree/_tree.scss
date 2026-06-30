@@ -1,0 +1,12 @@
+// ============================================================
+// _tree.scss – outermost tree container
+// ============================================================
+@use 'tokens' as t;
+
+.dept-tree {
+    display:        flex;
+    flex-direction: column;
+    gap:            t.$row-gap;
+    min-width:      0;
+    width:          100%;
+}

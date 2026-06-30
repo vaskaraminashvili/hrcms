@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-Bl8_pkJy.css",
+    "file": "assets/app-B7E0_u2c.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -8,10 +8,28 @@
       "app.css"
     ]
   },
+  "resources/css/filament/admin/custom.css": {
+    "file": "assets/custom-CzoU95c7.css",
+    "src": "resources/css/filament/admin/custom.css",
+    "isEntry": true,
+    "name": "custom",
+    "names": [
+      "custom.css"
+    ]
+  },
   "resources/js/app.js": {
     "file": "assets/app-l0sNRNKZ.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
+  },
+  "resources/scss/department-tree/department-tree.scss": {
+    "file": "assets/department-tree-sRWrQzRa.css",
+    "src": "resources/scss/department-tree/department-tree.scss",
+    "isEntry": true,
+    "name": "department-tree",
+    "names": [
+      "department-tree.css"
+    ]
   }
 }
