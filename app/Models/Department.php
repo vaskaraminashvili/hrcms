@@ -20,6 +20,27 @@ class Department extends Model
     /** @use HasFactory<DepartmentFactory> */
     use HasFactory, HasTreeStructure, LogsActivity;
 
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'color',
+        'author_id',
+        'status',
+        'parent_id',
+        'order',
+        'vacancy_count',
+        'type',
+        'show_parent',
+        'index',
+    ];
+
+    protected $casts = [
+        'color' => EnumsDepartmentColor::class,
+        'status' => DepartmentStatus::class,
+        'type' => DepartmentType::class,
+    ];
+
     protected static function boot(): void
     {
         parent::boot();
@@ -29,6 +50,27 @@ class Department extends Model
                 $department->slug = Str::slug($department->name);
             }
         });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll();
+    }
+
+    public function positions(): HasMany
+    {
+        return $this->hasMany(Position::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Department::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Department::class, 'parent_id');
     }
 
     protected function level(): Attribute
@@ -42,46 +84,5 @@ class Department extends Model
                 return $this->name.' | Level '.($this->ancestors()->count() + 1);
             },
         );
-    }
-
-    protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'color',
-        'author_id',
-        'status',
-        'parent_id',
-        'order',
-        'type',
-        'show_parent',
-        'index',
-    ];
-
-    protected $casts = [
-        'color' => EnumsDepartmentColor::class,
-        'status' => DepartmentStatus::class,
-        'type' => DepartmentType::class,
-    ];
-
-    public function positions(): HasMany
-    {
-        return $this->hasMany(Position::class);
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logAll();
-    }
-
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(Department::class, 'parent_id');
-    }
-
-    public function children(): HasMany
-    {
-        return $this->hasMany(Department::class, 'parent_id');
     }
 }
