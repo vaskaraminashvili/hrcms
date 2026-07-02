@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 enum PersonalFile: string
@@ -56,7 +57,7 @@ enum PersonalFile: string
     }
 
     /**
-     * Eloquent attribute name after {@see \Illuminate\Database\Eloquent\Model::loadCount()} for this section's has-many (e.g. scientific_projects_count).
+     * Eloquent attribute name after {@see Model::loadCount()} for this section's has-many (e.g. scientific_projects_count).
      */
     public function tabBadgeRelationCountAttribute(): string
     {
@@ -124,10 +125,20 @@ enum PersonalFile: string
 
         return match ($this) {
             self::ACADEMIC_POSITION => self::resolveAcademicPositionItemLabel($state),
+            self::WORK_EXPERIENCE => self::resolveWorkExperienceItemLabel($state),
             self::ACADEMIC_DEGREES => self::resolveAcademicDegreeItemLabelFromState($state),
             self::FOREIGN_LANGUAGES => self::resolveForeignLanguageItemLabelFromState($state),
             default => $this->resolveTranslatableItemLabel($state),
         };
+    }
+
+    private static function resolveWorkExperienceItemLabel(array $state): ?string
+    {
+        $field = 'institution';
+        $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
+        $period = $state['started_at'].' - '.($state['ended_at'] ?? 'N/A');
+
+        return is_string($value) ? Str::limit($value, 58).' - '.$period : null;
     }
 
     private static function resolveAcademicDegreeItemLabelFromState(array $state): ?string

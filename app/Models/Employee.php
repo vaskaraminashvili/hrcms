@@ -97,7 +97,9 @@ class Employee extends Model implements HasMedia
 
     public function workExperiences(): HasMany
     {
-        return $this->hasMany(WorkExperience::class)->orderBy('sort');
+        return $this->hasMany(WorkExperience::class)
+            ->orderByDesc('ended_at')
+            ->orderByDesc('started_at');
     }
 
     public function scientificProjects(): HasMany
