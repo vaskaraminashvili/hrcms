@@ -55,14 +55,13 @@ class PositionImportService
     public function importAll(bool $clearTableBefore = true): array
     {
         set_time_limit(0);
-
         if ($clearTableBefore) {
             $this->clearPositionsTable();
         }
 
         $places = Place::query()->pluck('id', 'name');
         $departments = Department::query()->pluck('id', 'name');
-        $employees = Employee::query()->pluck('id', 'personal_number');
+        $employees = Employee::withTrashed()->pluck('id', 'personal_number');
         $vacationPolicyIds = VacationPolicy::query()
             ->get()
             ->mapWithKeys(fn (VacationPolicy $policy) => [$policy->position_type->value => $policy->id]);
@@ -108,13 +107,11 @@ class PositionImportService
             ->orderBy('import_positions.date_start')
             ->orderBy('import_positions.id')
             ->get();
-
         $grouped = $rows->groupBy(
             fn (stdClass $r): string => (string) (int) $r->import_employee_ref
                 .'|'.(string) (int) $r->import_department_ref
                 .'|'.(string) (int) $r->import_place_ref
         );
-
         foreach ($grouped as $groupRows) {
             DB::transaction(function () use (
                 $groupRows,
@@ -214,7 +211,6 @@ class PositionImportService
             ],
             $winner['attributes']
         );
-
         if ($collection->count() < 2) {
             return true;
         }

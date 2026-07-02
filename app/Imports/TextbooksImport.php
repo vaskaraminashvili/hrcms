@@ -17,17 +17,17 @@ class TextbooksImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?Textbook
     {
-        $title = $this->string($row['title'] ?? null);
+        $title = $this->requiredTranslatableFromRow($row, 'title');
 
-        if ($title === '') {
+        if ($title === null) {
             return null;
         }
 
         return new Textbook([
             'employee_id' => $this->employeeId,
-            'title' => $this->translatable($title),
-            'publisher' => $this->optionalTranslatable($row['publisher'] ?? null),
-            'co_authors' => $this->optionalTranslatable($row['co_authors'] ?? null),
+            'title' => $title,
+            'publisher' => $this->optionalTranslatableFromRow($row, 'publisher'),
+            'co_authors' => $this->optionalTranslatableFromRow($row, 'co_authors'),
             'published_at' => $this->string($row['published_at'] ?? null) ?: null,
             'page_count' => $this->optionalInteger($row['page_count'] ?? null),
         ]);

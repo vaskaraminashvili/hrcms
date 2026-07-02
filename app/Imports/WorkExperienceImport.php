@@ -17,16 +17,17 @@ class WorkExperienceImport implements ToModel, WithHeadingRow
 
     public function model(array $row): ?WorkExperience
     {
-        $institution = $this->string($row['institution'] ?? null);
-        $position = $this->string($row['position'] ?? null);
-        if ($institution === '' || $position === '') {
+        $institution = $this->requiredTranslatableFromRow($row, 'institution');
+        $position = $this->requiredTranslatableFromRow($row, 'position');
+
+        if ($institution === null || $position === null) {
             return null;
         }
 
         return new WorkExperience([
             'employee_id' => $this->employeeId,
-            'institution' => $this->translatable($institution),
-            'position' => $this->translatable($position),
+            'institution' => $institution,
+            'position' => $position,
             'started_at' => $this->optionalDate($row['started_at'] ?? null),
             'ended_at' => $this->optionalDate($row['ended_at'] ?? null),
         ]);

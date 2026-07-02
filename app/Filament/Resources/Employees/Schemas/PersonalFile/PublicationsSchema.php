@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exceptions\InvalidExcelImportStructureException;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Imports\ExcelImportStructureValidator;
 use App\Imports\PublicationsImport;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
@@ -55,7 +57,7 @@ class PublicationsSchema
                         ->required(),
                 ])
                 ->visible(fn (?Model $record): bool => $record !== null)
-                ->authorize('update')
+                ->authorize('importPersonalFile')
                 ->action(function (array $data, $livewire): void {
                     $record = $livewire->getRecord();
                     $file = $data['file'];
@@ -63,6 +65,21 @@ class PublicationsSchema
                     $path = $file instanceof TemporaryUploadedFile
                         ? $file->getRealPath()
                         : $file;
+
+                    try {
+                        ExcelImportStructureValidator::validateAgainstTemplate(
+                            $path,
+                            resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        );
+                    } catch (InvalidExcelImportStructureException) {
+                        Notification::make()
+                            ->title(__('filament.personal_file.publications.import_invalid_structure'))
+                            ->body(__('filament.personal_file.publications.import_invalid_structure_body'))
+                            ->danger()
+                            ->send();
+
+                        return;
+                    }
 
                     Excel::import(new PublicationsImport($record->getKey()), $path);
 
