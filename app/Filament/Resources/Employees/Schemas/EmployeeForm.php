@@ -52,14 +52,14 @@ class EmployeeForm
                                         );
                                     })
                                     ->columnSpanFull(),
-                                SpatieMediaLibraryFileUpload::make('employee_image')
-                                    ->label(__('filament.employee_image'))
-                                    ->collection('employee_image')
-                                    ->removeUploadedFileButtonPosition('right')
-                                    ->openable()
-                                    ->downloadable()
-                                    ->columnSpanFull()
-                                    ->extraAttributes(['class' => 'attachments-upload']),
+                                // SpatieMediaLibraryFileUpload::make('employee_image')
+                                //     ->label(__('filament.employee_image'))
+                                //     ->collection('employee_image')
+                                //     ->removeUploadedFileButtonPosition('right')
+                                //     ->openable()
+                                //     ->downloadable()
+                                //     ->columnSpanFull()
+                                //     ->extraAttributes(['class' => 'attachments-upload']),
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
