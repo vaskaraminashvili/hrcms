@@ -4,11 +4,14 @@ namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\WorkExperienceImport;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -81,8 +84,32 @@ class WorkExperienceSchema
         return [
             static::translatableField('institution', __('filament.personal_file.work_experience.institution')),
             static::translatableField('position', __('filament.personal_file.work_experience.position')),
-            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
+            DatePicker::make('started_at')
+                ->native(false)
+                ->displayFormat('d.m.Y')
+                ->live()
+                ->afterStateUpdated(function (Get $get, Set $set): void {
+                    $endedAt = $get('ended_at');
+                    $startedAt = $get('started_at');
+
+                    if (blank($endedAt) || blank($startedAt)) {
+                        return;
+                    }
+
+                    if (Carbon::parse($endedAt)->lte(Carbon::parse($startedAt))) {
+                        $set('ended_at', null);
+                    }
+                })
+                ->label(__('filament.personal_file.dates.started_at')),
+            DatePicker::make('ended_at')
+                ->native(false)
+                ->displayFormat('d.m.Y')
+                ->disabled(fn (Get $get): bool => blank($get('started_at')))
+                ->minDate(fn (Get $get) => filled($get('started_at'))
+                    ? Carbon::parse($get('started_at'))->addDay()
+                    : null)
+                ->after('started_at')
+                ->label(__('filament.personal_file.dates.ended_at')),
         ];
     }
 }

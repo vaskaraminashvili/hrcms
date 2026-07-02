@@ -140,16 +140,30 @@ class EmployeeForm
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
-                                $tabSchema = [
-                                    Repeater::make($case->relationship())
-                                        ->label($case->label())
-                                        ->default([])
+                                $repeater = Repeater::make($case->relationship())
+                                    ->label($case->label())
+                                    ->default([])
+                                    ->schema($schemaClass::schema())
+                                    ->collapsed()
+                                    ->collapsible()
+                                    ->columnSpanFull();
+
+                                if ($case === PersonalFile::WORK_EXPERIENCE) {
+                                    $repeater
+                                        ->relationship(
+                                            modifyQueryUsing: fn ($query) => $query
+                                                ->orderByDesc('ended_at')
+                                                ->orderByDesc('started_at'),
+                                        )
+                                        ->reorderable(false);
+                                } else {
+                                    $repeater
                                         ->relationship()
-                                        ->schema($schemaClass::schema())
-                                        ->collapsed()
-                                        ->collapsible()
-                                        ->orderColumn('sort')
-                                        ->columnSpanFull()
+                                        ->orderColumn('sort');
+                                }
+
+                                $tabSchema = [
+                                    $repeater
                                         ->afterLabel([
                                             Action::make('add_repeater_item_'.$case->value)
                                                 ->label(__('filament.add_record_button'))
