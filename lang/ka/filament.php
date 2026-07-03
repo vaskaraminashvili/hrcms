@@ -79,6 +79,7 @@ return [
     'employee_image' => 'თანამშრომლის სურათი',
     'save' => 'შენახვა',
     'save_history' => 'შენახვა ისტორიით',
+    'position_file_attachments' => 'თანამდებობის ფაილები',
     'system' => 'სისტემა',
     'position_edit' => [
         'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
@@ -174,6 +175,9 @@ return [
     'position_history_title' => 'თანამდებობის ისტორია',
     'position_history_edit_title' => 'ველები ცვლილების მომენტში',
     'position_history_field_changed_helper' => 'ცვლილება: :change',
+    'position_history_section_attachments' => 'დაარქივებული ფაილები',
+    'position_history_attachments_description' => 'ფაილები, რომლებიც ამ ისტორიის ჩანაწერზე გადავიდა პოზიციის ისტორიით შენახვისას',
+    'position_history_no_attachments' => 'დაარქივებული ფაილები არ არის',
     'changed_by' => 'ვინ შეცვალა',
     'vacation_file_attachments' => 'შვებულების ფაილები',
     'vacation_day_off_limit_exceeded' => 'დეიოფის დღეების ლიმიტი ამოწურულია',
@@ -200,6 +204,7 @@ return [
         'place_id' => 'ადგილი',
         'staff_type' => 'შტატი',
         'clinical' => 'კლინიკური',
+        'position_attachments' => 'თანამდებობის ფაილები',
     ],
 
     'position_history_affects' => [

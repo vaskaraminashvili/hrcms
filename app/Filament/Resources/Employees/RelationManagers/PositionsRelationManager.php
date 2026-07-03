@@ -6,6 +6,7 @@ use App\Enums\PositionStatus;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Filament\Resources\Positions\Tables\Filters as PositionTableFilters;
 use App\Models\Position;
+use App\Services\PositionAttachmentHistoryService;
 use App\Services\PositionFormPersistence;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -177,8 +178,16 @@ class PositionsRelationManager extends RelationManager
                             ['id', 'created_at', 'updated_at'],
                         ));
                     })
-                    ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table): void {
+                    ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table, PositionAttachmentHistoryService $attachmentHistoryService): void {
+                        /** @var Position $record */
                         $skipObserver = (bool) ($livewire->getMountedAction()?->getArguments()['skipPositionObserver'] ?? false);
+
+                        if (! $skipObserver) {
+                            $attachmentHistoryService->beginSaveWithHistory(
+                                $record,
+                                PositionAttachmentHistoryService::formStateWithMediaFieldFromMountedAction($livewire),
+                            );
+                        }
 
                         if ($skipObserver) {
                             Position::withoutEvents(
@@ -189,6 +198,16 @@ class PositionsRelationManager extends RelationManager
                         }
 
                         $record->refresh();
+                    })
+                    ->after(function (EditAction $action, Model $record, PositionAttachmentHistoryService $attachmentHistoryService): void {
+                        /** @var Position $record */
+                        $skipObserver = (bool) ($action->getArguments()['skipPositionObserver'] ?? false);
+
+                        if ($skipObserver) {
+                            return;
+                        }
+
+                        $attachmentHistoryService->finalizeSaveWithHistory($record);
                     }),
                 Action::make('open_position_edit')
                     ->label(__('filament.relation_managers.positions.open_edit_in_new_tab'))

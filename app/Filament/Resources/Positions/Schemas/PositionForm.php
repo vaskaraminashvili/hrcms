@@ -240,6 +240,7 @@ class PositionForm
                             SpatieMediaLibraryFileUpload::make('position_file_attachments_attachments')
                                 ->label(__('filament.position_file_attachments'))
                                 ->collection('position')
+                                ->model($historySnapshot)
                                 ->removeUploadedFileButtonPosition('right')
                                 ->multiple()
                                 ->openable()

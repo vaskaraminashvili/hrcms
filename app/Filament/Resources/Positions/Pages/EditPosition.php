@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Positions\Pages;
 use App\Filament\Resources\Positions\PositionResource;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Models\Position;
+use App\Services\PositionAttachmentHistoryService;
 use App\Services\PositionFormPersistence;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
@@ -133,13 +134,28 @@ class EditPosition extends EditRecord
                 ->modalHeading(__('filament.position_edit.modal_save_history_heading'))
                 ->modalDescription(__('filament.position_edit.modal_save_history_description'))
                 ->modalSubmitActionLabel(__('filament.position_edit.modal_save_history_submit'))
-                ->action(function (): void {
+                ->action(function (PositionAttachmentHistoryService $attachmentHistoryService): void {
+                    $this->form->validate();
+
+                    /** @var Position $position */
+                    $position = $this->getRecord();
+
+                    $attachmentHistoryService->beginSaveWithHistory(
+                        $position,
+                        PositionAttachmentHistoryService::formStateWithMediaField($this->form),
+                    );
+
                     $this->skipPositionObserverOnNextSave = false;
+
                     try {
                         $this->save();
                     } finally {
                         $this->skipPositionObserverOnNextSave = false;
                     }
+
+                    $attachmentHistoryService->finalizeSaveWithHistory($position->refresh());
+
+                    $this->form->loadStateFromRelationships(shouldHydrate: true);
                 }),
             $this->getCancelFormAction(),
         ];
