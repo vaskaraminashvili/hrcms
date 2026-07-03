@@ -42,7 +42,6 @@ class EmployeeForm
                                     ->label(__('filament.employee_image'))
                                     ->content(function (?Employee $record): HtmlString {
                                         $imageUrl = $record?->employeeImageUrl();
-
                                         if ($imageUrl === null) {
                                             return new HtmlString('');
                                         }
@@ -52,14 +51,18 @@ class EmployeeForm
                                         );
                                     })
                                     ->columnSpanFull(),
-                                // SpatieMediaLibraryFileUpload::make('employee_image')
-                                //     ->label(__('filament.employee_image'))
-                                //     ->collection('employee_image')
-                                //     ->removeUploadedFileButtonPosition('right')
-                                //     ->openable()
-                                //     ->downloadable()
-                                //     ->columnSpanFull()
-                                //     ->extraAttributes(['class' => 'attachments-upload']),
+                                SpatieMediaLibraryFileUpload::make('employee_image')
+                                    ->label(__('filament.employee_image'))
+                                    ->collection('employee_image')
+                                    ->removeUploadedFileButtonPosition('right')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpanFull()
+                                    ->extraAttributes(['class' => 'attachments-upload'])
+                                    ->previewable(false)
+                                    ->hintColor('danger')
+                                    ->hint('ასატვირთი ფოტოსურათი უნდა იყოს 3×4 ფორმატის, ოფიციალური, მაღალი ხარისხის და CV-ისთვის შესაბამისი'),
+
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
