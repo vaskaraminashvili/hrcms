@@ -104,6 +104,9 @@ return [
     'position_history_kv_value' => 'Value',
     'position_history_edit_title' => 'Position fields at this change',
     'position_history_field_changed_helper' => 'Changed: :change',
+    'position_history_section_attachments' => 'Archived attachments',
+    'position_history_attachments_description' => 'Files moved to this history record when the position was saved with history',
+    'position_history_no_attachments' => 'No archived attachments',
 
     'save' => 'Save',
     'save_history' => 'Save with history',
@@ -132,6 +135,7 @@ return [
         'place_id' => 'Place',
         'staff_type' => 'Staff type',
         'clinical' => 'Clinical',
+        'position_attachments' => 'Position attachments',
     ],
 
     'position_history_affects' => [
