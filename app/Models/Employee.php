@@ -98,6 +98,7 @@ class Employee extends Model implements HasMedia
     public function workExperiences(): HasMany
     {
         return $this->hasMany(WorkExperience::class)
+            ->orderByRaw('ended_at IS NULL DESC')
             ->orderByDesc('ended_at')
             ->orderByDesc('started_at');
     }
