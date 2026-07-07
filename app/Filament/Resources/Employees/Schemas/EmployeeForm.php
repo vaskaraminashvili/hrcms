@@ -155,6 +155,7 @@ class EmployeeForm
                                     $repeater
                                         ->relationship(
                                             modifyQueryUsing: fn ($query) => $query
+                                                ->orderByRaw('ended_at IS NULL DESC')
                                                 ->orderByDesc('ended_at')
                                                 ->orderByDesc('started_at'),
                                         )
