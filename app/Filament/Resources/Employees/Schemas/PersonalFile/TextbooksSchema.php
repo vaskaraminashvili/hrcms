@@ -23,6 +23,8 @@ class TextbooksSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'textbooks.xlsx';
 
+    public static bool $fileUploadEnabled = true;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -87,5 +89,10 @@ class TextbooksSchema
                 ->label(__('filament.personal_file.page_count'))
                 ->numeric(),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

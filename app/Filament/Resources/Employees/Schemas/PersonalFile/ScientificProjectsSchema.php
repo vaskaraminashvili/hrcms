@@ -23,6 +23,8 @@ class ScientificProjectsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scientific_projects.xlsx';
 
+    public static bool $fileUploadEnabled = false;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -85,5 +87,10 @@ class ScientificProjectsSchema
             DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
             DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

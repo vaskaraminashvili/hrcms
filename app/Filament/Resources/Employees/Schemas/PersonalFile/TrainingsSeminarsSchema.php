@@ -23,6 +23,8 @@ class TrainingsSeminarsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'trainings_seminars.xlsx';
 
+    public static bool $fileUploadEnabled = true;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -84,5 +86,10 @@ class TrainingsSeminarsSchema
             DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
             DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

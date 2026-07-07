@@ -430,6 +430,7 @@ return [
 
     'personal_file' => [
         'attachments' => 'დანართები',
+        'personal_documents' => 'პირადობის დამადასტურებელი მოწმობა',
 
         'locale_georgian' => 'ქართული',
         'locale_english' => 'ინგლისური',
@@ -448,6 +449,8 @@ return [
 
         'academic_degrees' => [
             'degree' => 'ხარისხი',
+
+            'file_label' => 'აკადემიური ხარისხის დამადასტურებელი მოწმობა',
             'other' => 'სხვა',
         ],
         'academic_position' => [
@@ -483,6 +486,7 @@ return [
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'განათლების ჩანაწერები წარმატებით იქნა იმპორტირებული.',
+            'file_label' => 'განათლების დამადასტურებელი მოწმობა',
         ],
 
         'work_experience' => [
@@ -505,6 +509,7 @@ return [
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'ტრენინგები და სემინარები წარმატებით იქნა იმპორტირებული.',
+            'file_label' => 'ტრენინგების და სემინარების დამადასტურებელი მოწმობა',
         ],
 
         'publications' => [

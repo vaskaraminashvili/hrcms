@@ -10,6 +10,8 @@ class AcademicPositionSchema
 {
     use HasTranslatableFields;
 
+    public static bool $fileUploadEnabled = true;
+
     public static function schema(): array
     {
         return [
@@ -19,5 +21,10 @@ class AcademicPositionSchema
                     fn (AcademicPosition $case) => [$case->value => $case->getLabel()]
                 )),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

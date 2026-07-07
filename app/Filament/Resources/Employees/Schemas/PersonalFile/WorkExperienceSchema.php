@@ -26,6 +26,8 @@ class WorkExperienceSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'work_experience.xlsx';
 
+    public static bool $fileUploadEnabled = false;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -111,5 +113,10 @@ class WorkExperienceSchema
                 ->after('started_at')
                 ->label(__('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

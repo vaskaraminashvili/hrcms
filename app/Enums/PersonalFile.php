@@ -3,6 +3,7 @@
 namespace App\Enums;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 
 enum PersonalFile: string
@@ -20,6 +21,20 @@ enum PersonalFile: string
     case FOREIGN_LANGUAGES = 'foreign_languages';
     case COMPUTER_SKILLS = 'computer_skills';
     case OTHER = 'other';
+
+    public function attachmentsLabel(): string
+    {
+        if ($this->hasCustomAttachmentsLabel()) {
+            return __('filament.personal_file.'.$this->value.'.file_label');
+        }
+
+        return __('filament.personal_file.attachments');
+    }
+
+    public function hasCustomAttachmentsLabel(): bool
+    {
+        return Lang::has('filament.personal_file.'.$this->value.'.file_label');
+    }
 
     public function label(): string
     {
