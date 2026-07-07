@@ -292,6 +292,11 @@ return [
             'reset_password_modal_description' => 'This will reset the employee\'s login password to the default and require them to set a new password on next sign-in.',
             'reset_password_success' => 'Password reset successfully.',
             'reset_password_no_user' => 'This employee does not have a user account.',
+            'create_user_modal_heading' => 'Create employee user account?',
+            'create_user_modal_description' => 'This will create a login account for the employee with the default password and the employee role.',
+            'create_user_success' => 'User account created successfully.',
+            'create_user_failed' => 'User account could not be created.',
+            'create_user_not_allowed' => 'You are not allowed to create a user account for this employee.',
         ],
         'view_employee' => [
             'title' => 'View employee',

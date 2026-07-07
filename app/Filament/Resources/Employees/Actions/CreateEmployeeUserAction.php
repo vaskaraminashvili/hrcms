@@ -4,12 +4,10 @@ namespace App\Filament\Resources\Employees\Actions;
 
 use App\Models\Employee;
 use App\Models\User;
+use App\Services\EmployeeUserService;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class CreateEmployeeUserAction
 {
@@ -20,6 +18,8 @@ class CreateEmployeeUserAction
             ->icon('heroicon-m-user-plus')
             ->color('success')
             ->requiresConfirmation()
+            ->modalHeading(__('filament.admin.edit_employee.create_user_modal_heading'))
+            ->modalDescription(__('filament.admin.edit_employee.create_user_modal_description'))
             ->action(function (Employee $record): void {
                 self::create($record);
             });
@@ -45,75 +45,29 @@ class CreateEmployeeUserAction
         if (! self::canCreate($employee)) {
             Notification::make()
                 ->warning()
-                ->title(__('filament::notifications.danger') ?? 'Action not allowed.')
+                ->title(__('filament.admin.edit_employee.create_user_not_allowed'))
                 ->send();
 
             return;
         }
 
-        $email = self::resolveUniqueEmail($employee);
-
         try {
-            $user = User::query()->create([
-                'name' => trim("{$employee->name} {$employee->surname}") !== ''
-                    ? trim("{$employee->name} {$employee->surname}")
-                    : 'Employee '.$employee->id,
-                'email' => $email,
-                'password' => Hash::make((string) config('employees.default_password', 'password')),
-                'force_renew_password' => true,
-            ]);
-        } catch (QueryException $exception) {
+            app(EmployeeUserService::class)->createForEmployee($employee);
+        } catch (\Throwable $exception) {
+            report($exception);
+
             Notification::make()
                 ->danger()
-                ->title(__('filament::notifications.danger') ?? 'Failed to create user.')
+                ->title(__('filament.admin.edit_employee.create_user_failed'))
                 ->body($exception->getMessage())
                 ->send();
 
             return;
         }
 
-        $user->assignRole('employee');
-
-        $employee->forceFill(['user_id' => $user->id])->save();
-
         Notification::make()
             ->success()
-            ->title(__('filament::notifications.success') ?? 'User created.')
+            ->title(__('filament.admin.edit_employee.create_user_success'))
             ->send();
     }
-
-    private static function resolveUniqueEmail(Employee $employee): string
-    {
-        $existingEmail = Str::lower(trim((string) $employee->email));
-        if ($existingEmail !== '' && ! User::query()->where('email', $existingEmail)->exists()) {
-            return $existingEmail;
-        }
-
-        $domain = trim((string) config('employees.seed_email_domain'));
-        if ($domain === '') {
-            $domain = 'invalid.local';
-        }
-
-        $local = preg_replace('/\s+/', '', trim((string) $employee->personal_number)) ?? '';
-        if ($local === '') {
-            $local = 'employee-'.$employee->getKey();
-        }
-
-        $base = Str::lower($local.'@'.$domain);
-
-        if (! User::query()->where('email', $base)->exists()) {
-            return $base;
-        }
-
-        for ($suffix = 2; $suffix < 100_000; $suffix++) {
-            $candidate = Str::lower($local.$suffix.'@'.$domain);
-
-            if (! User::query()->where('email', $candidate)->exists()) {
-                return $candidate;
-            }
-        }
-
-        return Str::lower('employee-'.$employee->getKey().'-'.Str::uuid().'@'.$domain);
-    }
 }
-
