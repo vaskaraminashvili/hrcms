@@ -23,6 +23,8 @@ class ScholarshipsAwardsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scholarships_awards.xlsx';
 
+    public static bool $fileUploadEnabled = true;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -84,5 +86,10 @@ class ScholarshipsAwardsSchema
             static::translatableField('grant_details', __('filament.personal_file.scholarships_awards.grant_details')),
             TextInput::make('issued_at')->label(__('filament.personal_file.dates.issued_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

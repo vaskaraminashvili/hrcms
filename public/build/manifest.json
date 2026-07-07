@@ -9,7 +9,7 @@
     ]
   },
   "resources/css/filament/admin/custom.css": {
-    "file": "assets/custom-CzoU95c7.css",
+    "file": "assets/custom-bh9JGfzg.css",
     "src": "resources/css/filament/admin/custom.css",
     "isEntry": true,
     "name": "custom",
@@ -24,7 +24,7 @@
     "isEntry": true
   },
   "resources/scss/department-tree/department-tree.scss": {
-    "file": "assets/department-tree-sRWrQzRa.css",
+    "file": "assets/department-tree-Df0qrcab.css",
     "src": "resources/scss/department-tree/department-tree.scss",
     "isEntry": true,
     "name": "department-tree",

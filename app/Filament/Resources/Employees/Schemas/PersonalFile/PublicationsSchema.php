@@ -26,6 +26,8 @@ class PublicationsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scholar_export.xlsx';
 
+    public static bool $fileUploadEnabled = true;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -113,5 +115,10 @@ class PublicationsSchema
             TextInput::make('page_count')
                 ->label(__('filament.personal_file.page_count')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

@@ -128,9 +128,10 @@ class EmployeeForm
                                     ->columns(2)
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
-                                    ->label(__('filament.personal_file.attachments'))
+                                    ->label(__('filament.personal_file.personal_documents'))
                                     ->collection('basic_information_attachments')
                                     ->removeUploadedFileButtonPosition('right')
+                                    ->extraFieldWrapperAttributes(['class' => 'attachment-label-danger'])
                                     ->multiple()
                                     ->openable()
                                     ->downloadable()
@@ -200,16 +201,26 @@ class EmployeeForm
                                         ])
                                         ->addAction(fn (Action $action) => $action->visible(false))
                                         ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
-                                    SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
-                                        ->label(__('filament.personal_file.attachments'))
+
+                                ];
+
+                                if (method_exists($schemaClass, 'fileUploadEnabled') && $schemaClass::fileUploadEnabled()) {
+                                    $fileUpload = SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                        ->label($case->attachmentsLabel())
                                         ->collection($case->mediaCollectionName())
                                         ->removeUploadedFileButtonPosition('right')
                                         ->multiple()
                                         ->openable()
                                         ->downloadable()
                                         ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'attachments-upload']),
-                                ];
+                                        ->extraAttributes(['class' => 'attachments-upload']);
+
+                                    if ($case->hasCustomAttachmentsLabel()) {
+                                        $fileUpload->extraFieldWrapperAttributes(['class' => 'attachment-label-danger']);
+                                    }
+
+                                    $tabSchema[] = $fileUpload;
+                                }
 
                                 if (method_exists($schemaClass, 'tabHeaderActions')) {
                                     array_unshift($tabSchema, $schemaClass::tabHeaderActions());

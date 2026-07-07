@@ -23,6 +23,8 @@ class ScientificForumsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scientific_forums.xlsx';
 
+    public static bool $fileUploadEnabled = true;
+
     public static function tabHeaderActions(): Actions
     {
         return Actions::make([
@@ -84,5 +86,10 @@ class ScientificForumsSchema
             DatePicker::make('start_date')->label(__('filament.personal_file.dates.started_at')),
             DatePicker::make('end_date')->label(__('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }
