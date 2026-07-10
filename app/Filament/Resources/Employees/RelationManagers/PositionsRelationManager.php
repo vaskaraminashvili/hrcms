@@ -178,18 +178,27 @@ class PositionsRelationManager extends RelationManager
                             ['id', 'created_at', 'updated_at'],
                         ));
                     })
-                    ->using(function (array $data, RelationManager $livewire, Model $record, ?Table $table, PositionAttachmentHistoryService $attachmentHistoryService): void {
-                        /** @var Position $record */
-                        $skipObserver = (bool) ($livewire->getMountedAction()?->getArguments()['skipPositionObserver'] ?? false);
-
-                        if (! $skipObserver) {
-                            $attachmentHistoryService->beginSaveWithHistory(
-                                $record,
-                                PositionAttachmentHistoryService::formStateWithMediaFieldFromMountedAction($livewire),
-                            );
+                    // beginSaveWithHistory must run in before(): Filament saves Spatie media
+                    // during getState() (after before(), before using()).
+                    ->before(function (
+                        EditAction $action,
+                        RelationManager $livewire,
+                        Model $record,
+                        PositionAttachmentHistoryService $attachmentHistoryService,
+                    ): void {
+                        if (self::shouldSkipPositionObserver($action)) {
+                            return;
                         }
 
-                        if ($skipObserver) {
+                        /** @var Position $record */
+                        $attachmentHistoryService->beginSaveWithHistory(
+                            $record,
+                            PositionAttachmentHistoryService::formStateWithMediaFieldFromMountedAction($livewire),
+                        );
+                    })
+                    ->using(function (array $data, EditAction $action, Model $record): void {
+                        /** @var Position $record */
+                        if (self::shouldSkipPositionObserver($action)) {
                             Position::withoutEvents(
                                 fn () => PositionFormPersistence::updatePositionAndDetail($record, $data),
                             );
@@ -200,13 +209,11 @@ class PositionsRelationManager extends RelationManager
                         $record->refresh();
                     })
                     ->after(function (EditAction $action, Model $record, PositionAttachmentHistoryService $attachmentHistoryService): void {
-                        /** @var Position $record */
-                        $skipObserver = (bool) ($action->getArguments()['skipPositionObserver'] ?? false);
-
-                        if ($skipObserver) {
+                        if (self::shouldSkipPositionObserver($action)) {
                             return;
                         }
 
+                        /** @var Position $record */
                         $attachmentHistoryService->finalizeSaveWithHistory($record);
                     }),
                 Action::make('open_position_edit')
@@ -239,5 +246,10 @@ class PositionsRelationManager extends RelationManager
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function shouldSkipPositionObserver(EditAction $action): bool
+    {
+        return (bool) ($action->getArguments()['skipPositionObserver'] ?? false);
     }
 }
