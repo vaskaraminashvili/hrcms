@@ -8,6 +8,7 @@ use App\Models\PublicHoliday;
 use App\Observers\DepartmentObserver;
 use App\Observers\PositionObserver;
 use App\Observers\PublicHolidayObserver;
+use App\Services\PositionAttachmentHistoryService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Filament\Support\Assets\Css;
@@ -24,7 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Shared across Filament action before/using/after hooks in one request.
+        $this->app->scoped(PositionAttachmentHistoryService::class);
     }
 
     /**
