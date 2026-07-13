@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\ScientificForumsImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ScientificForumsSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/scientific_forums/scientific_forums.xlsx';
 
@@ -83,8 +84,8 @@ class ScientificForumsSchema
         return [
             static::translatableField('title', __('filament.personal_file.scientific_forums.title')),
             static::translatableField('participation_form', __('filament.personal_file.scientific_forums.participation_form')),
-            DatePicker::make('start_date')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('end_date')->label(__('filament.personal_file.dates.ended_at')),
+            static::yearMonthField('start_date', __('filament.personal_file.dates.started_at')),
+            static::yearMonthField('end_date', __('filament.personal_file.dates.ended_at')),
         ];
     }
 

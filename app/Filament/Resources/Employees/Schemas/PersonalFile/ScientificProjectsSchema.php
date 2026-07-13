@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\ScientificProjectsImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class ScientificProjectsSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/scientific_projects/scientific_projects.xlsx';
 
@@ -84,8 +85,8 @@ class ScientificProjectsSchema
             static::translatableField('project_name', __('filament.personal_file.scientific_projects.project_name')),
             static::translatableField('institution', __('filament.personal_file.scientific_projects.institution')),
             static::translatableField('position', __('filament.personal_file.scientific_projects.position')),
-            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
+            static::yearMonthField('started_at', __('filament.personal_file.dates.started_at')),
+            static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at')),
         ];
     }
 

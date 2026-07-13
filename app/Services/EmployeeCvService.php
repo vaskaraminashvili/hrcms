@@ -644,22 +644,30 @@ class EmployeeCvService
             return null;
         }
 
-        if ($date instanceof Carbon) {
-
-            return $date->format('d.m.Y');
-        } else {
+        if (! $date instanceof Carbon) {
             $date = Carbon::parse($date);
-
-            return $date->format('d.m.Y');
         }
 
-        return (string) $date;
+        return $date->format('d.m.Y');
+    }
+
+    private function formatYearMonth(mixed $date): ?string
+    {
+        if ($date === null || $date === '') {
+            return null;
+        }
+
+        if (! $date instanceof Carbon) {
+            $date = Carbon::parse($date);
+        }
+
+        return $date->format('Y-m');
     }
 
     private function formatPeriod(mixed $startedAt, mixed $endedAt): string
     {
-        $start = $this->formatDate($startedAt) ?? '';
-        $end = $this->formatDate($endedAt) ?? '';
+        $start = $this->formatYearMonth($startedAt) ?? '';
+        $end = $this->formatYearMonth($endedAt) ?? '';
 
         return "{$start} - {$end}";
     }
