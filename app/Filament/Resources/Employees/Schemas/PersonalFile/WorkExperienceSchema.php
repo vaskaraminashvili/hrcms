@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\WorkExperienceImport;
 use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class WorkExperienceSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/work_experience/work_experience.xlsx';
 
@@ -86,9 +87,7 @@ class WorkExperienceSchema
         return [
             static::translatableField('institution', __('filament.personal_file.work_experience.institution')),
             static::translatableField('position', __('filament.personal_file.work_experience.position')),
-            DatePicker::make('started_at')
-                ->native(false)
-                ->displayFormat('d.m.Y')
+            static::yearMonthField('started_at', __('filament.personal_file.dates.started_at'))
                 ->live()
                 ->afterStateUpdated(function (Get $get, Set $set): void {
                     $endedAt = $get('ended_at');
@@ -98,20 +97,15 @@ class WorkExperienceSchema
                         return;
                     }
 
-                    if (Carbon::parse($endedAt)->lte(Carbon::parse($startedAt))) {
+                    if (Carbon::parse($endedAt)->startOfMonth()->lte(Carbon::parse($startedAt)->startOfMonth())) {
                         $set('ended_at', null);
                     }
-                })
-                ->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')
-                ->native(false)
-                ->displayFormat('d.m.Y')
+                }),
+            static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at'))
                 ->disabled(fn (Get $get): bool => blank($get('started_at')))
-                ->minDate(fn (Get $get) => filled($get('started_at'))
-                    ? Carbon::parse($get('started_at'))->addDay()
-                    : null)
-                ->after('started_at')
-                ->label(__('filament.personal_file.dates.ended_at')),
+                ->extraInputAttributes(fn (Get $get): array => filled($get('started_at'))
+                    ? ['min' => Carbon::parse($get('started_at'))->addMonth()->format('Y-m')]
+                    : []),
         ];
     }
 
