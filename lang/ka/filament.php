@@ -498,6 +498,8 @@ return [
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'სამუშაო გამოცდილება წარმატებით იქნა იმპორტირებული.',
+            'ended_before_started' => 'დასრულების თარიღი უნდა იყოს დაწყების თარიღის ტოლი ან მეტი. გთხოვთ გაასწოროთ ეს ჩანაწერი შენახვამდე.',
+            'invalid_dates_item_label' => 'არასწორი თარიღები — :label',
         ],
 
         'trainings_seminars' => [

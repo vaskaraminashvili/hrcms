@@ -429,6 +429,8 @@ return [
             'import_submit' => 'Import',
             'import_file_label' => 'Excel file',
             'import_success' => 'Work experience imported successfully.',
+            'ended_before_started' => 'End date must be on or after the start date. Please fix this record before saving.',
+            'invalid_dates_item_label' => 'Invalid dates — :label',
         ],
 
         'trainings_seminars' => [

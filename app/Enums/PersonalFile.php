@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
@@ -153,7 +154,21 @@ enum PersonalFile: string
         $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
         $period = $state['started_at'].' - '.($state['ended_at'] ?? 'N/A');
 
-        return is_string($value) ? Str::limit($value, 58).' - '.$period : null;
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $label = Str::limit($value, 58).' - '.$period;
+
+        $startedAt = $state['started_at'] ?? null;
+        $endedAt = $state['ended_at'] ?? null;
+
+        if (filled($startedAt) && filled($endedAt)
+            && Carbon::parse($endedAt)->startOfMonth()->lt(Carbon::parse($startedAt)->startOfMonth())) {
+            return __('filament.personal_file.work_experience.invalid_dates_item_label', ['label' => $label]);
+        }
+
+        return $label;
     }
 
     private static function resolveAcademicDegreeItemLabelFromState(array $state): ?string
