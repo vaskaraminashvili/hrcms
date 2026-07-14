@@ -11,7 +11,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -88,24 +87,46 @@ class WorkExperienceSchema
             static::translatableField('institution', __('filament.personal_file.work_experience.institution')),
             static::translatableField('position', __('filament.personal_file.work_experience.position')),
             static::yearMonthField('started_at', __('filament.personal_file.dates.started_at'))
-                ->live()
-                ->afterStateUpdated(function (Get $get, Set $set): void {
-                    $endedAt = $get('ended_at');
-                    $startedAt = $get('started_at');
-
-                    if (blank($endedAt) || blank($startedAt)) {
-                        return;
-                    }
-
-                    if (Carbon::parse($endedAt)->startOfMonth()->lte(Carbon::parse($startedAt)->startOfMonth())) {
-                        $set('ended_at', null);
-                    }
-                }),
+                ->live(),
             static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at'))
+                ->live()
                 ->disabled(fn (Get $get): bool => blank($get('started_at')))
-                ->extraInputAttributes(fn (Get $get): array => filled($get('started_at'))
-                    ? ['min' => Carbon::parse($get('started_at'))->addMonth()->format('Y-m')]
-                    : []),
+                ->afterOrEqual('started_at')
+                ->validationMessages([
+                    'after_or_equal' => __('filament.personal_file.work_experience.ended_before_started'),
+                ])
+                ->helperText(function (Get $get): ?string {
+                    $startedAt = $get('started_at');
+                    $endedAt = $get('ended_at');
+
+                    if (blank($startedAt) || blank($endedAt)) {
+                        return null;
+                    }
+
+                    if (Carbon::parse($endedAt)->startOfMonth()->lt(Carbon::parse($startedAt)->startOfMonth())) {
+                        return __('filament.personal_file.work_experience.ended_before_started');
+                    }
+
+                    return null;
+                })
+                ->extraInputAttributes(function (Get $get): array {
+                    $startedAt = $get('started_at');
+                    $endedAt = $get('ended_at');
+
+                    if (blank($startedAt)) {
+                        return [];
+                    }
+
+                    $min = Carbon::parse($startedAt)->format('Y-m');
+
+                    // Skip HTML min when a legacy value is already below it, so the browser
+                    // does not block submit before Filament can show the field error.
+                    if (filled($endedAt) && Carbon::parse($endedAt)->format('Y-m') < $min) {
+                        return [];
+                    }
+
+                    return ['min' => $min];
+                }),
         ];
     }
 
