@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Filament\Exports\EmployeeExporter;
+use App\Filament\Resources\Employees\EmployeeResource;
 use App\Models\Employee;
 use BackedEnum;
 use App\Support\DepartmentBadgeColors;
@@ -64,6 +65,8 @@ class EmployeeReport extends Page implements HasTable
                 ->formatStateUsing(function (string $state, Employee $record): string {
                     return $record->name.' '.$record->surname;
                 })
+                ->url(fn (Employee $record): string => EmployeeResource::getUrl('edit', ['record' => $record]))
+                ->openUrlInNewTab()
                 ->searchable(['name', 'surname']),
 
             TextColumn::make('name_eng')
