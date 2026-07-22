@@ -10,6 +10,7 @@ use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Number;
 
 class EmployeeExporter extends Exporter
@@ -142,15 +143,73 @@ class EmployeeExporter extends Exporter
         return $start instanceof CarbonInterface ? $start : null;
     }
 
+    /**
+     * Total employed time across all positions, with overlapping ranges merged
+     * so concurrent appointments are counted once. Open-ended positions run to today.
+     */
     private static function workTenure(Employee $record): string
     {
-        $start = self::employmentStartDate($record);
+        $merged = self::mergedEmploymentIntervals($record);
 
-        if ($start === null) {
+        if ($merged->isEmpty()) {
             return '';
         }
 
-        return $start->diff(now())->format('%y წელი %m თვე');
+        $totalMonths = $merged->sum(
+            fn (array $interval): int => (int) $interval[0]->diffInMonths($interval[1])
+        );
+
+        $years = intdiv($totalMonths, 12);
+        $months = $totalMonths % 12;
+
+        return "{$years} წელი {$months} თვე";
+    }
+
+    /**
+     * @return Collection<int, array{0: CarbonInterface, 1: CarbonInterface}>
+     */
+    private static function mergedEmploymentIntervals(Employee $record): Collection
+    {
+        $now = now();
+
+        $intervals = $record->positions
+            ->filter(fn (Position $position): bool => $position->date_start !== null)
+            ->map(function (Position $position) use ($now): array {
+                $start = $position->date_start->copy()->startOfDay();
+                $end = ($position->date_end ?? $now)->copy()->startOfDay();
+
+                if ($end->lt($start)) {
+                    $end = $start->copy();
+                }
+
+                return [$start, $end];
+            })
+            ->sortBy(fn (array $interval): int => $interval[0]->getTimestamp())
+            ->values();
+
+        if ($intervals->isEmpty()) {
+            return collect();
+        }
+
+        $merged = collect();
+        [$currentStart, $currentEnd] = $intervals->first();
+
+        foreach ($intervals->slice(1) as [$start, $end]) {
+            if ($start->lte($currentEnd)) {
+                if ($end->gt($currentEnd)) {
+                    $currentEnd = $end;
+                }
+
+                continue;
+            }
+
+            $merged->push([$currentStart, $currentEnd]);
+            [$currentStart, $currentEnd] = [$start, $end];
+        }
+
+        $merged->push([$currentStart, $currentEnd]);
+
+        return $merged;
     }
 
     private static function formatPositionChanges(Employee $record): string
