@@ -51,6 +51,7 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->databaseNotifications()
             ->navigationItems([
                 NavigationItem::make(EmployeeStatusEnum::ARCHIVED->getLabel())
                     ->url(fn (): string => route('filament.admin.resources.employees.index', [
