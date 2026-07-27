@@ -163,6 +163,8 @@ return [
     'status' => 'სტატუსი',
     'active' => 'აქტიური',
     'archived' => 'დაარქივირებული',
+    'employee_report_label' => 'თანამშრომლების რეპორტი',
+    'reports_group_label' => 'რეპორტები',
     'created_at' => 'შექმნის თარიღი',
     'time' => 'დრო',
     'updated_at' => 'განახლების თარიღი',

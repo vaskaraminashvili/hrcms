@@ -40,7 +40,6 @@ class EmployeeReport extends Page implements HasTable
 
     protected static ?string $slug = 'reports/employees';
 
-    protected static ?string $navigationLabel = 'Employee Report';
 
     protected static string|UnitEnum|null $navigationGroup = 'Reports';
 
@@ -48,6 +47,16 @@ class EmployeeReport extends Page implements HasTable
 
     protected string $view = 'filament.pages.employee-report';
 
+    public static function getNavigationGroup(): string
+    {
+        return __('filament.reports_group_label');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('filament.employee_report_label');
+    }
+    
     public function table(Table $table): Table
     {
         return $table
