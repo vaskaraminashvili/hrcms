@@ -18,7 +18,9 @@ class CreateEmployee extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['birth_date'] = '1900-01-01'; // set the oldest date for the birth date
+        if (blank($data['birth_date'] ?? null)) {
+            $data['birth_date'] = '1900-01-01';
+        }
 
         return $data;
     }
