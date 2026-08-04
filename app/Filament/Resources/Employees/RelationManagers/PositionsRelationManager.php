@@ -40,7 +40,9 @@ class PositionsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['department.parent']))
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query
+                ->with(['department.parent'])
+                ->whereNot('status', PositionStatus::Achieved->value))
             ->filters(
                 [
                     PositionTableFilters::hideScheduledDismissals(),
