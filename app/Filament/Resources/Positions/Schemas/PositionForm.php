@@ -26,6 +26,7 @@ use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\TextSize;
@@ -181,7 +182,9 @@ class PositionForm
                                 }),
                             DatePicker::make('date_end')
                                 ->label(__('filament.date_end'))
-                                ->required(fn ($get): bool => self::statusIsDismissal($get('status'))),
+                                ->disabled(fn ($get): bool => (bool) $get('automative_renewal'))
+                                ->dehydrated()
+                                ->required(fn ($get): bool => self::statusIsDismissal($get('status')) && ! (bool) $get('automative_renewal')),
 
                             TextInput::make('act_number')
                                 ->label(__('filament.act_number')),
@@ -192,8 +195,12 @@ class PositionForm
                                 ->label(__('filament.status'))
                                 ->options(PositionStatus::class)
                                 ->live()
-                                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                ->afterStateUpdated(function (Get $get, Set $set, mixed $state): void {
                                     if (! self::statusIsDismissal($state)) {
+                                        return;
+                                    }
+
+                                    if ($get('automative_renewal')) {
                                         return;
                                     }
 
@@ -224,6 +231,12 @@ class PositionForm
                                 ->schema([
                                     Toggle::make('automative_renewal')
                                         ->label(__('filament.automative_renewal'))
+                                        ->live()
+                                        ->afterStateUpdated(function (Set $set, mixed $state): void {
+                                            if ($state) {
+                                                $set('date_end', null);
+                                            }
+                                        })
                                         ->visible(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type')))
                                         ->required(fn ($get): bool => self::positionTypeShowsAutomativeRenewal($get('position_type'))),
                                 ])
