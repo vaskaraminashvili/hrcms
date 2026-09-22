@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Enums\PublicationScope;
 use App\Imports\Concerns\InterpretsExcelImportRows;
 use App\Models\ScientificForum;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -27,6 +28,7 @@ class ScientificForumsImport implements ToModel, WithHeadingRow
             'employee_id' => $this->employeeId,
             'title' => $title,
             'participation_form' => $this->optionalTranslatableFromRow($row, 'participation_form'),
+            'scope' => PublicationScope::Local->value,
             'start_date' => $this->optionalDate($row['start_date'] ?? null),
             'end_date' => $this->optionalDate($row['end_date'] ?? null),
         ]);

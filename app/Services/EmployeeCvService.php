@@ -8,6 +8,8 @@ use App\Enums\CvLocale;
 use App\Enums\Education as EducationDegreeEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Enums\PublicationScope;
+use App\Enums\ScientificForumRole;
 use App\Models\AcademicDegree;
 use App\Models\AcademicPosition;
 use App\Models\ComputerSkill;
@@ -229,12 +231,66 @@ class EmployeeCvService
                 $this->field(__('filament.personal_file.publications.co_authors'), $this->translatable($publication->co_authors, $this->localeKey)),
                 $this->field(__('filament.personal_file.dates.published_at'), $publication->published_at !== null ? (string) $publication->published_at : null),
                 $this->field(__('filament.personal_file.page_count'), $publication->page_count !== null ? (string) $publication->page_count : null),
+                ...$this->publicationDetailFields($publication),
             ]))
             ->filter(fn (array $entry): bool => $entry['fields'] !== [])
             ->values()
             ->all();
 
         return $this->section(PersonalFile::PUBLICATIONS, $entries);
+    }
+
+    /**
+     * @return list<array{label: string|null, value: string|null, alwaysShow?: bool}|null>
+     */
+    private function publicationDetailFields(Publication $publication): array
+    {
+        $details = is_array($publication->publication_details) ? $publication->publication_details : [];
+        $scope = PublicationScope::tryFrom((string) ($details['scope'] ?? '')) ?? PublicationScope::Local;
+        $indexed = $scope === PublicationScope::International && (bool) ($details['indexed'] ?? false);
+        $impactFactor = $indexed && (bool) ($details['impact_factor'] ?? false);
+
+        $fields = [
+            $this->field(__('filament.personal_file.publications.scope'), $scope->getLabel()),
+        ];
+
+        if ($scope === PublicationScope::International) {
+            $fields[] = $this->field(
+                __('filament.personal_file.publications.indexed'),
+                $this->publicationBooleanLabel($indexed),
+            );
+        }
+
+        if ($indexed) {
+            $fields[] = $this->field(
+                __('filament.personal_file.publications.impact_factor'),
+                $this->publicationBooleanLabel($impactFactor),
+            );
+        }
+
+        return $fields;
+    }
+
+    private function publicationBooleanLabel(bool $value): string
+    {
+        return $value
+            ? __('filament.personal_file.publications.yes')
+            : __('filament.personal_file.publications.no');
+    }
+
+    private function scientificForumRoleLabel(?string $value): ?string
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $role = ScientificForumRole::tryFrom($value);
+
+        if ($role === ScientificForumRole::Attendee || $role === ScientificForumRole::Speaker) {
+            return $role->getLabel();
+        }
+
+        return $value;
     }
 
     /**
@@ -266,6 +322,11 @@ class EmployeeCvService
             ->map(fn (ScientificForum $forum): array => $this->entry([
                 $this->field(__('filament.personal_file.scientific_forums.title'), $this->translatable($forum->title, $this->localeKey)),
                 $this->field(__('filament.personal_file.scientific_forums.participation_form'), $this->translatable($forum->participation_form, $this->localeKey)),
+                $this->field(__('filament.personal_file.scientific_forums.participation_role'), $this->scientificForumRoleLabel($forum->participation_role)),
+                $this->field(
+                    __('filament.personal_file.scientific_forums.scope'),
+                    (PublicationScope::tryFrom((string) ($forum->scope ?? '')) ?? PublicationScope::Local)->getLabel(),
+                ),
                 $this->field(__('cv.period'), $this->formatPeriod(
                     $forum->getAttribute('start_date') ?? $forum->getAttribute('held_at'),
                     $forum->getAttribute('end_date'),
