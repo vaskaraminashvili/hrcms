@@ -28,6 +28,7 @@ class PublicationFactory extends Factory
                 'en' => $this->faker->name().', '.$this->faker->name(),
             ],
             'page_count' => $this->faker->numberBetween(4, 30),
+            'publication_details' => Publication::defaultPublicationDetails(),
         ];
     }
 }

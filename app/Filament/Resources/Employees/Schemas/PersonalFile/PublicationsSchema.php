@@ -2,16 +2,21 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Enums\PublicationScope;
 use App\Exceptions\InvalidExcelImportStructureException;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\ExcelImportStructureValidator;
 use App\Imports\PublicationsImport;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -114,7 +119,66 @@ class PublicationsSchema
                 ->label(__('filament.personal_file.dates.published_at')),
             TextInput::make('page_count')
                 ->label(__('filament.personal_file.page_count')),
+            Radio::make('publication_details.scope')
+                ->label(__('filament.personal_file.publications.scope'))
+                ->options(PublicationScope::class)
+                ->default(PublicationScope::Local->value)
+                ->inline()
+                ->required()
+                ->live()
+                ->afterStateHydrated(function (Radio $component, mixed $state): void {
+                    if (blank($state)) {
+                        $component->state(PublicationScope::Local->value);
+                    }
+                })
+                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                    if (self::publicationScope($state) === PublicationScope::International) {
+                        return;
+                    }
+
+                    $set('publication_details.indexed', false);
+                    $set('publication_details.impact_factor', false);
+                }),
+            Checkbox::make('publication_details.indexed')
+                ->label(__('filament.personal_file.publications.indexed'))
+                ->live()
+                ->dehydratedWhenHidden()
+                ->visible(fn (Get $get): bool => self::isInternational($get))
+                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                    if ($state) {
+                        return;
+                    }
+
+                    $set('publication_details.impact_factor', false);
+                }),
+            Checkbox::make('publication_details.impact_factor')
+                ->label(__('filament.personal_file.publications.impact_factor'))
+                ->dehydratedWhenHidden()
+                ->visible(fn (Get $get): bool => self::isIndexed($get)),
         ];
+    }
+
+    private static function isInternational(Get $get): bool
+    {
+        return self::publicationScope($get('publication_details.scope')) === PublicationScope::International;
+    }
+
+    private static function isIndexed(Get $get): bool
+    {
+        return self::isInternational($get) && (bool) $get('publication_details.indexed');
+    }
+
+    private static function publicationScope(mixed $state): ?PublicationScope
+    {
+        if ($state instanceof PublicationScope) {
+            return $state;
+        }
+
+        if (! is_string($state)) {
+            return null;
+        }
+
+        return PublicationScope::tryFrom($state);
     }
 
     public static function fileUploadEnabled(): bool

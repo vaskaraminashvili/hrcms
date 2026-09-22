@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\PersonalFile;
+use App\Enums\PublicationScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,7 @@ class Publication extends Model implements HasMedia
         'published_at',
         'co_authors',
         'page_count',
+        'publication_details',
     ];
 
     public array $translatable = ['title', 'place', 'co_authors'];
@@ -37,6 +39,19 @@ class Publication extends Model implements HasMedia
             'co_authors' => 'array',
             'published_at' => 'integer',
             'page_count' => 'integer',
+            'publication_details' => 'array',
+        ];
+    }
+
+    /**
+     * @return array{scope: string, indexed: bool, impact_factor: bool}
+     */
+    public static function defaultPublicationDetails(): array
+    {
+        return [
+            'scope' => PublicationScope::Local->value,
+            'indexed' => false,
+            'impact_factor' => false,
         ];
     }
 

@@ -32,6 +32,7 @@ class PublicationsImport implements ToModel, WithHeadingRow
             'co_authors' => $this->optionalTranslatableFromRow($row, 'authors'),
             'published_at' => $year,
             'page_count' => null,
+            'publication_details' => Publication::defaultPublicationDetails(),
         ]);
     }
 
