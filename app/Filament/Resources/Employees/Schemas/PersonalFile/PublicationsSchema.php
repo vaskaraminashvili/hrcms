@@ -77,6 +77,7 @@ class PublicationsSchema
                         ExcelImportStructureValidator::validateAgainstTemplate(
                             $path,
                             resource_path(self::TEMPLATE_RELATIVE_PATH),
+                            optionalTrailingColumns: 3,
                         );
                     } catch (InvalidExcelImportStructureException) {
                         Notification::make()

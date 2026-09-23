@@ -540,7 +540,7 @@ return [
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'პუბლიკაციები წარმატებით იქნა იმპორტირებული.',
             'import_invalid_structure' => 'Excel ფაილის არასწორი სტრუქტურა',
-            'import_invalid_structure_body' => 'ატვირთული ფაილი არ ემთხვევა ექსპორტის შაბლონს. გთხოვთ, ჩამოტვირთოთ შაბლონი და გამოიყენოთ იგივე სვეტების განლაგება (year, title_ka, title_en, authors_ka, authors_en, venue_ka, venue_en).',
+            'import_invalid_structure_body' => 'ატვირთული ფაილი არ ემთხვევა ექსპორტის შაბლონს. გთხოვთ, ჩამოტვირთოთ შაბლონი და გამოიყენოთ იგივე სვეტების განლაგება (year, title_ka, title_en, authors_ka, authors_en, venue_ka, venue_en). დამატებითი სვეტები: scope, indexed, impact_factor.',
         ],
 
         'textbooks' => [

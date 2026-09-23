@@ -7,19 +7,47 @@ use App\Models\Employee;
 use App\Models\ScientificForum;
 use App\Services\EmployeeCvService;
 
-test('scientific forums import defaults scope to local', function () {
+test('scientific forums import defaults missing role and scope columns', function () {
     $import = new ScientificForumsImport(1);
 
     $forum = $import->model([
         'title_ka' => 'კონფერენცია',
         'title_en' => 'Conference',
-        'participation_form_ka' => '',
-        'participation_form_en' => '',
     ]);
 
     expect($forum)->not->toBeNull()
-        ->and($forum->scope)->toBe(PublicationScope::Local->value)
-        ->and($forum->participation_role)->toBeNull();
+        ->and($forum->participation_role)->toBeNull()
+        ->and($forum->scope)->toBe(PublicationScope::Local->value);
+});
+
+test('scientific forums import maps role and scope from excel columns', function () {
+    $import = new ScientificForumsImport(1);
+
+    $forum = $import->model([
+        'title_ka' => 'კონფერენცია',
+        'title_en' => 'Conference',
+        'participation_role' => 'მომხსენებელი',
+        'scope' => 'საერთაშორისო',
+    ]);
+
+    expect($forum)->not->toBeNull()
+        ->and($forum->participation_role)->toBe(ScientificForumRole::Speaker->value)
+        ->and($forum->scope)->toBe(PublicationScope::International->value);
+});
+
+test('scientific forums import stores custom role text and defaults blank scope to local', function () {
+    $import = new ScientificForumsImport(1);
+
+    $forum = $import->model([
+        'title_ka' => 'კონფერენცია',
+        'title_en' => 'Conference',
+        'participation_role' => 'Chair',
+        'scope' => '',
+    ]);
+
+    expect($forum)->not->toBeNull()
+        ->and($forum->participation_role)->toBe('Chair')
+        ->and($forum->scope)->toBe(PublicationScope::Local->value);
 });
 
 test('cv shows attendee and local labels for scientific forums', function () {
