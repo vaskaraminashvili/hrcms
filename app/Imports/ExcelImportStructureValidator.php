@@ -11,14 +11,14 @@ class ExcelImportStructureValidator
     /**
      * @throws InvalidExcelImportStructureException
      */
-    public static function validateAgainstTemplate(string $importPath, string $templatePath): void
+    public static function validateAgainstTemplate(string $importPath, string $templatePath, int $optionalTrailingColumns = 0): void
     {
         abort_unless(is_file($templatePath), 404);
 
         $expectedHeadings = self::normalizeHeadings(self::readHeadingRow($templatePath));
         $actualHeadings = self::normalizeHeadings(self::readHeadingRow($importPath));
 
-        if (! self::headingsMatch($expectedHeadings, $actualHeadings)) {
+        if (! self::headingsMatch($expectedHeadings, $actualHeadings, $optionalTrailingColumns)) {
             throw new InvalidExcelImportStructureException;
         }
     }
@@ -61,14 +61,20 @@ class ExcelImportStructureValidator
      * @param  list<string>  $expected
      * @param  list<string>  $actual
      */
-    private static function headingsMatch(array $expected, array $actual): bool
+    private static function headingsMatch(array $expected, array $actual, int $optionalTrailingColumns = 0): bool
     {
-        if (count($expected) !== count($actual)) {
+        if ($optionalTrailingColumns < 0 || $optionalTrailingColumns >= count($expected)) {
             return false;
         }
 
-        foreach ($expected as $index => $heading) {
-            if (mb_strtolower($heading) !== mb_strtolower($actual[$index] ?? '')) {
+        $requiredCount = count($expected) - $optionalTrailingColumns;
+
+        if (count($actual) < $requiredCount || count($actual) > count($expected)) {
+            return false;
+        }
+
+        foreach ($actual as $index => $heading) {
+            if (mb_strtolower($heading) !== mb_strtolower($expected[$index] ?? '')) {
                 return false;
             }
         }

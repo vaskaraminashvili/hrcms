@@ -23,6 +23,62 @@ test('publications import defaults publication details to local', function () {
         ->and($publication->publication_details['scope'])->toBe(PublicationScope::Local->value);
 });
 
+test('publications import maps scope indexed and impact factor from excel columns', function () {
+    $import = new PublicationsImport(1);
+
+    $publication = $import->model([
+        'year' => 2024,
+        'title_ka' => 'სტატია',
+        'title_en' => 'Article',
+        'scope' => 'საერთაშორისო',
+        'indexed' => 'კი',
+        'impact_factor' => '1',
+    ]);
+
+    expect($publication)->not->toBeNull()
+        ->and($publication->publication_details)->toBe([
+            'scope' => PublicationScope::International->value,
+            'indexed' => true,
+            'impact_factor' => true,
+        ]);
+});
+
+test('publications import ignores indexed and impact factor unless the publication is international', function () {
+    $import = new PublicationsImport(1);
+
+    $publication = $import->model([
+        'year' => 2024,
+        'title_ka' => 'სტატია',
+        'title_en' => 'Article',
+        'scope' => 'ადგილობრივი',
+        'indexed' => 'კი',
+        'impact_factor' => 'კი',
+    ]);
+
+    expect($publication)->not->toBeNull()
+        ->and($publication->publication_details)->toBe(Publication::defaultPublicationDetails());
+});
+
+test('publications import ignores impact factor unless the publication is indexed', function () {
+    $import = new PublicationsImport(1);
+
+    $publication = $import->model([
+        'year' => 2024,
+        'title_ka' => 'სტატია',
+        'title_en' => 'Article',
+        'scope' => 'international',
+        'indexed' => '0',
+        'impact_factor' => '1',
+    ]);
+
+    expect($publication)->not->toBeNull()
+        ->and($publication->publication_details)->toBe([
+            'scope' => PublicationScope::International->value,
+            'indexed' => false,
+            'impact_factor' => false,
+        ]);
+});
+
 test('cv shows local type without indexed flags', function () {
     app()->setLocale('ka');
 

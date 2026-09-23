@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Enums\PublicationScope;
 use App\Imports\Concerns\InterpretsExcelImportRows;
 use App\Models\Publication;
 use Carbon\CarbonInterface;
@@ -32,8 +33,24 @@ class PublicationsImport implements ToModel, WithHeadingRow
             'co_authors' => $this->optionalTranslatableFromRow($row, 'authors'),
             'published_at' => $year,
             'page_count' => null,
-            'publication_details' => Publication::defaultPublicationDetails(),
+            'publication_details' => $this->publicationDetailsFromRow($row),
         ]);
+    }
+
+    /**
+     * @return array{scope: string, indexed: bool, impact_factor: bool}
+     */
+    private function publicationDetailsFromRow(array $row): array
+    {
+        $scope = $this->geographicScopeFromRow($row);
+        $indexed = $scope === PublicationScope::International->value
+            && $this->booleanFromRow($row['indexed'] ?? null);
+
+        return [
+            'scope' => $scope,
+            'indexed' => $indexed,
+            'impact_factor' => $indexed && $this->booleanFromRow($row['impact_factor'] ?? null),
+        ];
     }
 
     private function normalizeYear(mixed $value): ?int
