@@ -1,0 +1,24 @@
+---
+description: Tests must never wipe, refresh, or truncate application database data.
+globs: ["tests/**/*.php", "phpunit.xml", "phpunit.xml.dist", "tests/Pest.php"]
+alwaysApply: true
+---
+
+# Tests Must Never Wipe Database Data
+
+## ⚠️ STRICT RULES - DO NOT VIOLATE ⚠️
+
+Application data (Herd, `.env`, MySQL, or a SQLite file) must survive every test run. Tests may only touch the ephemeral in-memory database already set in `phpunit.xml`.
+
+1. **Never wipe the application database.** Do not run `migrate:fresh`, `migrate:refresh`, `migrate:reset`, `db:wipe`, `schema:drop`, `db:seed --force` against a fresh schema, or any `DROP` / `TRUNCATE` SQL on the application database. Do not run those commands "to reset tests."
+2. **Never point tests at the application database.** `phpunit.xml` must keep `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`, and `DB_URL` empty. Do not remove, comment out, or override those values. Do not pass `--env`, a custom phpunit config, or `DB_*` overrides that use `.env`.
+3. **`RefreshDatabase`, `LazilyRefreshDatabase`, and `DatabaseMigrations` are allowed only against that in-memory database.** They migrate and wipe whatever connection they receive. If the connection is not `sqlite` `:memory:`, stop and do not run the suite.
+4. **Before `php artisan test` or `vendor/bin/pest`, confirm the connection.** If it is anything other than in-memory SQLite, do not run tests.
+
+```php
+// ❌ BAD — refreshes the Herd / .env database and deletes real rows
+// phpunit.xml DB_CONNECTION changed to mysql, or DB_DATABASE left as the app database
+uses(LazilyRefreshDatabase::class);
+
+// ✅ GOOD — phpunit.xml stays on sqlite :memory:; refresh traits only rebuild that empty database
+```
