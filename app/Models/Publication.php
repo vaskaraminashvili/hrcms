@@ -55,6 +55,55 @@ class Publication extends Model implements HasMedia
         ];
     }
 
+    /**
+     * @return array{scope: string, indexed: bool, impact_factor: bool}
+     */
+    public static function normalizePublicationDetails(mixed $scope, bool $indexed, bool $impactFactor): array
+    {
+        $resolved = $scope instanceof PublicationScope
+            ? $scope
+            : (is_string($scope) ? PublicationScope::tryFrom($scope) : null);
+
+        if ($resolved !== PublicationScope::International) {
+            return self::defaultPublicationDetails();
+        }
+
+        return [
+            'scope' => PublicationScope::International->value,
+            'indexed' => $indexed,
+            'impact_factor' => $indexed && $impactFactor,
+        ];
+    }
+
+    /**
+     * @param  list<int|string>  $publicationIds
+     * @param  array{scope: string, indexed: bool, impact_factor: bool}  $details
+     */
+    public static function applyPublicationDetails(int $employeeId, array $publicationIds, array $details): int
+    {
+        $ids = array_values(array_filter(
+            array_map(intval(...), $publicationIds),
+            fn (int $id): bool => $id > 0,
+        ));
+
+        if ($ids === []) {
+            return 0;
+        }
+
+        $publications = static::query()
+            ->where('employee_id', $employeeId)
+            ->whereIn('id', $ids)
+            ->get();
+
+        foreach ($publications as $publication) {
+            $publication->update([
+                'publication_details' => $details,
+            ]);
+        }
+
+        return $publications->count();
+    }
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);

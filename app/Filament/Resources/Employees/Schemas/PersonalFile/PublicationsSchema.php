@@ -100,6 +100,22 @@ class PublicationsSchema
 
                     $livewire->refreshFormData(['publications']);
                 }),
+            Action::make('classifyPublications')
+                ->label(__('filament.personal_file.publications.classify'))
+                ->icon(Heroicon::AdjustmentsHorizontal)
+                ->url(function ($livewire): string {
+                    $record = $livewire->getRecord();
+
+                    if (! $record instanceof Model) {
+                        return '#';
+                    }
+
+                    return $livewire::getResource()::getUrl('classifyPublications', [
+                        'record' => $record,
+                    ]);
+                })
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile'),
         ])->alignBetween();
     }
 
@@ -120,7 +136,21 @@ class PublicationsSchema
                 ->label(__('filament.personal_file.dates.published_at')),
             TextInput::make('page_count')
                 ->label(__('filament.personal_file.page_count')),
-            Radio::make('publication_details.scope')
+            ...static::classificationFields(),
+        ];
+    }
+
+    /**
+     * @return array<int, Radio|Checkbox>
+     */
+    public static function classificationFields(string $prefix = 'publication_details'): array
+    {
+        $scope = self::fieldPath($prefix, 'scope');
+        $indexed = self::fieldPath($prefix, 'indexed');
+        $impactFactor = self::fieldPath($prefix, 'impact_factor');
+
+        return [
+            Radio::make($scope)
                 ->label(__('filament.personal_file.publications.scope'))
                 ->options(PublicationScope::class)
                 ->default(PublicationScope::Local->value)
@@ -132,41 +162,50 @@ class PublicationsSchema
                         $component->state(PublicationScope::Local->value);
                     }
                 })
-                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                ->afterStateUpdated(function (Set $set, mixed $state) use ($indexed, $impactFactor): void {
                     if (self::publicationScope($state) === PublicationScope::International) {
                         return;
                     }
 
-                    $set('publication_details.indexed', false);
-                    $set('publication_details.impact_factor', false);
+                    $set($indexed, false);
+                    $set($impactFactor, false);
                 }),
-            Checkbox::make('publication_details.indexed')
+            Checkbox::make($indexed)
                 ->label(__('filament.personal_file.publications.indexed'))
                 ->live()
                 ->dehydratedWhenHidden()
-                ->visible(fn (Get $get): bool => self::isInternational($get))
-                ->afterStateUpdated(function (Set $set, mixed $state): void {
+                ->visible(fn (Get $get): bool => self::isInternational($get, $scope))
+                ->afterStateUpdated(function (Set $set, mixed $state) use ($impactFactor): void {
                     if ($state) {
                         return;
                     }
 
-                    $set('publication_details.impact_factor', false);
+                    $set($impactFactor, false);
                 }),
-            Checkbox::make('publication_details.impact_factor')
+            Checkbox::make($impactFactor)
                 ->label(__('filament.personal_file.publications.impact_factor'))
                 ->dehydratedWhenHidden()
-                ->visible(fn (Get $get): bool => self::isIndexed($get)),
+                ->visible(fn (Get $get): bool => self::isIndexed($get, $scope, $indexed)),
         ];
     }
 
-    private static function isInternational(Get $get): bool
+    private static function fieldPath(string $prefix, string $field): string
     {
-        return self::publicationScope($get('publication_details.scope')) === PublicationScope::International;
+        if ($prefix === '') {
+            return $field;
+        }
+
+        return $prefix.'.'.$field;
     }
 
-    private static function isIndexed(Get $get): bool
+    private static function isInternational(Get $get, string $scopePath): bool
     {
-        return self::isInternational($get) && (bool) $get('publication_details.indexed');
+        return self::publicationScope($get($scopePath)) === PublicationScope::International;
+    }
+
+    private static function isIndexed(Get $get, string $scopePath, string $indexedPath): bool
+    {
+        return self::isInternational($get, $scopePath) && (bool) $get($indexedPath);
     }
 
     private static function publicationScope(mixed $state): ?PublicationScope
