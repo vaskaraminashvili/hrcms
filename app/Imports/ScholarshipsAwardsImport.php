@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\ScholarshipAward;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class ScholarshipsAwardsImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -24,7 +26,7 @@ class ScholarshipsAwardsImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new ScholarshipAward([
+        return $this->modelFromRow(ScholarshipAward::class, $row, [
             'employee_id' => $this->employeeId,
             'title' => $title,
             'grant_details' => $grantDetails,

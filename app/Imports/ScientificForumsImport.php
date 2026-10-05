@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Enums\ScientificForumRole;
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\ScientificForum;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -11,6 +12,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class ScientificForumsImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -24,7 +26,7 @@ class ScientificForumsImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new ScientificForum([
+        return $this->modelFromRow(ScientificForum::class, $row, [
             'employee_id' => $this->employeeId,
             'title' => $title,
             'participation_form' => $this->optionalTranslatableFromRow($row, 'participation_form'),
