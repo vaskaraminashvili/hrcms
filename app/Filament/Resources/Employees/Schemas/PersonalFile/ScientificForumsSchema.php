@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Enums\PublicationScope;
 use App\Enums\ScientificForumRole;
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\ScientificForumsImport;
@@ -32,6 +34,8 @@ class ScientificForumsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scientific_forums.xlsx';
 
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'scientific_forums_filled.xlsx';
+
     public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
@@ -46,6 +50,21 @@ class ScientificForumsSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledScientificForumsTemplate')
+                ->label(__('filament.personal_file.scientific_forums.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->scientificForums,
+                        PersonalFileTemplateRows::scientificForum(...),
+                    );
                 }),
             Action::make('importScientificForums')
                 ->label(__('filament.personal_file.scientific_forums.import'))

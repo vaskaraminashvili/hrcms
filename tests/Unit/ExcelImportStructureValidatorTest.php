@@ -42,6 +42,21 @@ test('validator allows omitting optional trailing columns from the publications 
     expect(true)->toBeTrue();
 });
 
+test('validator accepts a leading id column on a filled export', function () {
+    $template = spreadsheetWithHeadings([
+        'year', 'title_ka', 'title_en', 'authors_ka', 'authors_en', 'venue_ka', 'venue_en',
+        'scope', 'indexed', 'impact_factor',
+    ]);
+    $import = spreadsheetWithHeadings([
+        'id', 'year', 'title_ka', 'title_en', 'authors_ka', 'authors_en', 'venue_ka', 'venue_en',
+        'scope', 'indexed', 'impact_factor',
+    ]);
+
+    ExcelImportStructureValidator::validateAgainstTemplate($import, $template, optionalTrailingColumns: 3);
+
+    expect(true)->toBeTrue();
+});
+
 test('validator still requires the core scholar export columns', function () {
     $template = spreadsheetWithHeadings([
         'year', 'title_ka', 'title_en', 'authors_ka', 'authors_en', 'venue_ka', 'venue_en',

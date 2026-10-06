@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Enums\PublicationScope;
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\Publication;
 use Carbon\CarbonInterface;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -12,6 +13,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class PublicationsImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -26,14 +28,15 @@ class PublicationsImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new Publication([
+        return $this->modelFromRow(Publication::class, $row, [
             'employee_id' => $this->employeeId,
             'title' => $title,
             'place' => $this->optionalTranslatableFromRow($row, 'venue'),
             'co_authors' => $this->optionalTranslatableFromRow($row, 'authors'),
             'published_at' => $year,
-            'page_count' => null,
             'publication_details' => $this->publicationDetailsFromRow($row),
+        ], [
+            'page_count' => null,
         ]);
     }
 

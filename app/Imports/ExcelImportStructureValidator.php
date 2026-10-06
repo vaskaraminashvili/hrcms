@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Exceptions\InvalidExcelImportStructureException;
+use App\Exports\FilledExcelTemplate;
 use Maatwebsite\Excel\Concerns\ToArray;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -16,7 +17,9 @@ class ExcelImportStructureValidator
         abort_unless(is_file($templatePath), 404);
 
         $expectedHeadings = self::normalizeHeadings(self::readHeadingRow($templatePath));
-        $actualHeadings = self::normalizeHeadings(self::readHeadingRow($importPath));
+        $actualHeadings = self::withoutLeadingIdentifier(
+            self::normalizeHeadings(self::readHeadingRow($importPath)),
+        );
 
         if (! self::headingsMatch($expectedHeadings, $actualHeadings, $optionalTrailingColumns)) {
             throw new InvalidExcelImportStructureException;
@@ -52,6 +55,21 @@ class ExcelImportStructureValidator
     {
         while ($headings !== [] && end($headings) === '') {
             array_pop($headings);
+        }
+
+        return array_values($headings);
+    }
+
+    /**
+     * Filled exports prefix the template with an id column. Blank templates do not.
+     *
+     * @param  list<string>  $headings
+     * @return list<string>
+     */
+    private static function withoutLeadingIdentifier(array $headings): array
+    {
+        if (mb_strtolower($headings[0] ?? '') === FilledExcelTemplate::ID_HEADING) {
+            array_shift($headings);
         }
 
         return array_values($headings);

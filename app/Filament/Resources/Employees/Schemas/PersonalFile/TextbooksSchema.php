@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\TextbooksImport;
 use Filament\Actions\Action;
@@ -23,6 +25,8 @@ class TextbooksSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'textbooks.xlsx';
 
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'textbooks_filled.xlsx';
+
     public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
@@ -37,6 +41,21 @@ class TextbooksSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledTextbooksTemplate')
+                ->label(__('filament.personal_file.textbooks.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('update')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->textbooks,
+                        PersonalFileTemplateRows::textbook(...),
+                    );
                 }),
             Action::make('importTextbooks')
                 ->label(__('filament.personal_file.textbooks.import'))

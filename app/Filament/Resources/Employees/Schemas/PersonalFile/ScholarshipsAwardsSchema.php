@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\ScholarshipsAwardsImport;
 use Filament\Actions\Action;
@@ -23,6 +25,8 @@ class ScholarshipsAwardsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scholarships_awards.xlsx';
 
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'scholarships_awards_filled.xlsx';
+
     public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
@@ -37,6 +41,21 @@ class ScholarshipsAwardsSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledScholarshipsAwardsTemplate')
+                ->label(__('filament.personal_file.scholarships_awards.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->scholarshipsAwards,
+                        PersonalFileTemplateRows::scholarshipAward(...),
+                    );
                 }),
             Action::make('importScholarshipsAwards')
                 ->label(__('filament.personal_file.scholarships_awards.import'))

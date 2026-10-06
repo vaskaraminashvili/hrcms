@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
 use App\Enums\PublicationScope;
 use App\Exceptions\InvalidExcelImportStructureException;
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\ExcelImportStructureValidator;
 use App\Imports\PublicationsImport;
@@ -31,6 +33,8 @@ class PublicationsSchema
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scholar_export.xlsx';
 
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'scholar_export_filled.xlsx';
+
     public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
@@ -45,6 +49,21 @@ class PublicationsSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledPublicationsTemplate')
+                ->label(__('filament.personal_file.publications.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->publications,
+                        PersonalFileTemplateRows::publication(...),
+                    );
                 }),
             Action::make('importPublications')
                 ->label(__('filament.personal_file.publications.import'))

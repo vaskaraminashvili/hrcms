@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\Textbook;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class TextbooksImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -23,7 +25,7 @@ class TextbooksImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new Textbook([
+        return $this->modelFromRow(Textbook::class, $row, [
             'employee_id' => $this->employeeId,
             'title' => $title,
             'publisher' => $this->optionalTranslatableFromRow($row, 'publisher'),
