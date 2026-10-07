@@ -6,6 +6,7 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\PersonalFileItemPayload;
 use App\Models\Employee;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -19,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
 class EmployeeForm
@@ -166,6 +168,22 @@ class EmployeeForm
                                         ->relationship()
                                         ->orderColumn('sort');
                                 }
+
+                                $repeater
+                                    ->mutateRelationshipDataBeforeCreateUsing(
+                                        fn (array $data): ?array => PersonalFileItemPayload::withoutBlankItem($data, creating: true),
+                                    )
+                                    ->mutateRelationshipDataBeforeSaveUsing(
+                                        function (array $data, Model $record): ?array {
+                                            $payload = PersonalFileItemPayload::withoutBlankItem($data);
+
+                                            if ($payload === null) {
+                                                $record->delete();
+                                            }
+
+                                            return $payload;
+                                        },
+                                    );
 
                                 $tabSchema = [
                                     $repeater
