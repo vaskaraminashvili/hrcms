@@ -2,16 +2,23 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Enums\PublicationScope;
 use App\Exceptions\InvalidExcelImportStructureException;
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
 use App\Imports\ExcelImportStructureValidator;
 use App\Imports\PublicationsImport;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -25,6 +32,8 @@ class PublicationsSchema
     private const TEMPLATE_RELATIVE_PATH = 'templates/publications/scholar_export.xlsx';
 
     private const TEMPLATE_DOWNLOAD_NAME = 'scholar_export.xlsx';
+
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'scholar_export_filled.xlsx';
 
     public static bool $fileUploadEnabled = true;
 
@@ -40,6 +49,21 @@ class PublicationsSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledPublicationsTemplate')
+                ->label(__('filament.personal_file.publications.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->publications,
+                        PersonalFileTemplateRows::publication(...),
+                    );
                 }),
             Action::make('importPublications')
                 ->label(__('filament.personal_file.publications.import'))
@@ -72,6 +96,7 @@ class PublicationsSchema
                         ExcelImportStructureValidator::validateAgainstTemplate(
                             $path,
                             resource_path(self::TEMPLATE_RELATIVE_PATH),
+                            optionalTrailingColumns: 3,
                         );
                     } catch (InvalidExcelImportStructureException) {
                         Notification::make()
@@ -94,6 +119,22 @@ class PublicationsSchema
 
                     $livewire->refreshFormData(['publications']);
                 }),
+            Action::make('classifyPublications')
+                ->label(__('filament.personal_file.publications.classify'))
+                ->icon(Heroicon::AdjustmentsHorizontal)
+                ->url(function ($livewire): string {
+                    $record = $livewire->getRecord();
+
+                    if (! $record instanceof Model) {
+                        return '#';
+                    }
+
+                    return $livewire::getResource()::getUrl('classifyPublications', [
+                        'record' => $record,
+                    ]);
+                })
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile'),
         ])->alignBetween();
     }
 
@@ -114,7 +155,89 @@ class PublicationsSchema
                 ->label(__('filament.personal_file.dates.published_at')),
             TextInput::make('page_count')
                 ->label(__('filament.personal_file.page_count')),
+            ...static::classificationFields(),
         ];
+    }
+
+    /**
+     * @return array<int, Radio|Checkbox>
+     */
+    public static function classificationFields(string $prefix = 'publication_details'): array
+    {
+        $scope = self::fieldPath($prefix, 'scope');
+        $indexed = self::fieldPath($prefix, 'indexed');
+        $impactFactor = self::fieldPath($prefix, 'impact_factor');
+
+        return [
+            Radio::make($scope)
+                ->label(__('filament.personal_file.publications.scope'))
+                ->options(PublicationScope::class)
+                ->default(PublicationScope::Local->value)
+                ->inline()
+                ->required()
+                ->live()
+                ->afterStateHydrated(function (Radio $component, mixed $state): void {
+                    if (blank($state)) {
+                        $component->state(PublicationScope::Local->value);
+                    }
+                })
+                ->afterStateUpdated(function (Set $set, mixed $state) use ($indexed, $impactFactor): void {
+                    if (self::publicationScope($state) === PublicationScope::International) {
+                        return;
+                    }
+
+                    $set($indexed, false);
+                    $set($impactFactor, false);
+                }),
+            Checkbox::make($indexed)
+                ->label(__('filament.personal_file.publications.indexed'))
+                ->live()
+                ->dehydratedWhenHidden()
+                ->visible(fn (Get $get): bool => self::isInternational($get, $scope))
+                ->afterStateUpdated(function (Set $set, mixed $state) use ($impactFactor): void {
+                    if ($state) {
+                        return;
+                    }
+
+                    $set($impactFactor, false);
+                }),
+            Checkbox::make($impactFactor)
+                ->label(__('filament.personal_file.publications.impact_factor'))
+                ->dehydratedWhenHidden()
+                ->visible(fn (Get $get): bool => self::isIndexed($get, $scope, $indexed)),
+        ];
+    }
+
+    private static function fieldPath(string $prefix, string $field): string
+    {
+        if ($prefix === '') {
+            return $field;
+        }
+
+        return $prefix.'.'.$field;
+    }
+
+    private static function isInternational(Get $get, string $scopePath): bool
+    {
+        return self::publicationScope($get($scopePath)) === PublicationScope::International;
+    }
+
+    private static function isIndexed(Get $get, string $scopePath, string $indexedPath): bool
+    {
+        return self::isInternational($get, $scopePath) && (bool) $get($indexedPath);
+    }
+
+    private static function publicationScope(mixed $state): ?PublicationScope
+    {
+        if ($state instanceof PublicationScope) {
+            return $state;
+        }
+
+        if (! is_string($state)) {
+            return null;
+        }
+
+        return PublicationScope::tryFrom($state);
     }
 
     public static function fileUploadEnabled(): bool

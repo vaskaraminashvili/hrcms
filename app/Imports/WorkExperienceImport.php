@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\WorkExperience;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class WorkExperienceImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -24,7 +26,7 @@ class WorkExperienceImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new WorkExperience([
+        return $this->modelFromRow(WorkExperience::class, $row, [
             'employee_id' => $this->employeeId,
             'institution' => $institution,
             'position' => $position,

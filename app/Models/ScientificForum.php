@@ -25,6 +25,8 @@ class ScientificForum extends Model implements HasMedia
         'start_date',
         'end_date',
         'participation_form',
+        'participation_role',
+        'scope',
     ];
 
     public array $translatable = ['title', 'participation_form'];

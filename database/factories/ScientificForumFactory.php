@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\PublicationScope;
+use App\Enums\ScientificForumRole;
 use App\Models\Employee;
 use App\Models\ScientificForum;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,11 +24,16 @@ class ScientificForumFactory extends Factory
         return [
             'employee_id' => Employee::factory(),
             'title' => [
-                'ka' => $this->faker->sentence(5) . ' - კონფერენცია',
-                'en' => $this->faker->sentence(5) . ' - Conference',
+                'ka' => $this->faker->sentence(5).' - კონფერენცია',
+                'en' => $this->faker->sentence(5).' - Conference',
             ],
-            'held_at'            => $this->faker->dateTimeBetween('-10 years', 'now'),
+            'held_at' => $this->faker->dateTimeBetween('-10 years', 'now'),
             'participation_form' => $this->faker->randomElement($forms),
+            'participation_role' => $this->faker->randomElement([
+                ScientificForumRole::Attendee->value,
+                ScientificForumRole::Speaker->value,
+            ]),
+            'scope' => PublicationScope::Local->value,
         ];
     }
 }

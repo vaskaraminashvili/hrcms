@@ -2,6 +2,7 @@
 
 namespace App\Imports\Concerns;
 
+use App\Enums\PublicationScope;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
@@ -103,5 +104,22 @@ trait InterpretsExcelImportRows
         }
 
         return null;
+    }
+
+    protected function geographicScopeFromRow(array $row, string $column = 'scope'): string
+    {
+        $value = mb_strtolower($this->string($row[$column] ?? null));
+
+        return match ($value) {
+            PublicationScope::International->value, 'საერთაშორისო' => PublicationScope::International->value,
+            default => PublicationScope::Local->value,
+        };
+    }
+
+    protected function booleanFromRow(mixed $value): bool
+    {
+        $normalized = mb_strtolower($this->string($value));
+
+        return in_array($normalized, ['1', 'true', 'yes', 'y', 'კი'], true);
     }
 }
