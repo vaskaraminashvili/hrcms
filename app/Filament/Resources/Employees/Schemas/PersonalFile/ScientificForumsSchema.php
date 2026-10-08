@@ -10,6 +10,7 @@ use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatab
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\ScientificForumsImport;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -110,6 +111,10 @@ class ScientificForumsSchema
     {
         return [
             static::translatableField('title', __('filament.personal_file.scientific_forums.title')),
+            Checkbox::make('international_forum_publication')
+                ->label(__('filament.personal_file.scientific_forums.international_forum_publication'))
+                ->default(false)
+                ->columnSpanFull(),
             Section::make()
                 ->schema([
                     Select::make('participation_role')

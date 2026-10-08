@@ -27,6 +27,7 @@ class ScientificForumFactory extends Factory
                 'ka' => $this->faker->sentence(5).' - კონფერენცია',
                 'en' => $this->faker->sentence(5).' - Conference',
             ],
+            'international_forum_publication' => false,
             'held_at' => $this->faker->dateTimeBetween('-10 years', 'now'),
             'participation_form' => $this->faker->randomElement($forms),
             'participation_role' => $this->faker->randomElement([

@@ -182,6 +182,7 @@ test('filled exports write each section into the matching template columns', fun
         'employee_id' => $employee->id,
         'title' => ['ka' => 'ფორუმი', 'en' => 'Forum'],
         'participation_form' => ['ka' => 'ზეპირი', 'en' => 'Oral'],
+        'international_forum_publication' => true,
         'participation_role' => 'speaker',
         'scope' => PublicationScope::International->value,
         'start_date' => '2022-05-01',
@@ -229,6 +230,7 @@ test('filled exports write each section into the matching template columns', fun
     ))->toMatchArray([
         'id' => (string) $forum->getKey(),
         'title_en' => 'Forum',
+        'international_forum_publication' => '1',
         'participation_role' => 'speaker',
         'scope' => 'international',
         'start_date' => '2022-05-01',
@@ -274,6 +276,7 @@ test('filled exports write each section into the matching template columns', fun
             'id' => $forum->getKey(),
             ...PersonalFileTemplateRows::scientificForum($forum),
             'participation_role' => 'attendee',
+            'international_forum_publication' => '0',
         ]],
     ));
     Excel::import(new TextbooksImport($employee->id), filledImportPath(
@@ -304,6 +307,7 @@ test('filled exports write each section into the matching template columns', fun
     expect($scholarship->refresh()->getTranslation('issuer', 'en'))->toBe('Updated fund')
         ->and(ScholarshipAward::query()->where('employee_id', $employee->id)->count())->toBe(1)
         ->and($forum->refresh()->participation_role)->toBe('attendee')
+        ->and($forum->international_forum_publication)->toBeFalse()
         ->and(ScientificForum::query()->where('employee_id', $employee->id)->count())->toBe(1)
         ->and($textbook->refresh()->page_count)->toBe(90)
         ->and(Textbook::query()->where('employee_id', $employee->id)->count())->toBe(1)

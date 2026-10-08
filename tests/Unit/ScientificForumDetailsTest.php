@@ -17,7 +17,24 @@ test('scientific forums import defaults missing role and scope columns', functio
 
     expect($forum)->not->toBeNull()
         ->and($forum->participation_role)->toBeNull()
-        ->and($forum->scope)->toBe(PublicationScope::Local->value);
+        ->and($forum->scope)->toBe(PublicationScope::Local->value)
+        ->and($forum->international_forum_publication)->toBeFalse();
+});
+
+test('scientific forums import stores international forum publication as 1 or 0', function () {
+    $import = new ScientificForumsImport(1);
+
+    $published = $import->model([
+        'title_ka' => 'კონფერენცია',
+        'international_forum_publication' => '1',
+    ]);
+    $unpublished = $import->model([
+        'title_ka' => 'კონფერენცია',
+        'international_forum_publication' => '0',
+    ]);
+
+    expect($published->international_forum_publication)->toBeTrue()
+        ->and($unpublished->international_forum_publication)->toBeFalse();
 });
 
 test('scientific forums import maps role and scope from excel columns', function () {

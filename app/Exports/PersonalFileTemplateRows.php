@@ -70,6 +70,7 @@ class PersonalFileTemplateRows
     {
         return [
             ...self::translatableColumns($record, 'title', 'title'),
+            'international_forum_publication' => self::booleanCell((bool) $record->international_forum_publication),
             ...self::translatableColumns($record, 'participation_form', 'participation_form'),
             'start_date' => self::date($record->getAttribute('start_date')),
             'end_date' => self::date($record->getAttribute('end_date')),

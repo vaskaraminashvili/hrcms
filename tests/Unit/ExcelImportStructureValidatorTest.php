@@ -89,7 +89,9 @@ test('scientific forums template includes participation role and scope columns',
 
     expect($headings)->toContain('participation_role')
         ->and($headings)->toContain('scope')
-        ->and($headings[0] ?? null)->toBe('title_ka');
+        ->and($headings)->toContain('international_forum_publication')
+        ->and($headings[0] ?? null)->toBe('title_ka')
+        ->and($headings[2] ?? null)->toBe('international_forum_publication');
 });
 
 /**
