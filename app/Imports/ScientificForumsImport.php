@@ -29,6 +29,7 @@ class ScientificForumsImport implements ToModel, WithHeadingRow
         return $this->modelFromRow(ScientificForum::class, $row, [
             'employee_id' => $this->employeeId,
             'title' => $title,
+            'international_forum_publication' => $this->booleanFromRow($row['international_forum_publication'] ?? null),
             'participation_form' => $this->optionalTranslatableFromRow($row, 'participation_form'),
             'participation_role' => $this->participationRoleFromRow($row),
             'scope' => $this->geographicScopeFromRow($row),

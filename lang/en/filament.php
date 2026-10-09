@@ -496,6 +496,7 @@ return [
 
         'scientific_forums' => [
             'title' => 'Title',
+            'international_forum_publication' => 'Abstract/article published in the proceedings of an international forum',
             'participation_form' => 'Form of participation',
             'participation_role' => 'Role',
             'participation_role_other' => 'Other',

@@ -568,6 +568,7 @@ return [
 
         'scientific_forums' => [
             'title' => 'სახელწოდება',
+            'international_forum_publication' => 'აბსტრაქტი/სტატია გამოქვეყნებულია საერთაშორისო ფორუმის შრომათა კრებულში',
             'participation_form' => 'მოხსენების დასახელება',
             'participation_role' => 'როლი',
             'participation_role_other' => 'სხვა',
