@@ -20,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
@@ -165,7 +166,10 @@ class EmployeeForm
                                         ->reorderable(false);
                                 } else {
                                     $repeater
-                                        ->relationship()
+                                        ->relationship(
+                                            modifyQueryUsing: fn (Builder $query) => $query
+                                                ->withoutTrashed(),
+                                        )
                                         ->orderColumn('sort');
                                 }
 
