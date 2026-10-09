@@ -10,3 +10,7 @@
 .dark .attachment-label-danger .fi-fo-field-label-content {
     color: var(--danger-400);
 }
+
+.fi-badge .fi-badge-label:not(.fi-wrapped) {
+    overflow: visible;
+}
