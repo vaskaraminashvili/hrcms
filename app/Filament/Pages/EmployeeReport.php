@@ -5,11 +5,14 @@ namespace App\Filament\Pages;
 use App\Enums\DepartmentStatus;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
+use App\Enums\PositionStatus;
+use App\Enums\PositionType;
 use App\Filament\Exports\EmployeeExporter;
 use App\Filament\Resources\Employees\EmployeeResource;
 use App\Models\Employee;
-use BackedEnum;
+use App\Models\Place;
 use App\Support\DepartmentBadgeColors;
+use BackedEnum;
 use Carbon\Carbon;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
@@ -17,30 +20,30 @@ use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Actions\Exports\Models\Export;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
-use UnitEnum;
-use Filament\Tables\Enums\FiltersLayout;
 use Illuminate\Support\HtmlString;
-use Filament\Tables\Columns\ImageColumn;
-
-
+use UnitEnum;
 
 class EmployeeReport extends Page implements HasTable
 {
     use InteractsWithTable;
 
     protected static ?string $slug = 'reports/employees';
-
 
     protected static string|UnitEnum|null $navigationGroup = 'Reports';
 
@@ -57,151 +60,158 @@ class EmployeeReport extends Page implements HasTable
     {
         return __('filament.employee_report_label');
     }
-    
+
     public function table(Table $table): Table
     {
         return $table
-        ->query(Employee::query()->with([
-            'appointmentPositions.department.parent',
-            'appointmentPositions.place',
-        ]))
+            ->query(Employee::query()->with([
+                'appointmentPositions.department.parent',
+                'appointmentPositions.place',
+            ]))
             ->columns([
                 ImageColumn::make('employee_image')
-                ->getStateUsing(fn (Employee $record) => $record->employeeImageUrl())
-                ->circular()
-                ->label(''),
-            TextColumn::make('name')
-                ->label(__('filament.name'))
-                ->formatStateUsing(function (string $state, Employee $record): string {
-                    return $record->name.' '.$record->surname;
-                })
-                ->url(fn (Employee $record): string => EmployeeResource::getUrl('edit', ['record' => $record]))
-                ->openUrlInNewTab()
-                ->searchable(['name', 'surname']),
+                    ->getStateUsing(fn (Employee $record) => $record->employeeImageUrl())
+                    ->circular()
+                    ->label(''),
+                TextColumn::make('name')
+                    ->label(__('filament.name'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->name.' '.$record->surname;
+                    })
+                    ->url(fn (Employee $record): string => EmployeeResource::getUrl('edit', ['record' => $record]))
+                    ->openUrlInNewTab()
+                    ->searchable(['name', 'surname']),
 
-            TextColumn::make('name_eng')
-                ->label(__('filament.name_eng'))
-                ->formatStateUsing(function (string $state, Employee $record): string {
-                    return $record->name_eng.' '.$record->surrname_eng;
-                })
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(['name_eng', 'surrname_eng']),
-            TextColumn::make('mobile_number')
-                ->label(__('filament.mobile_number_placeholder'))
-                ->formatStateUsing(function (string $state, Employee $record): string {
-                    return $record->mobile_number;
-                })
-                ->color('info')
-                ->copyable()
-                ->copyMessage(__('filament.copied'))
-                ->copyMessageDuration(1500)
-                ->searchable(),
-            TextColumn::make('personal_number')
-                ->badge()
-                ->label(__('filament.personal_number_short'))
-                ->formatStateUsing(function (string $state, Employee $record): string {
-                    return $record->personal_number;
-                })
-                ->color('success')
-                ->copyable()
-                ->copyMessage(__('filament.copied'))
-                ->copyMessageDuration(1500)
-                ->searchable(),
-            TextColumn::make('birth_date')
-                ->label(__('filament.birth_date_placeholder'))
-                ->date()
-                ->sortable(),
-            TextColumn::make('appointment_positions_department_summary')
-                ->label(__('filament.department_id'))
-                ->width('400px')
-                ->wrap()
-                ->html()
-                ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department', asBadge: false, col_width: 330)),
-            TextColumn::make('appointment_positions_type_summary')
-                ->label(__('filament.position_type'))
-                ->html()
-                ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'type')),
-            TextColumn::make('appointment_positions_place_summary')
-                ->label(__('filament.place_id'))
-                ->html()
-                ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'place'))
-                ->description(fn (Employee $record): string => self::appointmentPositionsDateEndDescription($record)),
-            TextColumn::make('appointment_positions_status_summary')
-                ->label(__('filament.status'))
-                ->html()
-                ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'status')),
+                TextColumn::make('name_eng')
+                    ->label(__('filament.name_eng'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->name_eng.' '.$record->surrname_eng;
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(['name_eng', 'surrname_eng']),
+                TextColumn::make('mobile_number')
+                    ->label(__('filament.mobile_number_placeholder'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->mobile_number;
+                    })
+                    ->color('info')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
+                    ->searchable(),
+                TextColumn::make('personal_number')
+                    ->badge()
+                    ->label(__('filament.personal_number_short'))
+                    ->formatStateUsing(function (string $state, Employee $record): string {
+                        return $record->personal_number;
+                    })
+                    ->color('success')
+                    ->copyable()
+                    ->copyMessage(__('filament.copied'))
+                    ->copyMessageDuration(1500)
+                    ->searchable(),
+                TextColumn::make('birth_date')
+                    ->label(__('filament.birth_date_placeholder'))
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('created_at')
+                    ->label(__('filament.created_at'))
+                    ->date()
+                    ->sortable(),
+                TextColumn::make('appointment_positions_department_summary')
+                    ->label(__('filament.department_id'))
+                    ->width('400px')
+                    ->wrap()
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'department', asBadge: false, col_width: 330)),
+                TextColumn::make('appointment_positions_type_summary')
+                    ->label(__('filament.position_type'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'type')),
+                TextColumn::make('appointment_positions_place_summary')
+                    ->label(__('filament.place_id'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'place'))
+                    ->description(fn (Employee $record): string => self::appointmentPositionsDateEndDescription($record)),
+                TextColumn::make('appointment_positions_status_summary')
+                    ->label(__('filament.status'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'status')),
+                TextColumn::make('appointment_positions_date_start_summary')
+                    ->label(__('filament.date_start'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'date_start', asBadge: false)),
+                TextColumn::make('appointment_positions_date_end_summary')
+                    ->label(__('filament.date_end'))
+                    ->html()
+                    ->state(fn (Employee $record): HtmlString => self::appointmentPositionsBadgesHtml($record, 'date_end', asBadge: false)),
 
-            TextColumn::make('positions_count')
-                ->label(__('filament.positions_count'))
-                ->alignCenter()
-                ->icon('heroicon-o-briefcase')
-                ->counts(['appointmentPositions as positions_count'])
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->sortable(),
-            // TextColumn::make('email')
-            //     ->label(__('filament.email'))
-            //     ->searchable(),
+                TextColumn::make('positions_count')
+                    ->label(__('filament.positions_count'))
+                    ->alignCenter()
+                    ->icon('heroicon-o-briefcase')
+                    ->counts(['appointmentPositions as positions_count'])
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                // TextColumn::make('email')
+                //     ->label(__('filament.email'))
+                //     ->searchable(),
 
-            TextColumn::make('status')
-                ->label(__('filament.status'))
-                ->badge()
-                ->color(fn (Employee $record): string => $record->status->getColor())
-                ->icon(fn (Employee $record): string => $record->status->getIcon())
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->sortable(),
-            TextColumn::make('gender')
-                ->label(__('filament.gender'))
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->searchable(),
-            TextColumn::make('citizenship')
-                ->label(__('filament.citizenship'))
-                ->searchable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('education')
-                ->label(__('filament.education'))
-                ->numeric()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('degree')
-                ->label(__('filament.degree'))
-                ->searchable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('address_details')
-                ->label(__('filament.address'))
-                ->formatStateUsing(function (?array $state): string {
-                    if (! is_array($state)) {
-                        return '';
-                    }
+                TextColumn::make('status')
+                    ->label(__('filament.status'))
+                    ->badge()
+                    ->color(fn (Employee $record): string => $record->status->getColor())
+                    ->icon(fn (Employee $record): string => $record->status->getIcon())
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->sortable(),
+                TextColumn::make('gender')
+                    ->label(__('filament.gender'))
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->searchable(),
+                TextColumn::make('citizenship')
+                    ->label(__('filament.citizenship'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('education')
+                    ->label(__('filament.education'))
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('degree')
+                    ->label(__('filament.degree'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('address_details')
+                    ->label(__('filament.address'))
+                    ->formatStateUsing(function (?array $state): string {
+                        if (! is_array($state)) {
+                            return '';
+                        }
 
-                    $parts = array_filter([
-                        $state['address_physical'] ?? null,
-                        $state['address_jurisdiction'] ?? null,
-                        $state['en_address_physical'] ?? null,
-                        $state['en_address_jurisdiction'] ?? null,
-                    ]);
+                        $parts = array_filter([
+                            $state['address_physical'] ?? null,
+                            $state['address_jurisdiction'] ?? null,
+                            $state['en_address_physical'] ?? null,
+                            $state['en_address_jurisdiction'] ?? null,
+                        ]);
 
-                    return implode(' · ', $parts);
-                })
-                ->searchable(query: function (Builder $query, string $search): void {
-                    $query->where('address_details', 'like', '%'.$search.'%');
-                })
-                ->toggleable(isToggledHiddenByDefault: true)
-                ->wrap(),
-            TextColumn::make('created_at')
-                ->label(__('filament.created_at'))
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('updated_at')
-                ->label(__('filament.updated_at'))
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-            TextColumn::make('deleted_at')
-                ->label(__('filament.deleted_at'))
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                        return implode(' · ', $parts);
+                    })
+                    ->searchable(query: function (Builder $query, string $search): void {
+                        $query->where('address_details', 'like', '%'.$search.'%');
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->wrap(),
+                TextColumn::make('updated_at')
+                    ->label(__('filament.updated_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('deleted_at')
+                    ->label(__('filament.deleted_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 // ── Add more columns below ─────────────────────────────────────
                 //
@@ -259,6 +269,132 @@ class EmployeeReport extends Page implements HasTable
                         ])->filter()->implode(' ');
                     }),
 
+                Filter::make('created_at')
+                    ->label(__('filament.created_at'))
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label(__('filament.date_from')),
+                        DatePicker::make('created_until')
+                            ->label(__('filament.date_until')),
+                    ])
+                    ->columns(2)
+                    ->columnSpan(2)
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'] ?? null,
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
+                    ->indicateUsing(function (array $data): ?string {
+                        if (! ($data['created_from'] ?? null) && ! ($data['created_until'] ?? null)) {
+                            return null;
+                        }
+
+                        return __('filament.created_at').': '.collect([
+                            ($data['created_from'] ?? null) ? __('filament.date_from').' '.Carbon::parse($data['created_from'])->toFormattedDateString() : null,
+                            ($data['created_until'] ?? null) ? __('filament.date_until').' '.Carbon::parse($data['created_until'])->toFormattedDateString() : null,
+                        ])->filter()->implode(' ');
+                    }),
+
+                Filter::make('appointment_position')
+                    ->label(__('filament.position'))
+                    ->form([
+                        Select::make('place_id')
+                            ->label(__('filament.place_id'))
+                            ->options(fn (): array => Place::query()
+                                ->where('is_active', true)
+                                ->orderBy('name')
+                                ->pluck('name', 'id')
+                                ->all())
+                            ->searchable(),
+                        Select::make('position_type')
+                            ->multiple()
+                            ->label(__('filament.position_type'))
+                            ->options(PositionType::class)
+                            ->searchable(),
+                        DatePicker::make('date_start')
+                            ->label(__('filament.date_start')),
+                        DatePicker::make('date_end')
+                            ->label(__('filament.date_end')),
+                        Select::make('status')
+                            ->label(__('filament.changed_fields.status'))
+                            ->options(PositionStatus::class)
+                            ->searchable(),
+                    ])
+                    ->columns(2)
+                    ->columnSpan(2)
+                    ->query(function (Builder $query, array $data): Builder {
+                        $placeId = $data['place_id'] ?? null;
+                        $positionType = $data['position_type'] ?? null;
+                        $dateStart = $data['date_start'] ?? null;
+                        $dateEnd = $data['date_end'] ?? null;
+                        $status = $data['status'] ?? null;
+
+                        if (blank($placeId) && blank($positionType) && blank($dateStart) && blank($dateEnd) && blank($status)) {
+                            return $query;
+                        }
+
+                        $constraint = function (Builder|Relation $positionQuery) use ($placeId, $positionType, $dateStart, $dateEnd, $status): void {
+                            $positionQuery
+                                ->when(filled($placeId), fn (Builder $query): Builder => $query->where('place_id', $placeId))
+                                ->when(filled($positionType), fn (Builder $query): Builder => $query->whereIn('position_type', Arr::wrap($positionType)))
+                                ->when(filled($dateStart), fn (Builder $query): Builder => $query->whereDate('date_start', '>=', $dateStart))
+                                ->when(filled($dateEnd), fn (Builder $query): Builder => $query->whereDate('date_end', '<=', $dateEnd))
+                                ->when(filled($status), fn (Builder $query): Builder => $query->where('status', $status));
+                        };
+
+                        return $query
+                            ->whereHas('appointmentPositions', $constraint)
+                            ->with([
+                                'appointmentPositions' => $constraint,
+                                'appointmentPositions.department.parent',
+                                'appointmentPositions.place',
+                            ]);
+                    })
+                    ->indicateUsing(function (array $data): array {
+                        $indicators = [];
+
+                        if ($data['place_id'] ?? null) {
+                            $indicators['place_id'] = __('filament.place_id').': '.(Place::query()->find($data['place_id'])?->name ?? $data['place_id']);
+                        }
+
+                        if (filled($data['position_type'] ?? null)) {
+                            $labels = collect(Arr::wrap($data['position_type']))
+                                ->map(function (mixed $value): string {
+                                    $type = $value instanceof PositionType
+                                        ? $value
+                                        : PositionType::tryFrom((string) $value);
+
+                                    return $type?->getLabel() ?? (string) $value;
+                                })
+                                ->implode(', ');
+
+                            $indicators['position_type'] = __('filament.position_type').': '.$labels;
+                        }
+
+                        if ($data['date_start'] ?? null) {
+                            $indicators['date_start'] = __('filament.date_start').': '.Carbon::parse($data['date_start'])->toFormattedDateString();
+                        }
+
+                        if ($data['date_end'] ?? null) {
+                            $indicators['date_end'] = __('filament.date_end').': '.Carbon::parse($data['date_end'])->toFormattedDateString();
+                        }
+
+                        if ($data['status'] ?? null) {
+                            $status = $data['status'] instanceof PositionStatus
+                                ? $data['status']
+                                : PositionStatus::tryFrom((string) $data['status']);
+                            $indicators['status'] = __('filament.changed_fields.status').': '.($status?->getLabel() ?? $data['status']);
+                        }
+
+                        return $indicators;
+                    }),
+
                 TrashedFilter::make(),
 
                 // ── Add more filters below ─────────────────────────────────────
@@ -273,7 +409,7 @@ class EmployeeReport extends Page implements HasTable
                 //         ->searchable()
                 //         ->preload(),
                 // ───────────────────────────────────────────────────────────────
-                ],layout: FiltersLayout::AboveContent)
+            ], layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(2)
             ->headerActions([
                 // Exports every row matching the current filters + search
@@ -318,7 +454,7 @@ class EmployeeReport extends Page implements HasTable
         ], absolute: false)));
     }
 
-        /**
+    /**
      * Renders each appointment position as a list item (badge or plain text per column).
      */
     private static function appointmentPositionsBadgesHtml(Employee $record, string $column, bool $asBadge = true, int $col_width = 0): HtmlString
@@ -348,6 +484,8 @@ class EmployeeReport extends Page implements HasTable
             $placeLabel = $position->place?->name ?? '—';
             $typeLabel = $position->position_type?->getLabel() ?? '';
             $statusLabel = $position->status?->getLabel() ?? '';
+            $dateStartLabel = $position->date_start?->format('d.m.Y') ?? '—';
+            $dateEndLabel = $position->date_end?->format('d.m.Y') ?? '—';
 
             $typeColor = self::filamentBadgeColorKey($position->position_type?->getColor());
             $statusColor = self::filamentBadgeColorKey($position->status?->getColor());
@@ -364,6 +502,8 @@ class EmployeeReport extends Page implements HasTable
                 'place' => $asBadge
                     ? self::filamentBadgeHtml($placeLabel, 'gray')
                     : self::filamentTextHtml($placeLabel),
+                'date_start' => self::filamentTextHtml($dateStartLabel),
+                'date_end' => self::filamentTextHtml($dateEndLabel),
                 default => '',
             };
 
@@ -407,7 +547,7 @@ class EmployeeReport extends Page implements HasTable
         return 'gray';
     }
 
-        private static function filamentBadgeHtml(string $label, string $colorKey, bool $raw = false): string
+    private static function filamentBadgeHtml(string $label, string $colorKey, bool $raw = false): string
     {
         $classes = DepartmentBadgeColors::BADGE_COLOR_CLASSES[$colorKey]
             ?? DepartmentBadgeColors::BADGE_COLOR_CLASSES['gray'];

@@ -84,6 +84,8 @@ return [
     'salary' => 'Salary',
     'comment' => 'Comment',
     'created_at' => 'Created at',
+    'date_from' => 'From',
+    'date_until' => 'Until',
     'updated_at' => 'Updated at',
     'deleted_at' => 'Deleted at',
     'from_year' => 'From year',
