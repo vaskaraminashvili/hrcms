@@ -8,6 +8,8 @@ use Filament\Forms\Components\TextInput;
 
 class ForeignLanguagesSchema
 {
+    public static bool $fileUploadEnabled = true;
+
     public static function schema(): array
     {
         return [
@@ -19,5 +21,10 @@ class ForeignLanguagesSchema
             TextInput::make('language')
                 ->label(__('filament.personal_file.foreign_languages.language')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

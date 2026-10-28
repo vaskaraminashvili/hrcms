@@ -5,6 +5,8 @@ use App\Http\Controllers\EmployeeCvController;
 use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
+Route::redirect('/', '/employee');
+
 Route::controller(ImportController::class)->group(function () {
     // Route::get('/import-employees', 'importEmployees')->name('import.employees');
     Route::get('/import-positions', 'importPositions')->name('import.positions');

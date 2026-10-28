@@ -21,13 +21,20 @@ class ScientificForum extends Model implements HasMedia
         'employee_id',
         'sort',
         'title',
+        'international_forum_publication',
         'held_at',
         'start_date',
         'end_date',
         'participation_form',
+        'participation_role',
+        'scope',
     ];
 
     public array $translatable = ['title', 'participation_form'];
+
+    protected $attributes = [
+        'international_forum_publication' => false,
+    ];
 
     protected function casts(): array
     {
@@ -35,6 +42,7 @@ class ScientificForum extends Model implements HasMedia
             'title' => 'array',
             'participation_form' => 'array',
             'held_at' => 'date',
+            'international_forum_publication' => 'boolean',
         ];
     }
 

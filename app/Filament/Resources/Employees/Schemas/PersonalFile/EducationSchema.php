@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\EducationImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -18,10 +20,15 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class EducationSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/education/education.xlsx';
 
     private const TEMPLATE_DOWNLOAD_NAME = 'education.xlsx';
+
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'education_filled.xlsx';
+
+    public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
     {
@@ -35,6 +42,21 @@ class EducationSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledEducationTemplate')
+                ->label(__('filament.personal_file.education.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('update')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->educations,
+                        PersonalFileTemplateRows::education(...),
+                    );
                 }),
             Action::make('importEducation')
                 ->label(__('filament.personal_file.education.import'))
@@ -82,8 +104,13 @@ class EducationSchema
             static::translatableField('institution', __('filament.personal_file.education.institution')),
             static::translatableField('program', __('filament.personal_file.education.program')),
             static::translatableField('specialty', __('filament.personal_file.education.specialty')),
-            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
+            static::yearMonthField('started_at', __('filament.personal_file.dates.started_at')),
+            static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

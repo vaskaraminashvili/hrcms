@@ -79,6 +79,7 @@ return [
     'employee_image' => 'თანამშრომლის სურათი',
     'save' => 'შენახვა',
     'save_history' => 'შენახვა ისტორიით',
+    'position_file_attachments' => 'თანამდებობის ფაილები',
     'system' => 'სისტემა',
     'position_edit' => [
         'modal_save_history_heading' => 'შენახვა პოზიციის ისტორიით?',
@@ -180,6 +181,9 @@ return [
     'position_history_title' => 'თანამდებობის ისტორია',
     'position_history_edit_title' => 'ველები ცვლილების მომენტში',
     'position_history_field_changed_helper' => 'ცვლილება: :change',
+    'position_history_section_attachments' => 'დაარქივებული ფაილები',
+    'position_history_attachments_description' => 'ფაილები, რომლებიც ამ ისტორიის ჩანაწერზე გადავიდა პოზიციის ისტორიით შენახვისას',
+    'position_history_no_attachments' => 'დაარქივებული ფაილები არ არის',
     'changed_by' => 'ვინ შეცვალა',
     'vacation_file_attachments' => 'შვებულების ფაილები',
     'vacation_day_off_limit_exceeded' => 'დეიოფის დღეების ლიმიტი ამოწურულია',
@@ -206,6 +210,7 @@ return [
         'place_id' => 'ადგილი',
         'staff_type' => 'შტატი',
         'clinical' => 'კლინიკური',
+        'position_attachments' => 'თანამდებობის ფაილები',
     ],
 
     'position_history_affects' => [
@@ -354,6 +359,11 @@ return [
             'reset_password_modal_description' => 'ეს გადააყენებს თანამშრომლის შესვლის პაროლს საწყის მნიშვნელობაზე და შემდეგი შესვლისას ახალი პაროლის დაყენებას მოითხოვს.',
             'reset_password_success' => 'პაროლი წარმატებით გადაიტვირთა.',
             'reset_password_no_user' => 'ამ თანამშრომელს მომხმარებლის ანგარიში არ აქვს.',
+            'create_user_modal_heading' => 'გსურთ თანამშრომლისთვის მომხმარებლის ანგარიშის შექმნა?',
+            'create_user_modal_description' => 'ეს შექმნის თანამშრომლისთვის შესვლის ანგარიშს საწყისი პაროლით და employee როლით.',
+            'create_user_success' => 'მომხმარებლის ანგარიში წარმატებით შეიქმნა.',
+            'create_user_failed' => 'მომხმარებლის ანგარიში ვერ შეიქმნა.',
+            'create_user_not_allowed' => 'ამ თანამშრომლისთვის მომხმარებლის ანგარიშის შექმნა არ გაქვთ ნებადართული.',
         ],
         'view_employee' => [
             'title' => 'თანამშრომლის ნახვა',
@@ -426,6 +436,7 @@ return [
 
     'personal_file' => [
         'attachments' => 'დანართები',
+        'personal_documents' => 'პირადობის დამადასტურებელი მოწმობა',
 
         'locale_georgian' => 'ქართული',
         'locale_english' => 'ინგლისური',
@@ -444,6 +455,8 @@ return [
 
         'academic_degrees' => [
             'degree' => 'ხარისხი',
+
+            'file_label' => 'აკადემიური ხარისხის დამადასტურებელი მოწმობა',
             'other' => 'სხვა',
         ],
         'academic_position' => [
@@ -474,47 +487,70 @@ return [
             'program' => 'პროგრამა',
             'specialty' => 'სპეციალობა',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'განათლების იმპორტი',
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'განათლების ჩანაწერები წარმატებით იქნა იმპორტირებული.',
+            'file_label' => 'განათლების დამადასტურებელი მოწმობა',
         ],
 
         'work_experience' => [
             'institution' => 'დაწესებულება',
             'position' => 'თანამდებობა',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სამუშაო გამოცდილების იმპორტი',
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'სამუშაო გამოცდილება წარმატებით იქნა იმპორტირებული.',
+            'ended_before_started' => 'დასრულების თარიღი უნდა იყოს დაწყების თარიღის ტოლი ან მეტი. გთხოვთ გაასწოროთ ეს ჩანაწერი შენახვამდე.',
+            'invalid_dates_item_label' => 'არასწორი თარიღები — :label',
         ],
 
         'trainings_seminars' => [
             'institution' => 'დაწესებულება',
             'topic' => 'თემა',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'ტრენინგების და სემინარების იმპორტი',
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'ტრენინგები და სემინარები წარმატებით იქნა იმპორტირებული.',
+            'file_label' => 'ტრენინგების და სემინარების დამადასტურებელი მოწმობა',
         ],
 
         'publications' => [
             'title' => 'სახელწოდება',
             'place' => 'გამოქვეყნების ადგილი',
             'co_authors' => 'ავტორები',
+            'scope' => 'ტიპი',
+            'scope_options' => [
+                'local' => 'ადგილობრივი',
+                'international' => 'საერთაშორისო',
+            ],
+            'indexed' => 'ინდექსირებული',
+            'impact_factor' => 'იმპაქტ ფაქტორიანი',
+            'classify' => 'პუბლიკაციების კლასიფიკაცია',
+            'classify_heading' => 'პუბლიკაციების კლასიფიკაცია',
+            'classify_list' => 'პუბლიკაციები',
+            'classify_submit' => 'გამოყენება მონიშნულებზე',
+            'classify_success' => 'განახლდა :count პუბლიკაცია.',
+            'classify_empty' => 'ამ თანამშრომელს ჯერ არ აქვს პუბლიკაციები.',
+            'yes' => 'კი',
+            'no' => 'არა',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'პუბლიკაციების იმპორტი',
             'import_submit' => 'იმპორტი',
             'import_file_label' => 'Excel ფაილი',
             'import_success' => 'პუბლიკაციები წარმატებით იქნა იმპორტირებული.',
             'import_invalid_structure' => 'Excel ფაილის არასწორი სტრუქტურა',
-            'import_invalid_structure_body' => 'ატვირთული ფაილი არ ემთხვევა ექსპორტის შაბლონს. გთხოვთ, ჩამოტვირთოთ შაბლონი და გამოიყენოთ იგივე სვეტების განლაგება (year, title_ka, title_en, authors_ka, authors_en, venue_ka, venue_en).',
+            'import_invalid_structure_body' => 'ატვირთული ფაილი არ ემთხვევა ექსპორტის შაბლონს. გთხოვთ, ჩამოტვირთოთ შაბლონი და გამოიყენოთ იგივე სვეტების განლაგება (year, title_ka, title_en, authors_ka, authors_en, venue_ka, venue_en). დამატებითი სვეტები: scope, indexed, impact_factor. შევსებული ფაილი შეიძლება იწყებოდეს id სვეტით.',
         ],
 
         'textbooks' => [
@@ -522,6 +558,7 @@ return [
             'publisher' => 'გამომცემელი',
             'co_authors' => 'ავტორები',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სახელმძღვანელოების იმპორტი',
             'import_submit' => 'იმპორტი',
@@ -531,8 +568,18 @@ return [
 
         'scientific_forums' => [
             'title' => 'სახელწოდება',
+            'international_forum_publication' => 'აბსტრაქტი/სტატია გამოქვეყნებულია საერთაშორისო ფორუმის შრომათა კრებულში',
             'participation_form' => 'მოხსენების დასახელება',
+            'participation_role' => 'როლი',
+            'participation_role_other' => 'სხვა',
+            'participation_role_options' => [
+                'attendee' => 'დამსწრე',
+                'speaker' => 'მომხსენებელი',
+                'other' => 'სხვა',
+            ],
+            'scope' => 'ტიპი',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სამეცნიერო ფორუმების იმპორტი',
             'import_submit' => 'იმპორტი',
@@ -545,6 +592,7 @@ return [
             'issuer' => 'გამცემი ორგანიზაცია',
             'grant_details' => 'გრანტი',
             'download_template' => 'Excel შაბლონის ჩამოტვირთვა',
+            'download_filled_template' => 'შევსებული Excel-ის ჩამოტვირთვა',
             'import' => 'იმპორტი Excel-იდან',
             'import_modal_heading' => 'სტიპენდიებისა და ჯილდოების იმპორტი',
             'import_submit' => 'იმპორტი',

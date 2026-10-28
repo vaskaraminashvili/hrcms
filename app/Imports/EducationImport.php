@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Imports\Concerns\InterpretsExcelImportRows;
+use App\Imports\Concerns\UpdatesExistingImportRows;
 use App\Models\Education;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,6 +11,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 class EducationImport implements ToModel, WithHeadingRow
 {
     use InterpretsExcelImportRows;
+    use UpdatesExistingImportRows;
 
     public function __construct(
         private readonly int $employeeId,
@@ -23,7 +25,7 @@ class EducationImport implements ToModel, WithHeadingRow
             return null;
         }
 
-        return new Education([
+        return $this->modelFromRow(Education::class, $row, [
             'employee_id' => $this->employeeId,
             'institution' => $institution,
             'program' => $this->optionalTranslatableFromRow($row, 'program'),

@@ -2,13 +2,17 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\WorkExperienceImport;
+use Carbon\Carbon;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -18,10 +22,15 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class WorkExperienceSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/work_experience/work_experience.xlsx';
 
     private const TEMPLATE_DOWNLOAD_NAME = 'work_experience.xlsx';
+
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'work_experience_filled.xlsx';
+
+    public static bool $fileUploadEnabled = false;
 
     public static function tabHeaderActions(): Actions
     {
@@ -35,6 +44,21 @@ class WorkExperienceSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledWorkExperienceTemplate')
+                ->label(__('filament.personal_file.work_experience.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->workExperiences,
+                        PersonalFileTemplateRows::workExperience(...),
+                    );
                 }),
             Action::make('importWorkExperience')
                 ->label(__('filament.personal_file.work_experience.import'))
@@ -81,8 +105,52 @@ class WorkExperienceSchema
         return [
             static::translatableField('institution', __('filament.personal_file.work_experience.institution')),
             static::translatableField('position', __('filament.personal_file.work_experience.position')),
-            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
+            static::yearMonthField('started_at', __('filament.personal_file.dates.started_at'))
+                ->live(),
+            static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at'))
+                ->live()
+                ->disabled(fn (Get $get): bool => blank($get('started_at')))
+                ->afterOrEqual('started_at')
+                ->validationMessages([
+                    'after_or_equal' => __('filament.personal_file.work_experience.ended_before_started'),
+                ])
+                ->helperText(function (Get $get): ?string {
+                    $startedAt = $get('started_at');
+                    $endedAt = $get('ended_at');
+
+                    if (blank($startedAt) || blank($endedAt)) {
+                        return null;
+                    }
+
+                    if (Carbon::parse($endedAt)->startOfMonth()->lt(Carbon::parse($startedAt)->startOfMonth())) {
+                        return __('filament.personal_file.work_experience.ended_before_started');
+                    }
+
+                    return null;
+                })
+                ->extraInputAttributes(function (Get $get): array {
+                    $startedAt = $get('started_at');
+                    $endedAt = $get('ended_at');
+
+                    if (blank($startedAt)) {
+                        return [];
+                    }
+
+                    $min = Carbon::parse($startedAt)->format('Y-m');
+
+                    // Skip HTML min when a legacy value is already below it, so the browser
+                    // does not block submit before Filament can show the field error.
+                    if (filled($endedAt) && Carbon::parse($endedAt)->format('Y-m') < $min) {
+                        return [];
+                    }
+
+                    return ['min' => $min];
+                }),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

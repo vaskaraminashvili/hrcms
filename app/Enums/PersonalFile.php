@@ -2,6 +2,9 @@
 
 namespace App\Enums;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 
 enum PersonalFile: string
@@ -19,6 +22,20 @@ enum PersonalFile: string
     case FOREIGN_LANGUAGES = 'foreign_languages';
     case COMPUTER_SKILLS = 'computer_skills';
     case OTHER = 'other';
+
+    public function attachmentsLabel(): string
+    {
+        if ($this->hasCustomAttachmentsLabel()) {
+            return __('filament.personal_file.'.$this->value.'.file_label');
+        }
+
+        return __('filament.personal_file.attachments');
+    }
+
+    public function hasCustomAttachmentsLabel(): bool
+    {
+        return Lang::has('filament.personal_file.'.$this->value.'.file_label');
+    }
 
     public function label(): string
     {
@@ -56,7 +73,7 @@ enum PersonalFile: string
     }
 
     /**
-     * Eloquent attribute name after {@see \Illuminate\Database\Eloquent\Model::loadCount()} for this section's has-many (e.g. scientific_projects_count).
+     * Eloquent attribute name after {@see Model::loadCount()} for this section's has-many (e.g. scientific_projects_count).
      */
     public function tabBadgeRelationCountAttribute(): string
     {
@@ -124,10 +141,34 @@ enum PersonalFile: string
 
         return match ($this) {
             self::ACADEMIC_POSITION => self::resolveAcademicPositionItemLabel($state),
+            self::WORK_EXPERIENCE => self::resolveWorkExperienceItemLabel($state),
             self::ACADEMIC_DEGREES => self::resolveAcademicDegreeItemLabelFromState($state),
             self::FOREIGN_LANGUAGES => self::resolveForeignLanguageItemLabelFromState($state),
             default => $this->resolveTranslatableItemLabel($state),
         };
+    }
+
+    private static function resolveWorkExperienceItemLabel(array $state): ?string
+    {
+        $field = 'institution';
+        $value = $state[$field]['ka'] ?? $state[$field]['en'] ?? null;
+        $period = $state['started_at'].' - '.($state['ended_at'] ?? 'N/A');
+
+        if (! is_string($value)) {
+            return null;
+        }
+
+        $label = Str::limit($value, 58).' - '.$period;
+
+        $startedAt = $state['started_at'] ?? null;
+        $endedAt = $state['ended_at'] ?? null;
+
+        if (filled($startedAt) && filled($endedAt)
+            && Carbon::parse($endedAt)->startOfMonth()->lt(Carbon::parse($startedAt)->startOfMonth())) {
+            return __('filament.personal_file.work_experience.invalid_dates_item_label', ['label' => $label]);
+        }
+
+        return $label;
     }
 
     private static function resolveAcademicDegreeItemLabelFromState(array $state): ?string

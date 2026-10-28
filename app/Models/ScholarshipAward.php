@@ -21,17 +21,19 @@ class ScholarshipAward extends Model implements HasMedia
         'employee_id',
         'sort',
         'title',
+        'grant_details',
         'issuer',
         'issued_at',
     ];
 
-    public array $translatable = ['title', 'issuer'];
+    public array $translatable = ['title', 'issuer', 'grant_details'];
 
     protected function casts(): array
     {
         return [
             'title' => 'array',
             'issuer' => 'array',
+            'grant_details' => 'array',
         ];
     }
 

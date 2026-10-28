@@ -26,6 +26,8 @@ class EditPositionHistory extends EditRecord
 
     public function form(Schema $schema): Schema
     {
+        // dd($this->getRecord()->getMedia('position'));
+
         return PositionForm::configure(
             $this->defaultForm($schema)->model($this->getRecord()->position),
             withEmployee: true,

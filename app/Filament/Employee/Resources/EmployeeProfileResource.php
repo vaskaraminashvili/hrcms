@@ -2,6 +2,7 @@
 
 namespace App\Filament\Employee\Resources;
 
+use App\Filament\Employee\Resources\EmployeeProfileResource\Pages\ClassifyProfilePublications;
 use App\Filament\Employee\Resources\EmployeeProfileResource\Pages\EditEmployeeProfile;
 use App\Filament\Resources\Employees\EmployeeResource;
 use App\Models\Employee;
@@ -54,6 +55,7 @@ class EmployeeProfileResource extends Resource
     {
         return [
             'edit' => EditEmployeeProfile::route('/edit'),
+            'classifyPublications' => ClassifyProfilePublications::route('/{record}/publications/classify'),
         ];
     }
 

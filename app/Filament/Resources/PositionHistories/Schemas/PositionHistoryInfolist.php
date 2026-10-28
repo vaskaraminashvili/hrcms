@@ -10,6 +10,7 @@ use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class PositionHistoryInfolist
 {
@@ -112,6 +113,31 @@ class PositionHistoryInfolist
                                     ->all();
                             }),
                     ]),
+
+                Section::make(__('filament.position_history_section_attachments'))
+                    ->description(__('filament.position_history_attachments_description'))
+                    ->schema([
+                        TextEntry::make('archived_attachments')
+                            ->label('')
+                            ->html()
+                            ->getStateUsing(function (PositionHistory $record): string {
+                                $media = $record->getMedia('position');
+
+                                if ($media->isEmpty()) {
+                                    return e(__('filament.position_history_no_attachments'));
+                                }
+
+                                return $media
+                                    ->map(function (Media $item): string {
+                                        $url = e($item->getUrl());
+                                        $name = e($item->file_name);
+
+                                        return '<a href="'.$url.'" target="_blank" rel="noopener noreferrer" class="fi-link text-primary-600 hover:underline dark:text-primary-400">'.$name.'</a>';
+                                    })
+                                    ->implode('<br>');
+                            }),
+                    ])
+                    ->visible(fn (PositionHistory $record): bool => $record->getMedia('position')->isNotEmpty()),
 
             ]);
     }

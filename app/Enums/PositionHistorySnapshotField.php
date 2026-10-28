@@ -35,6 +35,7 @@ enum PositionHistorySnapshotField: string
     case UpdatedAt = 'updated_at';
     case Clinical = 'clinical';
     case StaffType = 'staff_type';
+    case PositionAttachments = 'position_attachments';
 
     /**
      * Human-readable label for a snapshot array key (infolist full snapshot, etc.).
@@ -130,6 +131,7 @@ enum PositionHistorySnapshotField: string
                 '2' => __('filament.staff_type_option.non_established'),
                 default => (string) $value,
             },
+            self::PositionAttachments => (string) $value,
         };
     }
 }

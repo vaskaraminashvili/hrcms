@@ -97,7 +97,10 @@ class Employee extends Model implements HasMedia
 
     public function workExperiences(): HasMany
     {
-        return $this->hasMany(WorkExperience::class)->orderBy('sort');
+        return $this->hasMany(WorkExperience::class)
+            ->orderByRaw('ended_at IS NULL DESC')
+            ->orderByDesc('ended_at')
+            ->orderByDesc('started_at');
     }
 
     public function scientificProjects(): HasMany
@@ -172,7 +175,7 @@ class Employee extends Model implements HasMedia
     {
         $mediaImageUrl = $this->getFirstMediaUrl('employee_image');
         if ($mediaImageUrl !== '') {
-            return $mediaImageUrl;
+            return $this->getFirstMedia('employee_image')?->getTemporaryUrl(now()->addHour());
         }
 
         $photo = trim((string) $this->photo);

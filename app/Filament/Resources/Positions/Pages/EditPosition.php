@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Positions\Pages;
 use App\Filament\Resources\Positions\PositionResource;
 use App\Filament\Resources\Positions\Schemas\PositionForm;
 use App\Models\Position;
+use App\Services\PositionAttachmentHistoryService;
 use App\Services\PositionFormPersistence;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
@@ -18,12 +19,12 @@ class EditPosition extends EditRecord
 
     protected bool $skipPositionObserverOnNextSave = false;
 
-    public function getTitle(): string
+    public static function getNavigationLabel(): string
     {
         return __('filament.admin.edit_position.title');
     }
 
-    public static function getNavigationLabel(): string
+    public function getTitle(): string
     {
         return __('filament.admin.edit_position.title');
     }
@@ -53,6 +54,8 @@ class EditPosition extends EditRecord
         $skipObserver = $this->skipPositionObserverOnNextSave;
         $this->skipPositionObserverOnNextSave = false;
 
+        $oldValues = $record->replicate();
+
         if ($skipObserver) {
             Position::withoutEvents(
                 fn () => PositionFormPersistence::updatePositionAndDetail($record, $data),
@@ -61,7 +64,27 @@ class EditPosition extends EditRecord
             PositionFormPersistence::updatePositionAndDetail($record, $data);
         }
 
-        return $record->refresh();
+        $record->refresh();
+        // Get new values after update
+        $newValues = $record->getAttributes();
+
+        // Get only the changed attributes (dirty)
+        $changedValues = $record->getDirty();
+
+        // Build the properties in the format you want
+        $properties = [
+            'attributes' => $newValues,
+            'old' => $oldValues->getAttributes(),
+        ];
+
+        activity()
+            ->event('updated')
+            ->performedOn($record)
+            ->causedBy(auth()->user())
+            ->withProperties($properties)
+            ->log('Position updated'.($skipObserver ? ' (quick save)' : ''));
+
+        return $record;
     }
 
     protected function getHeaderActions(): array
@@ -111,13 +134,28 @@ class EditPosition extends EditRecord
                 ->modalHeading(__('filament.position_edit.modal_save_history_heading'))
                 ->modalDescription(__('filament.position_edit.modal_save_history_description'))
                 ->modalSubmitActionLabel(__('filament.position_edit.modal_save_history_submit'))
-                ->action(function (): void {
+                ->action(function (PositionAttachmentHistoryService $attachmentHistoryService): void {
+                    $this->form->validate();
+
+                    /** @var Position $position */
+                    $position = $this->getRecord();
+
+                    $attachmentHistoryService->beginSaveWithHistory(
+                        $position,
+                        PositionAttachmentHistoryService::formStateWithMediaField($this->form),
+                    );
+
                     $this->skipPositionObserverOnNextSave = false;
+
                     try {
                         $this->save();
                     } finally {
                         $this->skipPositionObserverOnNextSave = false;
                     }
+
+                    $attachmentHistoryService->finalizeSaveWithHistory($position->refresh());
+
+                    $this->form->loadStateFromRelationships(shouldHydrate: true);
                 }),
             $this->getCancelFormAction(),
         ];

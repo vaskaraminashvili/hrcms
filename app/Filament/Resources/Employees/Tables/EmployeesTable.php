@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Resources\Employees\Actions\CreateEmployeeUserAction;
 use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Models\Employee;
 use App\Support\DepartmentBadgeColors;
@@ -192,6 +193,8 @@ class EmployeesTable
                     }),
             ])
             ->recordActions([
+                CreateEmployeeUserAction::make()
+                    ->visible(fn (Employee $record): bool => CreateEmployeeUserAction::canCreate($record)),
                 ResetEmployeeUserPasswordAction::make()
                     ->visible(fn (Employee $record): bool => ResetEmployeeUserPasswordAction::canReset($record)),
                 EditAction::make()

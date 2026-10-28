@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\Employees\Schemas\PersonalFile;
 
+use App\Exports\FilledExcelTemplate;
+use App\Exports\PersonalFileTemplateRows;
 use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasTranslatableFields;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\Concerns\HasYearMonthFields;
 use App\Imports\TrainingsSeminarsImport;
 use Filament\Actions\Action;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -18,10 +20,15 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 class TrainingsSeminarsSchema
 {
     use HasTranslatableFields;
+    use HasYearMonthFields;
 
     private const TEMPLATE_RELATIVE_PATH = 'templates/trainings_seminars/trainings_seminars.xlsx';
 
     private const TEMPLATE_DOWNLOAD_NAME = 'trainings_seminars.xlsx';
+
+    private const FILLED_TEMPLATE_DOWNLOAD_NAME = 'trainings_seminars_filled.xlsx';
+
+    public static bool $fileUploadEnabled = true;
 
     public static function tabHeaderActions(): Actions
     {
@@ -35,6 +42,21 @@ class TrainingsSeminarsSchema
                     abort_unless(is_file($path), 404);
 
                     return response()->download($path, self::TEMPLATE_DOWNLOAD_NAME);
+                }),
+            Action::make('downloadFilledTrainingsSeminarsTemplate')
+                ->label(__('filament.personal_file.trainings_seminars.download_filled_template'))
+                ->icon(Heroicon::ArrowDownOnSquare)
+                ->visible(fn (?Model $record): bool => $record !== null)
+                ->authorize('importPersonalFile')
+                ->action(function ($livewire): BinaryFileResponse {
+                    $record = $livewire->getRecord();
+
+                    return FilledExcelTemplate::download(
+                        resource_path(self::TEMPLATE_RELATIVE_PATH),
+                        self::FILLED_TEMPLATE_DOWNLOAD_NAME,
+                        $record->trainingsSeminars,
+                        PersonalFileTemplateRows::trainingSeminar(...),
+                    );
                 }),
             Action::make('importTrainingsSeminars')
                 ->label(__('filament.personal_file.trainings_seminars.import'))
@@ -81,8 +103,13 @@ class TrainingsSeminarsSchema
         return [
             static::translatableField('institution', __('filament.personal_file.trainings_seminars.institution')),
             static::translatableField('topic', __('filament.personal_file.trainings_seminars.topic')),
-            DatePicker::make('started_at')->label(__('filament.personal_file.dates.started_at')),
-            DatePicker::make('ended_at')->label(__('filament.personal_file.dates.ended_at')),
+            static::yearMonthField('started_at', __('filament.personal_file.dates.started_at')),
+            static::yearMonthField('ended_at', __('filament.personal_file.dates.ended_at')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

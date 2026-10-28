@@ -8,11 +8,18 @@ class ComputerSkillsSchema
 {
     use HasTranslatableFields;
 
+    public static bool $fileUploadEnabled = true;
+
     public static function schema(): array
     {
         return [
             static::translatableField('title', __('filament.personal_file.computer_skills.title')),
             static::translatableField('level', __('filament.personal_file.computer_skills.level')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

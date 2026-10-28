@@ -6,6 +6,7 @@ use App\Enums\Education;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Enums\PersonalFile;
+use App\Filament\Resources\Employees\Schemas\PersonalFile\PersonalFileItemPayload;
 use App\Models\Employee;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
@@ -19,6 +20,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\HtmlString;
 
 class EmployeeForm
@@ -42,7 +45,6 @@ class EmployeeForm
                                     ->label(__('filament.employee_image'))
                                     ->content(function (?Employee $record): HtmlString {
                                         $imageUrl = $record?->employeeImageUrl();
-
                                         if ($imageUrl === null) {
                                             return new HtmlString('');
                                         }
@@ -59,7 +61,11 @@ class EmployeeForm
                                     ->openable()
                                     ->downloadable()
                                     ->columnSpanFull()
-                                    ->extraAttributes(['class' => 'attachments-upload']),
+                                    ->extraAttributes(['class' => 'attachments-upload'])
+                                    ->previewable(false)
+                                    ->hintColor('danger')
+                                    ->hint('ასატვირთი ფოტოსურათი უნდა იყოს 3×4 ფორმატის, ოფიციალური, მაღალი ხარისხის და CV-ისთვის შესაბამისი'),
+
                                 TextInput::make('name')
                                     ->label(__('filament.name'))
                                     ->required(),
@@ -125,9 +131,10 @@ class EmployeeForm
                                     ->columns(2)
                                     ->columnSpanFull(),
                                 SpatieMediaLibraryFileUpload::make('personal_file_attachments_attachments')
-                                    ->label(__('filament.personal_file.attachments'))
+                                    ->label(__('filament.personal_file.personal_documents'))
                                     ->collection('basic_information_attachments')
                                     ->removeUploadedFileButtonPosition('right')
+                                    ->extraFieldWrapperAttributes(['class' => 'attachment-label-danger'])
                                     ->multiple()
                                     ->openable()
                                     ->downloadable()
@@ -140,16 +147,50 @@ class EmployeeForm
                             function (PersonalFile $case) {
                                 $schemaClass = $case->schemaClass();
 
+                                $repeater = Repeater::make($case->relationship())
+                                    ->label($case->label())
+                                    ->default([])
+                                    ->schema($schemaClass::schema())
+                                    ->collapsed()
+                                    ->collapsible()
+                                    ->columnSpanFull();
+
+                                if ($case === PersonalFile::WORK_EXPERIENCE) {
+                                    $repeater
+                                        ->relationship(
+                                            modifyQueryUsing: fn ($query) => $query
+                                                ->orderByRaw('ended_at IS NULL DESC')
+                                                ->orderByDesc('ended_at')
+                                                ->orderByDesc('started_at'),
+                                        )
+                                        ->reorderable(false);
+                                } else {
+                                    $repeater
+                                        ->relationship(
+                                            modifyQueryUsing: fn (Builder $query) => $query
+                                                ->withoutTrashed(),
+                                        )
+                                        ->orderColumn('sort');
+                                }
+
+                                $repeater
+                                    ->mutateRelationshipDataBeforeCreateUsing(
+                                        fn (array $data): ?array => PersonalFileItemPayload::withoutBlankItem($data, creating: true),
+                                    )
+                                    ->mutateRelationshipDataBeforeSaveUsing(
+                                        function (array $data, Model $record): ?array {
+                                            $payload = PersonalFileItemPayload::withoutBlankItem($data);
+
+                                            if ($payload === null) {
+                                                $record->delete();
+                                            }
+
+                                            return $payload;
+                                        },
+                                    );
+
                                 $tabSchema = [
-                                    Repeater::make($case->relationship())
-                                        ->label($case->label())
-                                        ->default([])
-                                        ->relationship()
-                                        ->schema($schemaClass::schema())
-                                        ->collapsed()
-                                        ->collapsible()
-                                        ->orderColumn('sort')
-                                        ->columnSpanFull()
+                                    $repeater
                                         ->afterLabel([
                                             Action::make('add_repeater_item_'.$case->value)
                                                 ->label(__('filament.add_record_button'))
@@ -182,16 +223,26 @@ class EmployeeForm
                                         ])
                                         ->addAction(fn (Action $action) => $action->visible(false))
                                         ->itemLabel(fn (array $state): ?string => $case->resolveItemLabelFromState($state)),
-                                    SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
-                                        ->label(__('filament.personal_file.attachments'))
+
+                                ];
+
+                                if (method_exists($schemaClass, 'fileUploadEnabled') && $schemaClass::fileUploadEnabled()) {
+                                    $fileUpload = SpatieMediaLibraryFileUpload::make('personal_file_attachments_'.$case->value)
+                                        ->label($case->attachmentsLabel())
                                         ->collection($case->mediaCollectionName())
                                         ->removeUploadedFileButtonPosition('right')
                                         ->multiple()
                                         ->openable()
                                         ->downloadable()
                                         ->columnSpanFull()
-                                        ->extraAttributes(['class' => 'attachments-upload']),
-                                ];
+                                        ->extraAttributes(['class' => 'attachments-upload']);
+
+                                    if ($case->hasCustomAttachmentsLabel()) {
+                                        $fileUpload->extraFieldWrapperAttributes(['class' => 'attachment-label-danger']);
+                                    }
+
+                                    $tabSchema[] = $fileUpload;
+                                }
 
                                 if (method_exists($schemaClass, 'tabHeaderActions')) {
                                     array_unshift($tabSchema, $schemaClass::tabHeaderActions());

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\DepartmentStatus;
 use App\Enums\EmployeeStatusEnum;
 use App\Enums\Gender;
 use App\Filament\Exports\EmployeeExporter;
@@ -220,10 +221,16 @@ class EmployeeReport extends Page implements HasTable
                     ->label(__('filament.gender'))
                     ->options(Gender::class),
 
-                // Relationship filter (dot notation walks nested relationships).
+                // Same scope as Positions index (department_id + hide_scheduled_dismissals / appointmentPositions).
                 SelectFilter::make('department')
                     ->label(__('filament.department_id'))
-                    ->relationship('positions.department', 'name')
+                    ->relationship(
+                        name: 'appointmentPositions.department',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query): Builder => $query
+                            ->whereIn('status', [DepartmentStatus::ACTIVE->value])
+                            ->orderBy('name'),
+                    )
                     ->searchable()
                     ->preload()
                     ->multiple(),

@@ -10,6 +10,8 @@ class AcademicDegreesSchema
 {
     use HasTranslatableFields;
 
+    public static bool $fileUploadEnabled = true;
+
     public static function schema(): array
     {
         return [
@@ -20,5 +22,10 @@ class AcademicDegreesSchema
                 )),
             static::translatableField('other', __('filament.personal_file.academic_degrees.other')),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }

@@ -4,11 +4,18 @@ namespace App\Models;
 
 use App\Enums\PositionHistoryAffectField;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class PositionHistory extends Model
+class PositionHistory extends Model implements HasMedia
 {
+    use HasFactory, InteractsWithMedia, LogsActivity;
+
     protected $fillable = [
         'position_id',
         'changed_by',
@@ -115,5 +122,18 @@ class PositionHistory extends Model
     public function getSalaryTo(): ?int
     {
         return $this->changed_fields['salary']['to'] ?? null;
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                '*',
+            ]);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('position');
     }
 }

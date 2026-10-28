@@ -10,6 +10,8 @@ class OtherSchema
 {
     use HasTranslatableFields;
 
+    public static bool $fileUploadEnabled = true;
+
     public static function schema(): array
     {
         return [
@@ -24,5 +26,10 @@ class OtherSchema
                 ->removeUploadedFileButtonPosition('right')
                 ->extraAttributes(['class' => 'attachments-upload']),
         ];
+    }
+
+    public static function fileUploadEnabled(): bool
+    {
+        return self::$fileUploadEnabled;
     }
 }
