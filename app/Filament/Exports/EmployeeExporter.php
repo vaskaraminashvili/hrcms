@@ -32,6 +32,9 @@ class EmployeeExporter extends Exporter
             ExportColumn::make('birth_date')
                 ->label(__('filament.birth_date'))
                 ->formatStateUsing(fn (mixed $state): string => self::formatDate($state)),
+            ExportColumn::make('created_at')
+                ->label(__('filament.created_at'))
+                ->formatStateUsing(fn (mixed $state): string => self::formatDate($state)),
             ExportColumn::make('age')
                 ->label(__('filament.turning_age'))
                 ->state(fn (Employee $record): ?int => $record->birth_date?->age),
@@ -57,6 +60,12 @@ class EmployeeExporter extends Exporter
             ExportColumn::make('position')
                 ->label(__('filament.place_id'))
                 ->state(fn (Employee $record): string => self::primaryAppointment($record)?->place?->name ?? ''),
+            ExportColumn::make('date_start')
+                ->label(__('filament.date_start'))
+                ->state(fn (Employee $record): string => self::formatDate(self::primaryAppointment($record)?->date_start)),
+            ExportColumn::make('date_end')
+                ->label(__('filament.date_end'))
+                ->state(fn (Employee $record): string => self::formatDate(self::primaryAppointment($record)?->date_end)),
             ExportColumn::make('second_position')
                 ->label(__('filament.second_position'))
                 ->state(fn (Employee $record): string => self::secondAppointment($record)?->place?->name ?? ''),
@@ -79,8 +88,6 @@ class EmployeeExporter extends Exporter
     public static function modifyQuery(Builder $query): Builder
     {
         return $query->with([
-            'appointmentPositions.department.parent',
-            'appointmentPositions.place',
             'positions.histories',
         ]);
     }

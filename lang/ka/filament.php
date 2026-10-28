@@ -143,6 +143,8 @@ return [
     ],
     'comment' => 'კომენტარი',
     'created_at' => 'შექმნის თარიღი',
+    'date_from' => 'დან',
+    'date_until' => 'მდე',
     'updated_at' => 'განახლების თარიღი',
     'deleted_at' => 'წაშლის თარიღი',
     'from_year' => 'წლიდან',
