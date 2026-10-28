@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use AlizHarb\ActivityLog\ActivityLogPlugin;
 use App\Enums\EmployeeStatusEnum;
+use App\Filament\Auth\AdminLogin;
 use App\Filament\Widgets\EmployeeBirthdaysWidget;
 use App\Filament\Widgets\EmployeeContractEndingsWidget;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
@@ -40,7 +41,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('cms')
-            ->login()
+            ->login(AdminLogin::class)
+            ->brandName('TSMU HR')
             ->colors([
                 'primary' => Color::Indigo,
                 'gray' => Color::Slate,

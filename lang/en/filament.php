@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'admin_login_heading' => 'Administration login',
 
     /*
     |--------------------------------------------------------------------------
