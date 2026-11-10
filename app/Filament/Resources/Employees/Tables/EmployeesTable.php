@@ -3,10 +3,14 @@
 namespace App\Filament\Resources\Employees\Tables;
 
 use App\Enums\EmployeeStatusEnum;
+use App\Enums\PositionType;
 use App\Filament\Resources\Employees\Actions\CreateEmployeeUserAction;
 use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Models\Employee;
+use App\Models\Position;
+use App\Models\User;
 use App\Support\DepartmentBadgeColors;
+use App\Support\PersonalDataReviewer;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,6 +24,7 @@ use Filament\Tables\Enums\RecordActionsPosition;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\HtmlString;
 
 use function Filament\Support\generate_icon_html;
@@ -219,7 +224,7 @@ class EmployeesTable
      */
     private static function appointmentPositionsBadgesHtml(Employee $record, string $column, bool $asBadge = true, int $col_width = 0): HtmlString
     {
-        $positions = $record->appointmentPositions;
+        $positions = self::visibleAppointmentPositions($record);
 
         if ($positions->isEmpty()) {
             return new HtmlString('');
@@ -279,7 +284,7 @@ class EmployeesTable
 
     private static function appointmentPositionsDateEndDescription(Employee $record): string
     {
-        $positions = $record->appointmentPositions;
+        $positions = self::visibleAppointmentPositions($record);
 
         if ($positions->isEmpty()) {
             return '';
@@ -289,6 +294,33 @@ class EmployeesTable
             ->take(3)
             ->map(fn ($position): string => $position->date_end?->format('d.m.Y') ?? 'N/A')
             ->implode(' · ');
+    }
+
+    /**
+     * Reviewers only see appointment badges for academic or invited positions in their faculty.
+     *
+     * @return Collection<int, Position>
+     */
+    private static function visibleAppointmentPositions(Employee $record): Collection
+    {
+        $positions = $record->appointmentPositions;
+        $user = auth()->user();
+
+        if (! $user instanceof User || ! PersonalDataReviewer::isReviewer($user)) {
+            return $positions;
+        }
+
+        $departmentIds = PersonalDataReviewer::departmentIdsFor($user);
+
+        return $positions
+            ->filter(function (Position $position) use ($departmentIds): bool {
+                return $departmentIds->contains((int) $position->department_id)
+                    && in_array($position->position_type, [
+                        PositionType::AcademicPersonnel,
+                        PositionType::InvitedTeacher,
+                    ], true);
+            })
+            ->values();
     }
 
     /**

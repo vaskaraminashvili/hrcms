@@ -556,4 +556,8 @@ return [
         'login_heading' => 'Employee authorization',
     ],
 
+    'review_panel' => [
+        'login_heading' => 'Personal data review',
+    ],
+
 ];
