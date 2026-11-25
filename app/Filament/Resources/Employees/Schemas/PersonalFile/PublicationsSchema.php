@@ -125,7 +125,7 @@ class PublicationsSchema
                 ->url(function ($livewire): string {
                     $record = $livewire->getRecord();
 
-                    if (! $record instanceof Model) {
+                    if (! $record instanceof Model || ! self::resourceHasClassifyPage($livewire)) {
                         return '#';
                     }
 
@@ -133,9 +133,14 @@ class PublicationsSchema
                         'record' => $record,
                     ]);
                 })
-                ->visible(fn (?Model $record): bool => $record !== null)
+                ->visible(fn (?Model $record, $livewire): bool => $record !== null && self::resourceHasClassifyPage($livewire))
                 ->authorize('importPersonalFile'),
         ])->alignBetween();
+    }
+
+    public static function resourceHasClassifyPage(object $livewire): bool
+    {
+        return array_key_exists('classifyPublications', $livewire::getResource()::getPages());
     }
 
     public static function schema(): array

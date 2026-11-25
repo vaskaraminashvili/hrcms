@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\Employee;
+use App\Models\User;
+use App\Support\PersonalDataReviewer;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Foundation\Auth\User as AuthUser;
 
@@ -14,6 +16,12 @@ class EmployeePolicy
 
     public function viewAny(AuthUser $authUser): bool
     {
+        $reviewer = $this->personalDataReviewer($authUser);
+
+        if ($reviewer !== null) {
+            return $reviewer->department_id !== null;
+        }
+
         return $authUser->can('ViewAny:Employee');
     }
 
@@ -24,6 +32,12 @@ class EmployeePolicy
 
     public function viewCv(AuthUser $authUser, Employee $employee): bool
     {
+        $reviewer = $this->personalDataReviewer($authUser);
+
+        if ($reviewer !== null) {
+            return PersonalDataReviewer::employeeIsInScope($reviewer, $employee);
+        }
+
         if ($authUser->can('View:Employee')) {
             return true;
         }
@@ -38,11 +52,23 @@ class EmployeePolicy
 
     public function update(AuthUser $authUser, Employee $employee): bool
     {
+        $reviewer = $this->personalDataReviewer($authUser);
+
+        if ($reviewer !== null) {
+            return PersonalDataReviewer::employeeIsInScope($reviewer, $employee);
+        }
+
         return $authUser->can('Update:Employee');
     }
 
     public function importPersonalFile(AuthUser $authUser, Employee $employee): bool
     {
+        $reviewer = $this->personalDataReviewer($authUser);
+
+        if ($reviewer !== null) {
+            return PersonalDataReviewer::employeeIsInScope($reviewer, $employee);
+        }
+
         if ($authUser->can('Update:Employee')) {
             return true;
         }
@@ -84,5 +110,14 @@ class EmployeePolicy
     public function reorder(AuthUser $authUser): bool
     {
         return $authUser->can('Reorder:Employee');
+    }
+
+    private function personalDataReviewer(AuthUser $authUser): ?User
+    {
+        if (! $authUser instanceof User || ! PersonalDataReviewer::isReviewer($authUser)) {
+            return null;
+        }
+
+        return $authUser;
     }
 }

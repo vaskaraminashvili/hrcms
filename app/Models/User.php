@@ -3,10 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\PersonalDataReviewer;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -29,6 +31,7 @@ class User extends Authenticatable implements FilamentUser, RenewPasswordContrac
         'name',
         'email',
         'password',
+        'department_id',
         'force_renew_password',
     ];
 
@@ -62,11 +65,17 @@ class User extends Authenticatable implements FilamentUser, RenewPasswordContrac
         return $this->hasOne(Employee::class);
     }
 
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return match ($panel->getId()) {
             'admin' => $this->canAccessAdminPanel(),
             'employee' => $this->hasRole('employee'),
+            'review' => $this->hasRole(PersonalDataReviewer::ROLE) && $this->department_id !== null,
             default => false,
         };
     }
