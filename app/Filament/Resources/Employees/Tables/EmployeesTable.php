@@ -2,21 +2,20 @@
 
 namespace App\Filament\Resources\Employees\Tables;
 
+use App\Enums\DepartmentStatus;
 use App\Enums\EmployeeStatusEnum;
-use App\Enums\PositionType;
 use App\Filament\Resources\Employees\Actions\CreateEmployeeUserAction;
 use App\Filament\Resources\Employees\Actions\ResetEmployeeUserPasswordAction;
 use App\Models\Employee;
 use App\Models\Position;
-use App\Models\User;
 use App\Support\DepartmentBadgeColors;
-use App\Support\PersonalDataReviewer;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Facades\Filament;
 use Filament\Support\Enums\IconSize;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -196,6 +195,7 @@ class EmployeesTable
                             default => $query,
                         };
                     }),
+                ...self::reviewDepartmentFilter(),
             ])
             ->recordActions([
                 CreateEmployeeUserAction::make()
@@ -297,30 +297,35 @@ class EmployeesTable
     }
 
     /**
-     * Reviewers only see appointment badges for academic or invited positions in their faculty.
-     *
+     * @return array<int, SelectFilter>
+     */
+    private static function reviewDepartmentFilter(): array
+    {
+        if (Filament::getCurrentPanel()?->getId() !== 'review') {
+            return [];
+        }
+
+        return [
+            SelectFilter::make('department')
+                ->label(__('filament.department_id'))
+                ->relationship(
+                    name: 'appointmentPositions.department',
+                    titleAttribute: 'name',
+                    modifyQueryUsing: fn (Builder $query): Builder => $query
+                        ->where('status', DepartmentStatus::ACTIVE->value)
+                        ->orderBy('name'),
+                )
+                ->searchable()
+                ->preload(),
+        ];
+    }
+
+    /**
      * @return Collection<int, Position>
      */
     private static function visibleAppointmentPositions(Employee $record): Collection
     {
-        $positions = $record->appointmentPositions;
-        $user = auth()->user();
-
-        if (! $user instanceof User || ! PersonalDataReviewer::isReviewer($user)) {
-            return $positions;
-        }
-
-        $departmentIds = PersonalDataReviewer::departmentIdsFor($user);
-
-        return $positions
-            ->filter(function (Position $position) use ($departmentIds): bool {
-                return $departmentIds->contains((int) $position->department_id)
-                    && in_array($position->position_type, [
-                        PositionType::AcademicPersonnel,
-                        PositionType::InvitedTeacher,
-                    ], true);
-            })
-            ->values();
+        return $record->appointmentPositions;
     }
 
     /**

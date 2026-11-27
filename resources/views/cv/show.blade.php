@@ -379,8 +379,14 @@
 <body>
 
     <div class="cv-print-bar">
-        <button type="button" onclick="window.print()">{{ __('cv.print') }}</button>
+        <button type="button" onclick="window.print()">{{ __('cv.download') }}</button>
     </div>
+
+    @if ($download ?? false)
+        <script>
+            window.addEventListener('load', () => window.print());
+        </script>
+    @endif
 
     <div class="cv-wrapper">
 

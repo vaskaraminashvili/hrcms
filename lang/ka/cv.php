@@ -5,6 +5,9 @@ return [
         'generate' => 'CV-ის გენერაცია',
         'georgian' => 'ქართული CV',
         'english' => 'ინგლისური CV',
+        'download' => 'CV-ის ჩამოტვირთვა',
+        'download_georgian' => 'ქართული PDF',
+        'download_english' => 'ინგლისური PDF',
     ],
 
     'contact_information' => 'საკონტაქტო ინფორმაცია',
@@ -31,6 +34,7 @@ return [
     'scholarship_title' => 'სტიპენდიის/ჯილდოს დასახელება',
     'issuer' => 'გამცემი',
     'print' => 'ბეჭდვა',
+    'download' => 'ჩამოტვირთვა',
 
     'genders' => [
         'male_ka' => 'კაცი',

@@ -29,7 +29,7 @@ beforeEach(function () {
     Filament::setCurrentPanel(Filament::getPanel('review'));
 });
 
-test('a faculty reviewer sees only academic and invited staff under that faculty', function () {
+test('a reviewer sees every employee and can filter the list by department', function () {
     $reviewer = reviewerUser();
     $place = Place::query()->create(['name' => 'Reviewer place '.Str::random(6), 'is_active' => true]);
     $policy = VacationPolicy::query()->create([
@@ -58,11 +58,13 @@ test('a faculty reviewer sees only academic and invited staff under that faculty
     $this->actingAs($reviewer);
 
     Livewire::test(ListEmployees::class)
-        ->assertCanSeeTableRecords([$academic, $deeperAcademic])
-        ->assertCanNotSeeTableRecords([$administrative, $otherFacultyEmployee]);
+        ->assertCanSeeTableRecords([$academic, $deeperAcademic, $administrative, $otherFacultyEmployee])
+        ->filterTable('department', $child->id)
+        ->assertCanSeeTableRecords([$academic, $administrative])
+        ->assertCanNotSeeTableRecords([$otherFacultyEmployee]);
 
     expect($reviewer->can('update', $academic))->toBeTrue()
-        ->and($reviewer->can('update', $otherFacultyEmployee))->toBeFalse()
+        ->and($reviewer->can('update', $otherFacultyEmployee))->toBeTrue()
         ->and($reviewer->canAccessPanel(Filament::getPanel('admin')))->toBeFalse()
         ->and($reviewer->canAccessPanel(Filament::getPanel('review')))->toBeTrue()
         ->and(EmployeeResource::getRelations())->toBe([]);
@@ -71,7 +73,10 @@ test('a faculty reviewer sees only academic and invited staff under that faculty
         ->assertSuccessful();
 
     $this->get(EmployeeResource::getUrl('edit', ['record' => $otherFacultyEmployee]))
-        ->assertNotFound();
+        ->assertSuccessful()
+        ->assertSee(__('cv.actions.download'))
+        ->assertSee('/cv/ka?download=1')
+        ->assertSee('/cv/en?download=1');
 
     $this->get('/cms')->assertForbidden();
 
