@@ -5,6 +5,9 @@ return [
         'generate' => 'Generate CV',
         'georgian' => 'Georgian CV',
         'english' => 'English CV',
+        'download' => 'Download CV',
+        'download_georgian' => 'Georgian PDF',
+        'download_english' => 'English PDF',
     ],
 
     'contact_information' => 'Contact information',
@@ -31,6 +34,7 @@ return [
     'scholarship_title' => 'Scholarship / award',
     'issuer' => 'Issuer',
     'print' => 'Print',
+    'download' => 'Download',
 
     'genders' => [
         'male_ka' => 'Male',

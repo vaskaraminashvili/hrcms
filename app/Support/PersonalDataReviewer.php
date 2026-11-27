@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Enums\PositionType;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,20 +52,7 @@ class PersonalDataReviewer
      */
     public static function scopeEmployees(Builder $query, User $user): Builder
     {
-        $departmentIds = self::departmentIdsFor($user);
-
-        if ($departmentIds->isEmpty()) {
-            return $query->whereIn($query->getModel()->getQualifiedKeyName(), []);
-        }
-
-        return $query->whereHas('appointmentPositions', function (Builder $positions) use ($departmentIds): void {
-            $positions
-                ->whereIn('department_id', $departmentIds->all())
-                ->whereIn('position_type', [
-                    PositionType::AcademicPersonnel->value,
-                    PositionType::InvitedTeacher->value,
-                ]);
-        });
+        return $query;
     }
 
     public static function employeeIsInScope(User $user, Employee $employee): bool

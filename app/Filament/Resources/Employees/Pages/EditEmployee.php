@@ -69,6 +69,27 @@ class EditEmployee extends EditRecord
                 ->label(__('cv.actions.generate'))
                 ->color('primary')
                 ->icon('heroicon-m-document-text'),
+            ActionGroup::make([
+                Action::make('downloadCvGeorgian')
+                    ->label(__('cv.actions.download_georgian'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'ka',
+                        'download' => 1,
+                    ]))
+                    ->openUrlInNewTab(),
+                Action::make('downloadCvEnglish')
+                    ->label(__('cv.actions.download_english'))
+                    ->url(fn (): string => route('employees.cv.show', [
+                        'employee' => $this->getRecord(),
+                        'locale' => 'en',
+                        'download' => 1,
+                    ]))
+                    ->openUrlInNewTab(),
+            ])
+                ->label(__('cv.actions.download'))
+                ->color('gray')
+                ->icon('heroicon-m-arrow-down-tray'),
             ResetEmployeeUserPasswordAction::make()
                 ->visible(fn (): bool => ResetEmployeeUserPasswordAction::canReset($this->getRecord()))
                 ->action(function (): void {
